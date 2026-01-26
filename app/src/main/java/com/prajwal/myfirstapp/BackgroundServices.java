@@ -34,13 +34,15 @@ public class BackgroundServices {
     public void startAutoDiscovery(DiscoveryCallback callback) {
         new Thread(() -> {
             try {
-                DatagramSocket socket = new DatagramSocket(DISCOVERY_PORT);
+                DatagramSocket socket = new DatagramSocket(null);
+                socket.setReuseAddress(true); // Allow port sharing
+                socket.bind(new java.net.InetSocketAddress(DISCOVERY_PORT));
                 byte[] inBuf = new byte[1024];
 
                 while (true) {
                     try {
                         DatagramPacket inPacket = new DatagramPacket(inBuf, inBuf.length);
-                        socket.receive(inPacket); 
+                        socket.receive(inPacket);
                         String reply = new String(inPacket.getData(), 0, inPacket.getLength()).trim();
                         if (reply.equals("LAPTOP_IP_FOUND") || reply.equals("LAPTOP_SERVER_ACTIVE")) {
                             if (callback != null) callback.onServerFound();

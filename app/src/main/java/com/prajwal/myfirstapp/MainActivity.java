@@ -3,6 +3,7 @@ package com.prajwal.myfirstapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,15 +42,16 @@ public class MainActivity extends AppCompatActivity {
 
     // Heartbeat & Connection State Variables
     private long lastServerHeartbeat = 0;
-    private final long TIMEOUT_THRESHOLD = 7000; // 7 seconds
+    private final long TIMEOUT_THRESHOLD = 3000; // 3 seconds (faster detection)
     private boolean isServerCurrentlyRunning = false;
     private int missCount = 0;
     private boolean isPreviewOn = false;
+    private boolean serverSelected = false; // Only start monitoring after server is selected
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_old);
+        setContentView(R.layout.activity_main);
 
         // --- Core Components Init ---
         // Default IP, can be changed via Dialog
@@ -74,16 +76,42 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLeftClick).setOnClickListener(v -> connectionManager.sendCommand("MOUSE_CLICK"));
         findViewById(R.id.btnRightClick).setOnClickListener(v -> connectionManager.sendCommand("MOUSE_RIGHT_CLICK"));
 
-        // Dynamic Start/Stop Button
+        // Dynamic Button: Start/Test when disconnected, Stop when connected
         btnStop.setOnClickListener(v -> {
-            connectionManager.toggleServerState(isServerCurrentlyRunning, () -> {
-                String msg = isServerCurrentlyRunning ? "STOP_MAIN_SERVER" : "START_MAIN_SERVER";
-                runOnUiThread(() -> Toast.makeText(this, "Sending " + msg, Toast.LENGTH_SHORT).show());
-            });
+            // Check if server is selected first
+            if (!serverSelected) {
+                Toast.makeText(this, "Please select a server first (Menu button)", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (isServerCurrentlyRunning) {
+                // Server is running - Stop it via watchdog
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle("Stop Server")
+                        .setMessage("Stop the Python server on your PC?")
+                        .setPositiveButton("Stop", (d, w) -> {
+                            connectionManager.toggleServerState(true, null);
+                            Toast.makeText(this, "Stopping server...", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            } else {
+                // Server is disconnected - show options
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle("Server Options")
+                        .setMessage("What would you like to do?")
+                        .setPositiveButton("Start Server", (d, w) -> {
+                            connectionManager.toggleServerState(false, null);
+                            Toast.makeText(this, "Starting server...", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNeutralButton("Test Connection", (d, w) -> testConnection())
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
         });
 
         findViewById(R.id.btnOpenNotepad).setOnClickListener(v -> connectionManager.sendCommand("OPEN_NOTEPAD"));
-        findViewById(R.id.btnMenu).setOnClickListener(v -> showIPDialog());
+        findViewById(R.id.btnMenu).setOnClickListener(v -> showServerSelectionDialog());
         findViewById(R.id.btnVoice).setOnClickListener(v -> startVoiceRecognition(300));
         findViewById(R.id.btnWriteAI).setOnClickListener(v -> showWriteAIDialog());
         findViewById(R.id.btnEnterPresenter).setOnClickListener(v -> togglePresenterMode(true));
@@ -117,16 +145,16 @@ public class MainActivity extends AppCompatActivity {
             // Note: Since TouchpadHandler handles main touch, this is separate.
             // Keeping original logic inline here or moving to a handler is fine.
             // For brevity, I'll keep the inline logic from original but cleaned up.
-             switch (event.getAction()) {
+            switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
-                     // Basic vertical check, can be refined if needed, 
-                     // but TouchpadHandler also has scroll.
-                     break;
-             }
-             return true; 
+                    // Basic vertical check, can be refined if needed,
+                    // but TouchpadHandler also has scroll.
+                    break;
+            }
+            return true;
         });
-        // (The original scrollStrip logic was a bit verbose, 
-        //  if the user relies on it we can add a specific handler, 
+        // (The original scrollStrip logic was a bit verbose,
+        //  if the user relies on it we can add a specific handler,
         //  but the TouchPadHandler supports 2-finger scroll now).
         //  Let's actually restore the simple strip logic if they use it specifically.
         setupScrollStrip(scrollStrip);
@@ -138,8 +166,9 @@ public class MainActivity extends AppCompatActivity {
         // Preview Toggle
         findViewById(R.id.btnTogglePreview).setOnClickListener(v -> togglePreview((Button)v));
 
-        // Start background listeners
-        backgroundServices.startAutoDiscovery(() -> lastServerHeartbeat = System.currentTimeMillis());
+        // Don't start background listeners automatically
+        // Only start after user selects a server
+        // backgroundServices.startAutoDiscovery(() -> lastServerHeartbeat = System.currentTimeMillis());
         backgroundServices.startStatusListener((battery, plugged) -> {
             runOnUiThread(() -> tvBattery.setText("PC Battery: " + battery + (plugged ? " ⚡" : "")));
         });
@@ -147,7 +176,12 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> ivPreview.setImageBitmap(bitmap));
         });
 
-        startConnectionMonitor(); // Initialize the dynamic status monitor
+        // Don't start connection monitor automatically - wait for server selection
+        // startConnectionMonitor();
+
+        // Show initial status
+        tvStatus.setText("No server selected");
+        tvStatus.setTextColor(Color.parseColor("#FFA500")); // Orange
     }
 
     private void setupUtilityButtons() {
@@ -172,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupScrollStrip(View scrollStrip) {
-         scrollStrip.setOnTouchListener(new View.OnTouchListener() {
+        scrollStrip.setOnTouchListener(new View.OnTouchListener() {
             private float lastScrollY = 0;
             private final float SCROLL_THRESHOLD = 30;
 
@@ -200,14 +234,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     // --- Dynamic Status Handlers ---
 
     private void startConnectionMonitor() {
         new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(3000); // Check every 3 seconds
+                    Thread.sleep(1000); // Check every 1 second (faster response)
                     long currentTime = System.currentTimeMillis();
                     boolean isHearbeatFresh = (currentTime - lastServerHeartbeat < TIMEOUT_THRESHOLD);
 
@@ -230,12 +264,37 @@ public class MainActivity extends AppCompatActivity {
                 tvStatus.setText("Connected: " + connectionManager.getLaptopIp());
                 tvStatus.setTextColor(Color.GREEN);
                 btnStop.setText("Stop Server");
-                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#CF6679")));
+                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#CF6679"))); // Red
             } else {
                 tvStatus.setText("Disconnected");
                 tvStatus.setTextColor(Color.RED);
                 btnStop.setText("Start Server");
-                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#03DAC5")));
+                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#03DAC5"))); // Teal/Green
+            }
+        });
+    }
+
+    private void testConnection() {
+        btnStop.setEnabled(false);
+        btnStop.setText("Testing...");
+
+        connectionManager.testConnection(new ConnectionManager.PingCallback() {
+            @Override
+            public void onSuccess(long responseTime) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Connected (" + responseTime + "ms)", Toast.LENGTH_SHORT).show();
+                    lastServerHeartbeat = System.currentTimeMillis();
+                    btnStop.setEnabled(true);
+                });
+            }
+
+            @Override
+            public void onFailure() {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Server not responding", Toast.LENGTH_SHORT).show();
+                    lastServerHeartbeat = 0;
+                    btnStop.setEnabled(true);
+                });
             }
         });
     }
@@ -263,8 +322,8 @@ public class MainActivity extends AppCompatActivity {
         String type = intent.getType();
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-             if (uri != null) sendSharedFile(uri);
+            Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (uri != null) sendSharedFile(uri);
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
             ArrayList<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
             if (fileUris != null) {
@@ -274,15 +333,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendSharedFile(Uri uri) {
-        // Wake server then send
-        connectionManager.toggleServerState(false, null);
+        // Server should already be running - send file directly
         new Thread(() -> {
             try {
-                Thread.sleep(5000); // Wait for wake
-                connectionManager.sendFileToLaptop(this, uri, 
-                    () -> runOnUiThread(() -> Toast.makeText(this, "Sending file...", Toast.LENGTH_SHORT).show()),
-                    () -> runOnUiThread(() -> Toast.makeText(this, "Sent: " + uri.getLastPathSegment(), Toast.LENGTH_SHORT).show()),
-                    () -> runOnUiThread(() -> Toast.makeText(this, "Transfer Failed", Toast.LENGTH_SHORT).show())
+                Thread.sleep(1000); // Brief delay to ensure connection is ready
+                connectionManager.sendFileToLaptop(this, uri,
+                        () -> runOnUiThread(() -> Toast.makeText(this, "Sending file...", Toast.LENGTH_SHORT).show()),
+                        () -> runOnUiThread(() -> Toast.makeText(this, "Sent: " + uri.getLastPathSegment(), Toast.LENGTH_SHORT).show()),
+                        () -> runOnUiThread(() -> Toast.makeText(this, "Transfer Failed", Toast.LENGTH_SHORT).show())
                 );
             } catch (InterruptedException e) { e.printStackTrace(); }
         }).start();
@@ -314,6 +372,74 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void showServerSelectionDialog() {
+        android.app.ProgressDialog progress = new android.app.ProgressDialog(this);
+        progress.setMessage("Discovering servers...");
+        progress.setCancelable(false);
+        progress.show();
+
+        connectionManager.discoverServers(servers -> {
+            runOnUiThread(() -> {
+                progress.dismiss();
+
+                if (servers.isEmpty()) {
+                    // No servers found - show manual IP entry
+                    new AlertDialog.Builder(this)
+                            .setTitle("No Servers Found")
+                            .setMessage("No servers detected. Enter IP manually?")
+                            .setPositiveButton("Manual Entry", (d, w) -> showManualIPDialog())
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                } else {
+                    // Show list of discovered servers
+                    String[] serverArray = servers.toArray(new String[0]);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Select Server (" + servers.size() + " found)");
+                    builder.setItems(serverArray, (dialog, which) -> {
+                        String selectedIP = serverArray[which];
+                        selectServer(selectedIP);
+                    });
+                    builder.setNeutralButton("Manual Entry", (d, w) -> showManualIPDialog());
+                    builder.setNegativeButton("Cancel", null);
+                    builder.show();
+                }
+            });
+        });
+    }
+
+    private void showManualIPDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final EditText input = new EditText(this);
+        input.setText(connectionManager.getLaptopIp());
+        input.setHint("Enter IP address (e.g., 192.168.1.100)");
+        builder.setTitle("Manual IP Entry").setView(input);
+        builder.setPositiveButton("Connect", (d, w) -> {
+            String ip = input.getText().toString().trim();
+            if (!ip.isEmpty()) {
+                selectServer(ip);
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void selectServer(String ipAddress) {
+        connectionManager.setLaptopIp(ipAddress);
+        serverSelected = true;
+
+        // Start monitoring now that server is selected
+        if (!isServerCurrentlyRunning) {
+            backgroundServices.startAutoDiscovery(() -> lastServerHeartbeat = System.currentTimeMillis());
+            startConnectionMonitor();
+        }
+
+        Toast.makeText(this, "Server set to: " + ipAddress, Toast.LENGTH_SHORT).show();
+        tvStatus.setText("Connecting to " + ipAddress + "...");
+        tvStatus.setTextColor(Color.parseColor("#FFA500")); // Orange
+    }
+
+    // Keep old showIPDialog for backwards compatibility if needed elsewhere
     private void showIPDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText input = new EditText(this);
@@ -342,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
-    
+
     private void showWriteAIDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Write AI Command");
@@ -359,11 +485,11 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak...");
         startActivityForResult(intent, requestCode);
     }
-    
+
     private void togglePresenterMode(boolean show) {
         if (presenterModeUI != null) presenterModeUI.setVisibility(show ? View.VISIBLE : View.GONE);
     }
-    
+
     private void setupKeyboard(EditText hiddenInput) {
         hiddenInput.setText(" ");
         findViewById(R.id.btnKeyboard).setOnClickListener(v -> {
@@ -404,18 +530,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            
+
             // File Handling
             if (requestCode >= 200 && requestCode <= 202) {
-                 Uri uri = data.getData();
-                 if (uri != null) {
-                     connectionManager.sendFileToLaptop(this, uri, 
-                        () -> runOnUiThread(() -> Toast.makeText(this, "Sending...", Toast.LENGTH_SHORT).show()),
-                        () -> runOnUiThread(() -> Toast.makeText(this, "Sent!", Toast.LENGTH_SHORT).show()),
-                        () -> runOnUiThread(() -> Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show())
-                     );
-                 }
-                 return;
+                Uri uri = data.getData();
+                if (uri != null) {
+                    connectionManager.sendFileToLaptop(this, uri,
+                            () -> runOnUiThread(() -> Toast.makeText(this, "Sending...", Toast.LENGTH_SHORT).show()),
+                            () -> runOnUiThread(() -> Toast.makeText(this, "Sent!", Toast.LENGTH_SHORT).show()),
+                            () -> runOnUiThread(() -> Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show())
+                    );
+                }
+                return;
             }
 
             // Voice Handling
@@ -423,24 +549,24 @@ public class MainActivity extends AppCompatActivity {
             if (matches != null && !matches.isEmpty()) {
                 String text = matches.get(0);
                 if (requestCode == 400) {
-                     connectionManager.sendCommand("DICTATE:" + text);
-                     Toast.makeText(this, "Typing: " + text, Toast.LENGTH_SHORT).show();
+                    connectionManager.sendCommand("DICTATE:" + text);
+                    Toast.makeText(this, "Typing: " + text, Toast.LENGTH_SHORT).show();
                 } else if (requestCode == 300) {
-                     // Confirm Command
-                     new AlertDialog.Builder(this)
-                        .setTitle("Confirm Command")
-                        .setMessage(text)
-                        .setPositiveButton("Execute", (d,w) -> connectionManager.sendCommand("VOICE:" + text))
-                        .setNegativeButton("Cancel", null)
-                        .show();
+                    // Confirm Command
+                    new AlertDialog.Builder(this)
+                            .setTitle("Confirm Command")
+                            .setMessage(text)
+                            .setPositiveButton("Execute", (d,w) -> connectionManager.sendCommand("VOICE:" + text))
+                            .setNegativeButton("Cancel", null)
+                            .show();
                 } else if (requestCode == 500) {
-                     connectionManager.sendCommand("CLIPBOARD:" + text);
-                     Toast.makeText(this, "Synced Clipboard", Toast.LENGTH_SHORT).show();
+                    connectionManager.sendCommand("CLIPBOARD:" + text);
+                    Toast.makeText(this, "Synced Clipboard", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
-    
+
     @Override public void onBackPressed() {
         if (presenterModeUI != null && presenterModeUI.getVisibility() == View.VISIBLE) togglePresenterMode(false);
         else super.onBackPressed();

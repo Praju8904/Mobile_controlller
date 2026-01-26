@@ -19,6 +19,26 @@ public class ConnectionManager {
     private static final int PORT_COMMAND = 5005;
     private static final int PORT_FILE = 5006;
     private static final int PORT_WATCHDOG = 5007;
+    private static final int PORT_PING = 5008;
+
+    public interface PingCallback {
+        void onSuccess(long responseTime);
+        void onFailure();
+    }
+
+    public interface DiscoveryCallback {
+        void onServersFound(java.util.List<String> serverIPs);
+    }
+
+    public static class ServerInfo {
+        public String ipAddress;
+        public String hostname;
+
+        public ServerInfo(String ip, String hostname) {
+            this.ipAddress = ip;
+            this.hostname = hostname;
+        }
+    }
 
     public ConnectionManager(String initialIp) {
         this.laptopIp = initialIp;
@@ -45,10 +65,46 @@ public class ConnectionManager {
         }).start();
     }
 
+    public void testConnection(PingCallback callback) {
+        new Thread(() -> {
+            long startTime = System.currentTimeMillis();
+            try {
+                DatagramSocket socket = new DatagramSocket();
+                socket.setSoTimeout(2000); // 2 second timeout
+
+                // Send PING
+                String message = "PING";
+                byte[] sendBuf = message.getBytes();
+                InetAddress address = InetAddress.getByName(laptopIp);
+                DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, address, PORT_COMMAND);
+                socket.send(sendPacket);
+
+                // Wait for PONG response
+                byte[] receiveBuf = new byte[1024];
+                DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
+                socket.receive(receivePacket);
+
+                String response = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
+                if (response.equals("PONG")) {
+                    long responseTime = System.currentTimeMillis() - startTime;
+                    socket.close();
+                    if (callback != null) callback.onSuccess(responseTime);
+                } else {
+                    socket.close();
+                    if (callback != null) callback.onFailure();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (callback != null) callback.onFailure();
+            }
+        }).start();
+    }
+
     public void toggleServerState(boolean isRunning, Runnable onSuccess) {
         new Thread(() -> {
             try {
                 DatagramSocket socket = new DatagramSocket();
+                // Send to watchdog server on port 5007
                 String message = isRunning ? "STOP_MAIN_SERVER" : "START_MAIN_SERVER";
                 byte[] buf = message.getBytes();
                 InetAddress address = InetAddress.getByName(laptopIp);
@@ -60,11 +116,75 @@ public class ConnectionManager {
         }).start();
     }
 
+    public void discoverServers(DiscoveryCallback callback) {
+        new Thread(() -> {
+            java.util.Set<String> discoveredIPs = new java.util.HashSet<>();
+            DatagramSocket listenSocket = null;
+            DatagramSocket sendSocket = null;
+
+            try {
+                // Create listening socket on port 37020
+                listenSocket = new DatagramSocket(null);
+                listenSocket.setReuseAddress(true);
+                listenSocket.bind(new java.net.InetSocketAddress(37020));
+                listenSocket.setSoTimeout(500); // Short timeout for frequent checks
+
+                // Send broadcast discovery
+                sendSocket = new DatagramSocket();
+                sendSocket.setBroadcast(true);
+                byte[] sendBuf = "DISCOVERY_REQUEST".getBytes();
+                InetAddress broadcast = InetAddress.getByName("255.255.255.255");
+                DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, broadcast, PORT_WATCHDOG);
+                sendSocket.send(sendPacket);
+                sendSocket.close();
+
+                System.out.println("Discovery broadcast sent, listening on port 37020...");
+
+                // Listen for 3 seconds total
+                long endTime = System.currentTimeMillis() + 3000;
+                byte[] receiveBuf = new byte[1024];
+
+                while (System.currentTimeMillis() < endTime) {
+                    try {
+                        DatagramPacket receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
+                        listenSocket.receive(receivePacket);
+
+                        String response = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
+                        String senderIP = receivePacket.getAddress().getHostAddress();
+
+                        System.out.println("Received: '" + response + "' from " + senderIP);
+
+                        if (response.equals("LAPTOP_IP_FOUND") || response.equals("LAPTOP_SERVER_ACTIVE")) {
+                            discoveredIPs.add(senderIP);
+                            System.out.println("Added server: " + senderIP);
+                        }
+                    } catch (java.net.SocketTimeoutException e) {
+                        // Short timeout, continue loop
+                    }
+                }
+
+                listenSocket.close();
+
+                System.out.println("Discovery complete. Found " + discoveredIPs.size() + " server(s)");
+
+                java.util.List<String> servers = new java.util.ArrayList<>(discoveredIPs);
+                if (callback != null) callback.onServersFound(servers);
+
+            } catch (Exception e) {
+                System.err.println("Discovery error: " + e.getMessage());
+                e.printStackTrace();
+                if (listenSocket != null && !listenSocket.isClosed()) listenSocket.close();
+                if (sendSocket != null && !sendSocket.isClosed()) sendSocket.close();
+                if (callback != null) callback.onServersFound(new java.util.ArrayList<>());
+            }
+        }).start();
+    }
+
     public void sendFileToLaptop(Context context, Uri uri, Runnable onStart, Runnable onComplete, Runnable onError) {
         new Thread(() -> {
             try {
                 if (onStart != null) onStart.run();
-                
+
                 try (Socket socket = new Socket(laptopIp, PORT_FILE);
                      OutputStream output = socket.getOutputStream();
                      InputStream input = context.getContentResolver().openInputStream(uri)) {
