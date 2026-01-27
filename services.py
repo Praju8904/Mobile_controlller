@@ -31,7 +31,7 @@ def broadcast_identity():
         try:
             broadcast_sock.sendto(msg, ('<broadcast>', config.DISCOVERY_PORT))
         except: pass
-        time.sleep(3)
+        time.sleep(1)  # Faster broadcasts for quicker detection
 
 def receive_file():
     file_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

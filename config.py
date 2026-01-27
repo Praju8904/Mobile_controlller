@@ -5,6 +5,14 @@ from geometry_utils import normalize_points
 HOST, PORT = '0.0.0.0', 5005
 FILE_PORT = 5006
 DISCOVERY_PORT = 37020
+# Add this line - Keep this key secret!
+
+SECRET_KEY = "my_super_secret_project_key"
+
+# --- SECURITY SETUP ---
+USE_ENCRYPTION = True  # The main toggle
+AES_KEY = "my_secret_16byte" # Must be 16 chars
+HMAC_KEY = "my_hmac_secret_key"
 
 # Optimized PyAutoGUI settings
 pyautogui.FAILSAFE, pyautogui.PAUSE = False, 0

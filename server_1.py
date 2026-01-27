@@ -33,7 +33,13 @@ def start_server():
                 threading.Thread(target=services.send_live_preview, args=(client_ip,), daemon=True).start()
                 preview_thread_started = True
 
-            commands.execute_command(data.decode('utf-8'))
+            # Execute command and check for response
+            response = commands.execute_command(data.decode('utf-8'))
+            
+            # If command returns a response (like PONG), send it back
+            if response:
+                sock.sendto(response.encode('utf-8'), addr)
+                
         except socket.timeout:
             continue
         except KeyboardInterrupt:
