@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.view.KeyEvent;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -203,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnZoomIn).setOnClickListener(v -> connectionManager.sendCommand("ZOOM_IN"));
         findViewById(R.id.btnZoomOut).setOnClickListener(v -> connectionManager.sendCommand("ZOOM_OUT"));
         findViewById(R.id.btnResetZoom).setOnClickListener(v -> connectionManager.sendCommand("ZOOM_RESET"));
+        findViewById(R.id.btnEnter).setOnClickListener(v -> connectionManager.sendCommand("KEY:ENTER"));
     }
 
     private void setupScrollStrip(View scrollStrip) {
@@ -233,6 +236,21 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            // 1. Give the user feedback on the phone
+            Toast.makeText(this, "Privacy Shield Activated!", Toast.LENGTH_SHORT).show();
+
+            // 2. Send the specific command to the laptop
+            connectionManager.sendCommand("PANIC_SHIELD");
+
+            // 3. Return 'true' so the phone's actual volume doesn't change
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     // --- Dynamic Status Handlers ---
@@ -427,6 +445,8 @@ public class MainActivity extends AppCompatActivity {
     private void selectServer(String ipAddress) {
         connectionManager.setLaptopIp(ipAddress);
         serverSelected = true;
+
+        connectionManager.wakeUpWatchdog();
 
         // Start monitoring now that server is selected
         if (!isServerCurrentlyRunning) {

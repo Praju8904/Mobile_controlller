@@ -13,6 +13,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Formatter;
+
 public class ConnectionManager {
 
     private String laptopIp;
@@ -20,6 +24,7 @@ public class ConnectionManager {
     private static final int PORT_FILE = 5006;
     private static final int PORT_WATCHDOG = 5007;
     private static final int PORT_PING = 5008;
+    private static final String HMAC_KEY = "my_super_secret_project_key";
 
     public interface PingCallback {
         void onSuccess(long responseTime);
@@ -55,15 +60,53 @@ public class ConnectionManager {
     public void sendCommand(final String command) {
         new Thread(() -> {
             try {
+                String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+                String processedCommand = command;
+
+                // 1. Check the Toggle
+                if (SecurityUtils.USE_ENCRYPTION) {
+                    processedCommand = SecurityUtils.encryptAES(command);
+                }
+
+                // 2. Prepare the message for signing
+                String messageToSign = processedCommand + "|" + timestamp;
+
+                // 3. Generate HMAC Signature
+                String signature = SecurityUtils.calculateHMAC(messageToSign);
+
+                // 4. Final Packet: ENCRYPTED_CMD|TIMESTAMP|SIGNATURE
+                String finalPacket = messageToSign + "|" + signature;
+
                 DatagramSocket udpSocket = new DatagramSocket();
                 InetAddress serverAddr = InetAddress.getByName(laptopIp);
-                byte[] buf = command.getBytes();
+                byte[] buf = finalPacket.getBytes();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, serverAddr, PORT_COMMAND);
                 udpSocket.send(packet);
                 udpSocket.close();
-            } catch (Exception e) { e.printStackTrace(); }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }).start();
     }
+
+    public void wakeUpWatchdog() {
+        new Thread(() -> {
+            try {
+                DatagramSocket socket = new DatagramSocket();
+                byte[] buf = "START_MAIN_SERVER".getBytes(); // Matches your watchdog.py command
+                InetAddress address = InetAddress.getByName(this.laptopIp);
+
+                // IMPORTANT: Sending to 5007 (Watchdog Port)
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 5007);
+                socket.send(packet);
+                socket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
 
     public void testConnection(PingCallback callback) {
         new Thread(() -> {
@@ -219,5 +262,19 @@ public class ConnectionManager {
                 if (onError != null) onError.run();
             }
         }).start();
+    }
+
+    private String calculateHMAC(String data) throws Exception {
+        SecretKeySpec signingKey = new SecretKeySpec(HMAC_KEY.getBytes("UTF-8"), "HmacSHA256");
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(signingKey);
+        byte[] rawHmac = mac.doFinal(data.getBytes("UTF-8"));
+
+        // Convert bytes to Hex string
+        Formatter formatter = new Formatter();
+        for (byte b : rawHmac) {
+            formatter.format("%02x", b);
+        }
+        return formatter.toString();
     }
 }
