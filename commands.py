@@ -13,7 +13,71 @@ import hashlib
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import base64
+import socket
+import file_service
+import task_manager
 
+SCREENSHOT_DIR = os.path.join(os.getcwd(), "screenshots")
+if not os.path.exists(SCREENSHOT_DIR):
+    os.makedirs(SCREENSHOT_DIR)
+
+# ─── STOP FLAG (for embedded server mode) ───────────────────────
+_stop_server_flag = False
+
+def is_stop_requested():
+    """Check if a remote STOP_SERVER command was received."""
+    return _stop_server_flag
+
+def reset_stop_flag():
+    """Reset the stop flag (called when server starts)."""
+    global _stop_server_flag
+    _stop_server_flag = False
+
+# ─── CHAT CALLBACK (for GUI chat integration) ─────────────────
+_chat_callback = None
+
+def set_chat_callback(fn):
+    """Register a callback for incoming CHAT_MSG commands.
+    The callback receives (text, msg_type)."""
+    global _chat_callback
+    _chat_callback = fn
+
+def execute_command(command_text, addr):
+    client_ip = addr[0] # Phone's IP
+
+    if command_text == "REQUEST_FILE_LIST":
+        # Check the folder and return the list
+        folder = "./send_file"
+        if not os.path.exists(folder): os.makedirs(folder)
+        files = os.listdir(folder)
+        return "FILES:" + "|".join(files) if files else "FILES:EMPTY"
+
+    if command_text.startswith("DOWNLOAD_FILE:"):
+        filename = command_text.split(":")[1]
+        # Start the TCP server from file_service in a new thread
+        threading.Thread(target=file_service.start_file_transfer, 
+                         args=(filename, client_ip)).start()
+        return "SENDING_STARTED"
+
+    return None
+def handle_screenshot(mode, client_ip=None):
+    # 1. Capture the screen
+    filename = f"screenshot_{int(time.time())}.png"
+    filepath = os.path.join(SCREENSHOT_DIR, filename)  # <--- This contains the FULL path (D:\...\screenshots\...)
+    
+    screenshot = pyautogui.screenshot()
+    screenshot.save(filepath)
+    print(f"[*] Screenshot saved locally: {filepath}")
+
+    if mode == "SEND" and client_ip:
+        # --- THE FIX IS HERE ---
+        # OLD: args=(filename, client_ip)
+        # NEW: args=(filepath, client_ip)
+        print(f"[*] Sending screenshot to mobile at {client_ip}...")
+        threading.Thread(target=file_service.send_specific_file, 
+                         args=(filepath, client_ip)).start() # Pass 'filepath', NOT 'filename'
+        return "SENDING_STARTED"
+    return None
 
 def decrypt_command(ciphertext_b64):
     try:
@@ -92,6 +156,275 @@ def handle_voice_command(text):
     elif "type" in text:
         content = text.split("type")[-1].strip()
         pyautogui.write(content)
+
+
+def execute_command(data,addr,sock):
+    try:
+        # 1. Split the packet: ENCRYPTED_OR_PLAIN|TIMESTAMP|SIGNATURE
+        parts = data.split("|")
+        client_ip = addr[0]
+        if len(parts) != 3:
+            return
+
+        payload, timestamp, signature = parts
+
+        # 2. Verify Integrity first (Always sign the transmitted payload)
+        message_to_sign = f"{payload}|{timestamp}"
+        if not verify_signature(message_to_sign, signature):
+            print("   [Security] Authentication Failed! Unauthorized command ignored.")
+            return
+
+        # 3. Check for Replay Attacks (10-second window)
+        if abs(time.time() - float(timestamp)) > 10:
+            print("   [Security] Replay Attack detected or Clock out of sync.")
+            return
+
+        # 4. Decrypt if the toggle is ON
+        if config.USE_ENCRYPTION:
+            command = decrypt_command(payload)
+            if not command: return
+        else:
+            command = payload
+        
+        # 3. Use the cleaned text for all subsequent logic
+        command = command.strip()
+        if not command: return
+        print(f"[*] Executing Verified Command: {command}")
+
+        # Core System Logic
+        if command == "PING":
+            print("[*] PING received - responding with PONG")
+            return "PONG"
+        
+        # ── Chat Messages from Phone ──
+        elif command.startswith("CHAT_MSG:"):
+            chat_text = command.split(":", 1)[1]
+            print(f"   [💬 Chat] Phone: {chat_text[:60]}")
+            if _chat_callback:
+                try:
+                    _chat_callback(chat_text, "text")
+                except Exception as e:
+                    print(f"   [Chat] Callback error: {e}")
+            return None
+        
+        elif command.startswith("CHAT_FILE:"):
+            file_info = command.split(":", 1)[1]
+            print(f"   [💬 Chat] Phone sent file: {file_info}")
+            if _chat_callback:
+                try:
+                    _chat_callback(file_info, "file")
+                except Exception as e:
+                    print(f"   [Chat] Callback error: {e}")
+            return None
+        
+        if command == "PREVIEW_ON":
+            config.preview_active = True
+        elif command == "PREVIEW_OFF":
+            config.preview_active = False
+
+        # Unified App Launching
+        elif command == "OPEN_NOTEPAD":
+            try:
+                subprocess.Popen(['notepad.exe']) 
+            except Exception as e:
+                print(f"Error: {e}")
+
+        elif command == "SHUTDOWN_LAPTOP":
+            os.system("shutdown /s /t 60")
+
+        elif command.startswith("SCHEDULE:"):
+            _, mins, cmd_to_run = command.split(":")
+            threading.Thread(target=scheduled_task, args=(int(mins)*60, cmd_to_run), daemon=True).start()
+
+        # Mouse Handling (Uses command_text coordinates only)
+        elif command.startswith("MOUSE_MOVE:"):
+            try:
+                coords = command.split(":", 1)[1].split(",")
+                dx, dy = float(coords[0]), float(coords[1])
+                pyautogui.moveRel(dx * 2.5, dy * 2.5, _pause=False)
+            except (ValueError, IndexError) as e:
+                print(f"Mouse Move Error: {e}")
+
+        elif command == "MOUSE_CLICK": pyautogui.click()
+        elif command == "MOUSE_RIGHT_CLICK": pyautogui.rightClick()
+        
+        elif command.startswith("MOUSE_SCROLL:"):
+            try:
+                scroll_direction = int(command.split(":")[1])
+                pyautogui.scroll(scroll_direction * 150) 
+            except Exception as e:
+                print(f"Scroll Error: {e}")
+
+        elif command == "STOP_SERVER":
+            global _stop_server_flag
+            _stop_server_flag = True
+            print("Remote Stop signal received.")
+            return "SERVER_STOPPING"
+        
+        elif command == "MEDIA_PLAY_PAUSE":
+            pyautogui.press('playpause') 
+        
+        elif command == "MEDIA_NEXT":
+            pyautogui.press('nexttrack')
+            print("   [Action] Media: Next Track")
+
+        elif command == "MEDIA_PREV":
+            pyautogui.press('prevtrack')
+            print("   [Action] Media: Previous Track")
+
+        elif command == "MEDIA_STOP":
+            pyautogui.press('stop')
+            print("   [Action] Media: Stop")
+
+        elif command == "LOCK_PC":
+            import ctypes
+            ctypes.windll.user32.LockWorkStation()
+            print("   [Action] PC Locked")
+
+        elif command.startswith("VOICE:"):
+            voice_text = command.split(":", 1)[1]
+            handle_voice_command(voice_text)
+            
+        elif command == "NAV_NEXT":
+            pyautogui.press('right')
+            print("   [Action] Navigation: Next")
+
+        elif command == "NAV_BACK":
+            pyautogui.press('left')
+            print("   [Action] Navigation: Back")
+        
+        elif command == "SCREEN_BLACK":
+            pyautogui.press('b')
+            print("   [Action] Presentation Blackout")
+        
+        elif command.startswith("KEY:"):
+            try:
+                key = command.split(":", 1)[1].lower()
+                # Handle specific mappings for PyAutoGUI
+                if key == "backspace": pyautogui.press('backspace')
+                elif key == "enter": pyautogui.press('enter')
+                elif key == "space": pyautogui.press('space')
+                else: pyautogui.press(key) 
+            except Exception as e:
+                print(f"Keyboard Error: {e}")
+
+        elif command.startswith("CLIPBOARD:"):
+            text_to_copy = command.split(":", 1)[1]
+            pyperclip.copy(text_to_copy)
+            print(f"   [Action] Copied to Clipboard: {text_to_copy[:30]}...")
+
+        elif command.startswith("DICTATE:"):
+            text_content = command.split(":", 1)[1]
+            time.sleep(0.5) 
+            pyautogui.write(text_content, interval=0.01)
+            print(f"   [Action] Dictated: {text_content}")
+
+        # System Controls
+        elif command == "VOL_UP":
+            pyautogui.press("volumeup")
+        elif command == "VOL_DOWN":
+            pyautogui.press("volumedown")
+        elif command == "MUTE_TOGGLE":
+            pyautogui.press('volumemute')
+
+        elif command == "BRIGHT_UP":
+            current = sbc.get_brightness()[0]
+            sbc.set_brightness(min(100, current + 10))
+        elif command == "BRIGHT_DOWN":
+            current = sbc.get_brightness()[0]
+            sbc.set_brightness(max(0, current - 10))
+
+        elif command == "SHOW_DESKTOP":
+            pyautogui.hotkey('win', 'd')
+        
+        elif command == "APP_SWITCHER":
+            pyautogui.hotkey('win', 'tab')
+        
+        elif command == "ZOOM_IN":
+            pyautogui.hotkey('ctrl', '=')
+        elif command == "ZOOM_OUT":
+            pyautogui.hotkey('ctrl', '-')
+        elif command == "ZOOM_RESET":
+            pyautogui.hotkey('ctrl', '0')
+        elif command == "PANIC_SHIELD":
+            print("!!! PANIC SHIELD ACTIVATED !!!")
+            try:
+                # 1. Minimize All Windows (Win + D)
+                pyautogui.hotkey('win', 'd')
+                
+                # 2. Mute System Audio
+                pyautogui.press('volumemute')
+                
+                # 3. Blackout (If in PPT) or just Pause Media
+                pyautogui.press('playpause')
+                
+                # 4. Optional: Lower brightness to 0
+                sbc.set_brightness(0)
+                
+                print("   [Action] All systems silenced and hidden.")
+            except Exception as e:
+                print(f"Panic Error: {e}")
+        elif command == "SCREENSHOT_LOCAL":
+            handle_screenshot("LOCAL")
+
+        elif command == "SCREENSHOT_SEND":
+            handle_screenshot("SEND", client_ip)
+        
+        elif command.startswith("MOUSE_MOVE_RELATIVE:"):
+            _, dx, dy = command.split(":")
+            # moveRel moves the mouse FROM its current position
+            pyautogui.moveRel(int(dx), int(dy), _pause=False)
+        
+        if command == "REQUEST_FILE_LIST":
+            file_list = file_service.get_folder_contents()
+            # Send the list back via UDP (it's just a small string)
+            sock.sendto(f"FILE_LIST:{file_list}".encode(), addr)
+
+        elif command.startswith("GET_FILE:"):
+            filename = command.split(":")[1]
+            # Start TCP transfer in background
+            threading.Thread(target=file_service.send_specific_file, 
+                            args=(filename, addr[0])).start()
+
+        # Gesture Recognition (Uses cleaned coordinates)
+        elif command.startswith("GESTURE:"):
+            try:
+                raw_coords = command.split(":", 1)[1]
+                raw = [tuple(map(float, p.split(","))) for p in raw_coords.split("|") if p]
+                if len(raw) < 5: return
+                
+                user_p = normalize_points(raw)
+                
+                # Recognition logic
+                if get_similarity(user_p, config.L_BRACKET) < 25:
+                    pyautogui.press('left')
+                    print("   [Action] Skip Backward")
+                elif get_similarity(user_p, config.R_BRACKET) < 25:
+                    pyautogui.press('right')
+                    print("   [Action] Skip Forward")
+                elif get_similarity(user_p, config.CIRCLE_TEMPLATE) < 35:
+                    pyautogui.hotkey('ctrl', 'r')
+                    print("   [Action] Refresh")
+                elif get_similarity(user_p, config.CARET_TEMPLATE) < 25:
+                    pyautogui.hotkey('win', 'up')
+                    print("   [Action] Maximize Window")
+                elif get_similarity(user_p, config.M_SHAPE_TEMPLATE) < 25:
+                    pyautogui.hotkey('win', 'd')
+                    print("   [Action] Minimize All")
+                elif get_similarity(user_p, config.V_SHAPE_TEMPLATE) < 25:
+                    pyautogui.hotkey('win', 'down')
+                    print("   [Action] Mute Toggle")
+            except Exception as e:
+                print(f"Gesture Error: {e}")
+
+        # ─── TASK MANAGER COMMANDS ──────────────────────────────────
+        elif command.startswith("TASK_"):
+            response = task_manager.handle_mobile_command(command)
+            if response:
+                return response
+
+    except Exception as e:
+        print(f"Global Command Error: {e}")
 
 # def execute_command(data):
 #     try:
@@ -278,205 +611,6 @@ def handle_voice_command(text):
 #                 print(f"Scroll Error: {e}")
 #     except Exception as e:
 #         print(f"Auth Error: {e}")
-
-def execute_command(data):
-    try:
-        # 1. Split the packet: ENCRYPTED_OR_PLAIN|TIMESTAMP|SIGNATURE
-        parts = data.split("|")
-        if len(parts) != 3:
-            return
-
-        payload, timestamp, signature = parts
-
-        # 2. Verify Integrity first (Always sign the transmitted payload)
-        message_to_sign = f"{payload}|{timestamp}"
-        if not verify_signature(message_to_sign, signature):
-            print("   [Security] Authentication Failed! Unauthorized command ignored.")
-            return
-
-        # 3. Check for Replay Attacks (10-second window)
-        if abs(time.time() - float(timestamp)) > 10:
-            print("   [Security] Replay Attack detected or Clock out of sync.")
-            return
-
-        # 4. Decrypt if the toggle is ON
-        if config.USE_ENCRYPTION:
-            command = decrypt_command(payload)
-            if not command: return
-        else:
-            command = payload
-        
-        # 3. Use the cleaned text for all subsequent logic
-        command = command.strip()
-        if not command: return
-        print(f"[*] Executing Verified Command: {command}")
-
-        # Core System Logic
-        if command == "PING":
-            print("[*] PING received - responding with PONG")
-            return "PONG"
-        
-        if command == "PREVIEW_ON":
-            config.preview_active = True
-        elif command == "PREVIEW_OFF":
-            config.preview_active = False
-
-        # Unified App Launching
-        elif command == "OPEN_NOTEPAD":
-            try:
-                subprocess.Popen(['notepad.exe']) 
-            except Exception as e:
-                print(f"Error: {e}")
-
-        elif command == "SHUTDOWN_LAPTOP":
-            os.system("shutdown /s /t 60")
-
-        elif command.startswith("SCHEDULE:"):
-            _, mins, cmd_to_run = command.split(":")
-            threading.Thread(target=scheduled_task, args=(int(mins)*60, cmd_to_run), daemon=True).start()
-
-        # Mouse Handling (Uses command_text coordinates only)
-        elif command.startswith("MOUSE_MOVE:"):
-            try:
-                coords = command.split(":", 1)[1].split(",")
-                dx, dy = float(coords[0]), float(coords[1])
-                pyautogui.moveRel(dx * 2.5, dy * 2.5, _pause=False)
-            except (ValueError, IndexError) as e:
-                print(f"Mouse Move Error: {e}")
-
-        elif command == "MOUSE_CLICK": pyautogui.click()
-        elif command == "MOUSE_RIGHT_CLICK": pyautogui.rightClick()
-        
-        elif command.startswith("MOUSE_SCROLL:"):
-            try:
-                scroll_direction = int(command.split(":")[1])
-                pyautogui.scroll(scroll_direction * 150) 
-            except Exception as e:
-                print(f"Scroll Error: {e}")
-
-        elif command == "STOP_SERVER":
-            print("Remote Stop signal received.")
-            os._exit(0)
-        
-        elif command == "MEDIA_PLAY_PAUSE":
-            pyautogui.press('playpause') 
-        
-        elif command.startswith("VOICE:"):
-            voice_text = command.split(":", 1)[1]
-            handle_voice_command(voice_text)
-            
-        elif command == "NAV_NEXT":
-            pyautogui.press('right')
-            print("   [Action] Navigation: Next")
-
-        elif command == "NAV_BACK":
-            pyautogui.press('left')
-            print("   [Action] Navigation: Back")
-        
-        elif command == "SCREEN_BLACK":
-            pyautogui.press('b')
-            print("   [Action] Presentation Blackout")
-        
-        elif command.startswith("KEY:"):
-            try:
-                key = command.split(":", 1)[1].lower()
-                # Handle specific mappings for PyAutoGUI
-                if key == "backspace": pyautogui.press('backspace')
-                elif key == "enter": pyautogui.press('enter')
-                elif key == "space": pyautogui.press('space')
-                else: pyautogui.press(key) 
-            except Exception as e:
-                print(f"Keyboard Error: {e}")
-
-        elif command.startswith("CLIPBOARD:"):
-            text_to_copy = command.split(":", 1)[1]
-            pyperclip.copy(text_to_copy)
-            print(f"   [Action] Copied to Clipboard: {text_to_copy[:30]}...")
-
-        elif command.startswith("DICTATE:"):
-            text_content = command.split(":", 1)[1]
-            time.sleep(0.5) 
-            pyautogui.write(text_content, interval=0.01)
-            print(f"   [Action] Dictated: {text_content}")
-
-        # System Controls
-        elif command == "VOL_UP":
-            pyautogui.press("volumeup")
-        elif command == "VOL_DOWN":
-            pyautogui.press("volumedown")
-        elif command == "MUTE_TOGGLE":
-            pyautogui.press('volumemute')
-
-        elif command == "BRIGHT_UP":
-            current = sbc.get_brightness()[0]
-            sbc.set_brightness(min(100, current + 10))
-        elif command == "BRIGHT_DOWN":
-            current = sbc.get_brightness()[0]
-            sbc.set_brightness(max(0, current - 10))
-
-        elif command == "SHOW_DESKTOP":
-            pyautogui.hotkey('win', 'd')
-        
-        elif command == "APP_SWITCHER":
-            pyautogui.hotkey('win', 'tab')
-        
-        elif command == "ZOOM_IN":
-            pyautogui.hotkey('ctrl', '=')
-        elif command == "ZOOM_OUT":
-            pyautogui.hotkey('ctrl', '-')
-        elif command == "ZOOM_RESET":
-            pyautogui.hotkey('ctrl', '0')
-        elif command == "PANIC_SHIELD":
-            print("!!! PANIC SHIELD ACTIVATED !!!")
-            try:
-                # 1. Minimize All Windows (Win + D)
-                pyautogui.hotkey('win', 'd')
-                
-                # 2. Mute System Audio
-                pyautogui.press('volumemute')
-                
-                # 3. Blackout (If in PPT) or just Pause Media
-                pyautogui.press('playpause')
-                
-                # 4. Optional: Lower brightness to 0
-                sbc.set_brightness(0)
-                
-                print("   [Action] All systems silenced and hidden.")
-            except Exception as e:
-                print(f"Panic Error: {e}")
-        # Gesture Recognition (Uses cleaned coordinates)
-        elif command.startswith("GESTURE:"):
-            try:
-                raw_coords = command.split(":", 1)[1]
-                raw = [tuple(map(float, p.split(","))) for p in raw_coords.split("|") if p]
-                if len(raw) < 5: return
-                
-                user_p = normalize_points(raw)
-                
-                # Recognition logic
-                if get_similarity(user_p, config.L_BRACKET) < 25:
-                    pyautogui.press('left')
-                    print("   [Action] Skip Backward")
-                elif get_similarity(user_p, config.R_BRACKET) < 25:
-                    pyautogui.press('right')
-                    print("   [Action] Skip Forward")
-                elif get_similarity(user_p, config.CIRCLE_TEMPLATE) < 35:
-                    pyautogui.hotkey('ctrl', 'r')
-                    print("   [Action] Refresh")
-                elif get_similarity(user_p, config.CARET_TEMPLATE) < 25:
-                    pyautogui.hotkey('win', 'up')
-                    print("   [Action] Maximize Window")
-                elif get_similarity(user_p, config.M_SHAPE_TEMPLATE) < 25:
-                    pyautogui.hotkey('win', 'd')
-                    print("   [Action] Minimize All")
-                elif get_similarity(user_p, config.V_SHAPE_TEMPLATE) < 25:
-                    pyautogui.hotkey('win', 'down')
-                    print("   [Action] Mute Toggle")
-            except Exception as e:
-                print(f"Gesture Error: {e}")
-
-    except Exception as e:
-        print(f"Global Command Error: {e}")
 
 
 

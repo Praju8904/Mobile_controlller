@@ -3,11 +3,13 @@ import threading
 import config
 import services
 import commands
+import reverse_commands
 
 def start_server():
     # Start background threads exactly once
     threading.Thread(target=services.broadcast_identity, daemon=True).start()
     threading.Thread(target=services.receive_file, daemon=True).start()
+    threading.Thread(target=services.receive_camera_stream, daemon=True).start()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((config.HOST, config.PORT))
@@ -23,6 +25,11 @@ def start_server():
             data, addr = sock.recvfrom(4096)
             client_ip = addr[0]
             
+            # Track connected phone for reverse commands
+            if not reverse_commands.is_connected():
+                reverse_commands.set_phone_ip(client_ip)
+                print(f"[*] Phone connected: {client_ip}")
+            
             # START STATUS THREAD
             if not status_thread_started:
                 threading.Thread(target=services.send_system_status, args=(client_ip,), daemon=True).start()
@@ -34,7 +41,8 @@ def start_server():
                 preview_thread_started = True
 
             # Execute command and check for response
-            response = commands.execute_command(data.decode('utf-8'))
+            response = commands.execute_command(data.decode('utf-8'), addr, sock)
+
             
             # If command returns a response (like PONG), send it back
             if response:

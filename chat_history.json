@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1771007745225,
+    "sender": "system",
+    "content": "Chat history cleared",
+    "type": "system",
+    "timestamp": "2026-02-14T00:05:45.225054",
+    "metadata": {}
+  },
+  {
+    "id": 1771007836957,
+    "sender": "pc",
+    "content": "/info",
+    "type": "command",
+    "timestamp": "2026-02-14T00:07:16.957476",
+    "metadata": {
+      "result": "💻 System Info\n  CPU: 1.5%\n  RAM: 79.8%  (12/15 GB)\n  Disk: 12.1%  (103 GB free)\n  Battery: 80% ⚡"
+    }
+  },
+  {
+    "id": 1771007873264,
+    "sender": "pc",
+    "content": "filter messages instantly",
+    "type": "text",
+    "timestamp": "2026-02-14T00:07:53.264661",
+    "metadata": {}
+  }
+]

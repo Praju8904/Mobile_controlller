@@ -6,6 +6,42 @@ import psutil
 import pyautogui
 from io import BytesIO
 import config
+import cv2
+import numpy as np
+
+def receive_camera_stream():
+    # Listen on Port 37023
+    stream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    stream_sock.bind(('0.0.0.0', 37023))
+    print("[*] Waiting for Phone Camera stream on port 37023...")
+
+    try:
+        while True:
+            # Receive packet (Max UDP size is around 65535, so we use 60000 to be safe)
+            data, addr = stream_sock.recvfrom(60000)
+            print(f"Received {len(data)} bytes from phone!")
+            
+            # 1. Convert raw bytes to numpy array
+            np_arr = np.frombuffer(data, dtype=np.uint8)
+            
+            # 2. Decode JPEG to Image
+            frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+            
+            if frame is not None:
+                # 3. Rotate if needed (Phones often send rotated images)
+                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+                
+                # 4. Show the window
+                cv2.imshow("Phone Camera Stream", frame)
+                
+                # Press 'q' on the laptop to close the window
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+    except Exception as e:
+        print(f"Stream Error: {e}")
+    finally:
+        cv2.destroyAllWindows()
+        stream_sock.close()
 
 def send_system_status(target_ip):
     """Sends battery and system info back to the Android app."""
