@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/task_item_bg"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="12dp"
+    android:gravity="center_vertical">
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/cbTaskDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:buttonTint="#667EEA" />
+
+    <!-- Task Info (Title + Due) -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTaskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Task Title"
+            android:textColor="#E0E0E0"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tvTaskDue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FFB74D"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif"
+            android:visibility="gone"
+            android:layout_marginTop="3dp" />
+    </LinearLayout>
+
+    <!-- Priority Badge -->
+    <TextView
+        android:id="@+id/tvTaskPriority"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif-medium" />
+
+    <!-- Source (mobile/pc icon) -->
+    <TextView
+        android:id="@+id/tvTaskSource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Delete -->
+    <ImageButton
+        android:id="@+id/btnDeleteTask"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Delete"
+        android:tint="#EF5350" />
+
+</LinearLayout>

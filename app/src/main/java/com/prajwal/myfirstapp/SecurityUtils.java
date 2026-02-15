@@ -10,10 +10,11 @@ import java.util.Formatter;
 
 public class SecurityUtils {
 
-    // These must match your Python config.py exactly!
-    public static final String AES_KEY = "my_secret_16byte";
-    public static final String HMAC_KEY = "my_hmac_secret_key";
-    public static final boolean USE_ENCRYPTION = true; // YOUR TOGGLE
+    // These can be updated at runtime via QR pairing
+    // Defaults match the Python config.py fallback values
+    public static String AES_KEY = "my_secret_16byte";
+    public static String HMAC_KEY = "my_hmac_secret_key";
+    public static boolean USE_ENCRYPTION = true;
 
     public static String encryptAES(String plainText) throws Exception {
         byte[] keyBytes = AES_KEY.getBytes("UTF-8");

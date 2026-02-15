@@ -26,8 +26,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import java.io.File;
+import android.net.Uri;
+import android.content.Intent;
+import android.widget.Toast;
+import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+
+import android.os.Build;
+import android.provider.Settings;
+import android.net.Uri;
 
 import java.util.ArrayList;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +55,16 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBattery;
     private ImageView ivPreview;
     private Button btnStop;
+    private SensorHandler sensorHandler;
+
+    // Home Navigation
+    private View homeScreen;
+    private View touchpadScreen;
+    private Button btnBackHome;
+
+    // QR Pairing & Reverse Commands
+    private QRPairingManager qrPairingManager;
+    private ReverseCommandListener reverseCommandListener;
 
     // Heartbeat & Connection State Variables
     private long lastServerHeartbeat = 0;
@@ -53,12 +77,33 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // sensorHandler = new SensorHandler(this, connectionManager); //Air Mouse
         setContentView(R.layout.activity_main);
 
+        // --- QR Pairing Init ---
+        qrPairingManager = new QRPairingManager(this);
+        if (qrPairingManager.isPaired()) {
+            qrPairingManager.applyKeys();
+        }
+
         // --- Core Components Init ---
-        // Default IP, can be changed via Dialog
-        connectionManager = new ConnectionManager("10.190.76.54");
+        // Use paired IP if available, else default
+        String initialIp = qrPairingManager.isPaired() ? qrPairingManager.getServerIp() : "10.190.76.54";
+        connectionManager = new ConnectionManager(initialIp);
         backgroundServices = new BackgroundServices();
+
+        // --- Reverse Command Listener (PC → Phone) ---
+        reverseCommandListener = new ReverseCommandListener(this, initialIp);
+        reverseCommandListener.setCallback(command -> {
+            // Optional: show a small indicator when PC sends a command
+            Log.d("ReverseCmd", "Received from PC: " + command);
+        });
+
+        // Auto-start reverse listener if already paired
+        if (qrPairingManager.isPaired()) {
+            reverseCommandListener.start();
+            serverSelected = true;
+        }
 
         // --- View Initializations ---
         modeSwitch = findViewById(R.id.modeSwitch);
@@ -69,6 +114,13 @@ public class MainActivity extends AppCompatActivity {
         tvBattery = findViewById(R.id.tvBattery);
         ivPreview = findViewById(R.id.ivPreview);
         btnStop = findViewById(R.id.btnStop);
+
+        // --- Home Navigation Init ---
+        homeScreen = findViewById(R.id.homeScreen);
+        touchpadScreen = findViewById(R.id.touchpadScreen);
+        btnBackHome = findViewById(R.id.btnBackHome);
+        btnBackHome.setOnClickListener(v -> navigateToHome());
+        setupHomeCards();
 
         // --- Touchpad Init ---
         touchpadHandler = new TouchpadHandler(this, touchPad, modeSwitch, connectionManager);
@@ -114,9 +166,17 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.btnOpenNotepad).setOnClickListener(v -> connectionManager.sendCommand("OPEN_NOTEPAD"));
         findViewById(R.id.btnMenu).setOnClickListener(v -> showServerSelectionDialog());
+        findViewById(R.id.btnScanQR).setOnClickListener(v -> startQRScan());
         findViewById(R.id.btnVoice).setOnClickListener(v -> startVoiceRecognition(300));
         findViewById(R.id.btnWriteAI).setOnClickListener(v -> showWriteAIDialog());
         findViewById(R.id.btnEnterPresenter).setOnClickListener(v -> togglePresenterMode(true));
+
+        // Task Manager
+        findViewById(R.id.btnTasks).setOnClickListener(v -> {
+            Intent taskIntent = new Intent(MainActivity.this, TaskManagerActivity.class);
+            taskIntent.putExtra("server_ip", connectionManager.getLaptopIp());
+            startActivity(taskIntent);
+        });
 
         // Navigation & Utility Buttons
         setupUtilityButtons();
@@ -140,6 +200,54 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        // screen shot
+        Button btnScreenshot = findViewById(R.id.btnScreenshot);
+
+        // 1. Simple Click -> Save on Laptop
+        btnScreenshot.setOnClickListener(v -> {
+            connectionManager.sendCommand("SCREENSHOT_LOCAL");
+            Toast.makeText(this, "Screenshot saved on PC", Toast.LENGTH_SHORT).show();
+        });
+
+        // 2. Long Press -> Save on Laptop AND Send to Mobile
+        btnScreenshot.setOnLongClickListener(v -> {
+            connectionManager.sendCommand("SCREENSHOT_SEND");
+            Toast.makeText(this, "Capturing and transferring...", Toast.LENGTH_LONG).show();
+
+            // Vibrate to give feedback that long press worked
+            // Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            // if (vibrator != null) {
+            // vibrator.vibrate(VibrationEffect.createOneShot(100,
+            // VibrationEffect.DEFAULT_AMPLITUDE));
+            // }
+
+            return true; // Tells Android we handled the long press
+        });
+
+        // air mouse
+        /*
+         * View laserTrigger = findViewById(R.id.touchPad);
+         *
+         * laserTrigger.setOnTouchListener((v, event) -> {
+         * switch (event.getAction()) {
+         * case MotionEvent.ACTION_DOWN:
+         * // Start the laser when finger touches
+         * sensorHandler.start();
+         * v.setBackgroundColor(Color.parseColor("#33FF0000")); // Tint red for "Laser"
+         * feel
+         * break;
+         *
+         * case MotionEvent.ACTION_UP:
+         * // Stop the laser when finger lifts
+         * sensorHandler.stop();
+         * v.setBackgroundColor(Color.TRANSPARENT);
+         * break;
+         * }
+         * return true;
+         * });
+         *
+         */
+
         // Scroll Strip
         View scrollStrip = findViewById(R.id.scrollStrip);
         scrollStrip.setOnTouchListener((v, event) -> {
@@ -156,21 +264,21 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
         // (The original scrollStrip logic was a bit verbose,
-        //  if the user relies on it we can add a specific handler,
-        //  but the TouchPadHandler supports 2-finger scroll now).
-        //  Let's actually restore the simple strip logic if they use it specifically.
+        // if the user relies on it we can add a specific handler,
+        // but the TouchPadHandler supports 2-finger scroll now).
+        // Let's actually restore the simple strip logic if they use it specifically.
         setupScrollStrip(scrollStrip);
-
 
         // Keyboard Logic
         setupKeyboard(hiddenInput);
 
         // Preview Toggle
-        findViewById(R.id.btnTogglePreview).setOnClickListener(v -> togglePreview((Button)v));
+        findViewById(R.id.btnTogglePreview).setOnClickListener(v -> togglePreview((Button) v));
 
         // Don't start background listeners automatically
         // Only start after user selects a server
-        // backgroundServices.startAutoDiscovery(() -> lastServerHeartbeat = System.currentTimeMillis());
+        // backgroundServices.startAutoDiscovery(() -> lastServerHeartbeat =
+        // System.currentTimeMillis());
         backgroundServices.startStatusListener((battery, plugged) -> {
             runOnUiThread(() -> tvBattery.setText("PC Battery: " + battery + (plugged ? " ⚡" : "")));
         });
@@ -182,8 +290,37 @@ public class MainActivity extends AppCompatActivity {
         // startConnectionMonitor();
 
         // Show initial status
-        tvStatus.setText("No server selected");
-        tvStatus.setTextColor(Color.parseColor("#FFA500")); // Orange
+        tvStatus.setText("● No server selected");
+        tvStatus.setTextColor(Color.parseColor("#FFB74D")); // Warm orange
+        // file reciver
+        // connectionManager.startFileReceiver(this);
+
+        // file reciver
+        Button btnOpenFolder = findViewById(R.id.btnOpenFolder);
+
+        btnOpenFolder.setOnClickListener(v -> {
+            // 1. Get the exact path to your received files
+            File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
+            File receivedFolder = new File(docFolder, "Received_Files");
+
+            if (receivedFolder.exists()) {
+                // 2. Create an Intent to open the file provider
+                // This opens the system's file manager at your app's specific location
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                Uri uri = Uri.parse(receivedFolder.getPath());
+                intent.setDataAndType(uri, "*/*"); // Allow viewing all file types
+
+                try {
+                    startActivity(Intent.createChooser(intent, "Open Received Files"));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(this, "Please install a File Manager", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "No files received yet!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        Log.d("RE_SYSTEM", "Calling startFileReceiver now...");
+        connectionManager.startFileReceiver(getApplicationContext());
     }
 
     private void setupUtilityButtons() {
@@ -219,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         lastScrollY = currentY;
-                        v.setBackgroundColor(Color.parseColor("#6603DAC5"));
+                        v.setBackgroundColor(Color.parseColor("#40667EEA"));
                         break;
                     case MotionEvent.ACTION_MOVE:
                         float deltaY = currentY - lastScrollY;
@@ -230,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        v.setBackgroundColor(Color.parseColor("#3303DAC5"));
+                        v.setBackground(getDrawable(R.drawable.scroll_strip_bg));
                         break;
                 }
                 return true;
@@ -265,12 +402,16 @@ public class MainActivity extends AppCompatActivity {
 
                     if (isHearbeatFresh) {
                         missCount = 0;
-                        if (!isServerCurrentlyRunning) updateConnectionUI(true);
+                        if (!isServerCurrentlyRunning)
+                            updateConnectionUI(true);
                     } else {
                         missCount++;
-                        if (missCount >= 2 && isServerCurrentlyRunning) updateConnectionUI(false);
+                        if (missCount >= 2 && isServerCurrentlyRunning)
+                            updateConnectionUI(false);
                     }
-                } catch (InterruptedException e) { e.printStackTrace(); }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
@@ -279,16 +420,18 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             isServerCurrentlyRunning = isConnected;
             if (isConnected) {
-                tvStatus.setText("Connected: " + connectionManager.getLaptopIp());
-                tvStatus.setTextColor(Color.GREEN);
+                tvStatus.setText("● Connected: " + connectionManager.getLaptopIp());
+                tvStatus.setTextColor(Color.parseColor("#66BB6A"));
                 btnStop.setText("Stop Server");
-                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#CF6679"))); // Red
+                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#C62828"))); // Deep Red
             } else {
-                tvStatus.setText("Disconnected");
-                tvStatus.setTextColor(Color.RED);
+                tvStatus.setText("● Disconnected");
+                tvStatus.setTextColor(Color.parseColor("#EF5350"));
                 btnStop.setText("Start Server");
-                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#03DAC5"))); // Teal/Green
+                btnStop.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#1565C0"))); // Blue
             }
+            // Keep Dynamic Bar in sync
+            updateDynamicBar();
         });
     }
 
@@ -341,11 +484,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            if (uri != null) sendSharedFile(uri);
+            if (uri != null)
+                sendSharedFile(uri);
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
             ArrayList<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
             if (fileUris != null) {
-                for (Uri uri : fileUris) sendSharedFile(uri);
+                for (Uri uri : fileUris)
+                    sendSharedFile(uri);
             }
         }
     }
@@ -357,13 +502,14 @@ public class MainActivity extends AppCompatActivity {
                 Thread.sleep(1000); // Brief delay to ensure connection is ready
                 connectionManager.sendFileToLaptop(this, uri,
                         () -> runOnUiThread(() -> Toast.makeText(this, "Sending file...", Toast.LENGTH_SHORT).show()),
-                        () -> runOnUiThread(() -> Toast.makeText(this, "Sent: " + uri.getLastPathSegment(), Toast.LENGTH_SHORT).show()),
-                        () -> runOnUiThread(() -> Toast.makeText(this, "Transfer Failed", Toast.LENGTH_SHORT).show())
-                );
-            } catch (InterruptedException e) { e.printStackTrace(); }
+                        () -> runOnUiThread(() -> Toast
+                                .makeText(this, "Sent: " + uri.getLastPathSegment(), Toast.LENGTH_SHORT).show()),
+                        () -> runOnUiThread(() -> Toast.makeText(this, "Transfer Failed", Toast.LENGTH_SHORT).show()));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }).start();
     }
-
 
     // --- UI Dialogs & Pickers ---
 
@@ -373,7 +519,8 @@ public class MainActivity extends AppCompatActivity {
         final EditText input = new EditText(this);
         input.setHint("Type or paste text here...");
 
-        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(
+                Context.CLIPBOARD_SERVICE);
         if (clipboard.hasPrimaryClip()) {
             input.setText(clipboard.getPrimaryClip().getItemAt(0).getText());
         }
@@ -387,6 +534,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void showRemoteFilesDialog(String pipeSeparatedFiles) {
+        if (pipeSeparatedFiles.equals("EMPTY")) {
+            Toast.makeText(this, "No files in laptop folder", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] files = pipeSeparatedFiles.split("\\|");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Files on Laptop");
+        builder.setItems(files, (dialog, which) -> {
+            String selectedFile = files[which];
+            connectionManager.sendCommand("GET_FILE:" + selectedFile);
+            Toast.makeText(this, "Downloading " + selectedFile, Toast.LENGTH_SHORT).show();
+        });
         builder.show();
     }
 
@@ -406,6 +571,7 @@ public class MainActivity extends AppCompatActivity {
                             .setTitle("No Servers Found")
                             .setMessage("No servers detected. Enter IP manually?")
                             .setPositiveButton("Manual Entry", (d, w) -> showManualIPDialog())
+                            .setNeutralButton("Scan QR Code", (d, w) -> startQRScan())
                             .setNegativeButton("Cancel", null)
                             .show();
                 } else {
@@ -418,7 +584,7 @@ public class MainActivity extends AppCompatActivity {
                         String selectedIP = serverArray[which];
                         selectServer(selectedIP);
                     });
-                    builder.setNeutralButton("Manual Entry", (d, w) -> showManualIPDialog());
+                    builder.setNeutralButton("Scan QR", (d, w) -> startQRScan());
                     builder.setNegativeButton("Cancel", null);
                     builder.show();
                 }
@@ -448,6 +614,13 @@ public class MainActivity extends AppCompatActivity {
 
         connectionManager.wakeUpWatchdog();
 
+        // Start/restart reverse command listener for this server
+        if (reverseCommandListener != null) {
+            reverseCommandListener.stop();
+        }
+        reverseCommandListener = new ReverseCommandListener(this, ipAddress);
+        reverseCommandListener.start();
+
         // Start monitoring now that server is selected
         if (!isServerCurrentlyRunning) {
             backgroundServices.startAutoDiscovery(() -> lastServerHeartbeat = System.currentTimeMillis());
@@ -455,8 +628,45 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, "Server set to: " + ipAddress, Toast.LENGTH_SHORT).show();
-        tvStatus.setText("Connecting to " + ipAddress + "...");
-        tvStatus.setTextColor(Color.parseColor("#FFA500")); // Orange
+        tvStatus.setText("● Connecting to " + ipAddress + "...");
+        tvStatus.setTextColor(Color.parseColor("#FFB74D")); // Warm orange
+    }
+
+    private void startQRScan() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+        integrator.setPrompt("Scan the QR code from the PC Control Panel");
+        integrator.setCameraId(0);
+        integrator.setBeepEnabled(true);
+        integrator.setBarcodeImageEnabled(false);
+        integrator.setOrientationLocked(true);
+        integrator.initiateScan();
+    }
+
+    private void handleQRResult(String qrData) {
+        boolean success = qrPairingManager.parsePairingData(qrData);
+        if (success) {
+            qrPairingManager.applyKeys();
+            String ip = qrPairingManager.getServerIp();
+            String hostname = qrPairingManager.getHostname();
+            selectServer(ip);
+            Toast.makeText(this, "Paired with " + hostname + " (" + ip + ")",
+                    Toast.LENGTH_LONG).show();
+
+            // Send confirmation to PC
+            new Thread(() -> {
+                try {
+                    java.net.DatagramSocket sock = new java.net.DatagramSocket();
+                    byte[] buf = ("PAIRED:" + android.os.Build.MODEL).getBytes();
+                    java.net.InetAddress addr = java.net.InetAddress.getByName(ip);
+                    java.net.DatagramPacket pkt = new java.net.DatagramPacket(buf, buf.length, addr, 6001);
+                    sock.send(pkt);
+                    sock.close();
+                } catch (Exception e) { e.printStackTrace(); }
+            }).start();
+        } else {
+            Toast.makeText(this, "Invalid QR code", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Keep old showIPDialog for backwards compatibility if needed elsewhere
@@ -494,7 +704,8 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Write AI Command");
         final EditText input = new EditText(this);
         builder.setView(input);
-        builder.setPositiveButton("Execute", (d, w) -> connectionManager.sendCommand("VOICE:" + input.getText().toString()));
+        builder.setPositiveButton("Execute",
+                (d, w) -> connectionManager.sendCommand("VOICE:" + input.getText().toString()));
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
@@ -507,7 +718,242 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void togglePresenterMode(boolean show) {
-        if (presenterModeUI != null) presenterModeUI.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (presenterModeUI == null) return;
+        if (show) {
+            presenterModeUI.setVisibility(View.VISIBLE);
+            Animation animIn = AnimationUtils.loadAnimation(this, R.anim.anim_presenter_in);
+            presenterModeUI.startAnimation(animIn);
+        } else {
+            Animation animOut = AnimationUtils.loadAnimation(this, R.anim.anim_presenter_out);
+            animOut.setAnimationListener(new Animation.AnimationListener() {
+                @Override public void onAnimationStart(Animation a) {}
+                @Override public void onAnimationRepeat(Animation a) {}
+                @Override public void onAnimationEnd(Animation a) {
+                    presenterModeUI.setVisibility(View.GONE);
+                }
+            });
+            presenterModeUI.startAnimation(animOut);
+        }
+    }
+
+    // ═══ DYNAMIC BAR CONTROL ═══
+
+    private void toggleDynamicBar() {
+        // Check if already running → stop it
+        if (DynamicBarService.isServiceRunning()) {
+            Intent stopIntent = new Intent(this, DynamicBarService.class);
+            stopIntent.setAction("STOP_DYNAMIC_BAR");
+            startService(stopIntent);
+            Toast.makeText(this, "Dynamic Bar disabled", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check overlay permission (Android 6+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Overlay Permission Required")
+                    .setMessage("The Dynamic Bar needs 'Display over other apps' permission to float on top of your screen.\n\nTap 'Grant' to open settings.")
+                    .setPositiveButton("Grant", (d, w) -> {
+                        Intent intent = new Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName())
+                        );
+                        startActivityForResult(intent, 600);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            return;
+        }
+
+        // Start the Dynamic Bar service
+        startDynamicBarService();
+    }
+
+//    private void startDynamicBarService() {
+//        Intent serviceIntent = new Intent(this, DynamicBarService.class);
+//        serviceIntent.putExtra("laptop_ip", connectionManager.getLaptopIp());
+//        serviceIntent.putExtra("is_connected", isServerCurrentlyRunning);
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(serviceIntent);
+//        } else {
+//            startService(serviceIntent);
+//        }
+//        Toast.makeText(this, "Dynamic Bar enabled ✨", Toast.LENGTH_SHORT).show();
+//    }
+
+    /** Keep Dynamic Bar in sync when connection changes */
+//    private void updateDynamicBar() {
+//        DynamicBarService bar = DynamicBarService.getInstance();
+//        if (bar != null) {
+//            bar.updateConnectionStatus(isServerCurrentlyRunning, connectionManager.getLaptopIp());
+//        }
+//    }
+
+    // ═══ HOME SCREEN NAVIGATION ═══
+
+    private void setupHomeCards() {
+        findViewById(R.id.cardTouchpad).setOnClickListener(v -> navigateToTouchpad());
+
+        findViewById(R.id.cardKeyboard).setOnClickListener(v -> {
+            navigateToTouchpad();
+            new android.os.Handler().postDelayed(() -> {
+                EditText input = findViewById(R.id.hiddenInput);
+                input.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+            }, 300);
+        });
+
+        findViewById(R.id.cardPresenter).setOnClickListener(v -> togglePresenterMode(true));
+        findViewById(R.id.cardFiles).setOnClickListener(v -> showFilesMenu());
+        findViewById(R.id.cardAI).setOnClickListener(v -> showAIMenu());
+        findViewById(R.id.cardPCControl).setOnClickListener(v -> showPCControlMenu());
+
+        findViewById(R.id.cardTasks).setOnClickListener(v -> {
+            Intent taskIntent = new Intent(MainActivity.this, TaskManagerActivity.class);
+            taskIntent.putExtra("server_ip", connectionManager.getLaptopIp());
+            startActivity(taskIntent);
+        });
+
+        findViewById(R.id.cardMedia).setOnClickListener(v -> showMediaMenu());
+
+        // Dynamic Bar Card
+        findViewById(R.id.cardDynamicBar).setOnClickListener(v -> toggleDynamicBar());
+    }
+
+    private void navigateToTouchpad() {
+        Animation slideOut = AnimationUtils.loadAnimation(this, R.anim.anim_slide_out_left);
+        Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.anim_slide_in_right);
+        slideOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override public void onAnimationStart(Animation a) {}
+            @Override public void onAnimationRepeat(Animation a) {}
+            @Override public void onAnimationEnd(Animation a) {
+                homeScreen.setVisibility(View.GONE);
+                touchpadScreen.setVisibility(View.VISIBLE);
+                touchpadScreen.startAnimation(slideIn);
+            }
+        });
+        homeScreen.startAnimation(slideOut);
+        btnBackHome.setVisibility(View.VISIBLE);
+        btnBackHome.setAlpha(0f);
+        btnBackHome.animate().alpha(1f).setDuration(300).start();
+    }
+
+    private void navigateToHome() {
+        Animation slideOut = AnimationUtils.loadAnimation(this, R.anim.anim_slide_out_right);
+        Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.anim_slide_in_left);
+        slideOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override public void onAnimationStart(Animation a) {}
+            @Override public void onAnimationRepeat(Animation a) {}
+            @Override public void onAnimationEnd(Animation a) {
+                touchpadScreen.setVisibility(View.GONE);
+                homeScreen.setVisibility(View.VISIBLE);
+                homeScreen.startAnimation(slideIn);
+            }
+        });
+        touchpadScreen.startAnimation(slideOut);
+        btnBackHome.animate().alpha(0f).setDuration(200).withEndAction(() ->
+                btnBackHome.setVisibility(View.GONE)
+        ).start();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+    }
+
+    private void showFilesMenu() {
+        String[] options = {"📄  Send File", "🎬  Send Video", "🎵  Send Audio", "📂  Browse Received Files"};
+        new AlertDialog.Builder(this)
+                .setTitle("📁 File Transfer")
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0: openMediaPicker("*/*", 200); break;
+                        case 1: openMediaPicker("video/*", 201); break;
+                        case 2: openMediaPicker("audio/*", 202); break;
+                        case 3:
+                            File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
+                            File receivedFolder = new File(docFolder, "Received_Files");
+                            if (receivedFolder.exists()) {
+                                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                                intent.setDataAndType(Uri.parse(receivedFolder.getPath()), "*/*");
+                                try { startActivity(Intent.createChooser(intent, "Open Received Files")); }
+                                catch (android.content.ActivityNotFoundException ex) {
+                                    Toast.makeText(this, "Install a File Manager", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(this, "No files received yet!", Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                    }
+                })
+                .show();
+    }
+
+    private void showAIMenu() {
+        String[] options = {"🎙️  Voice Command", "✍️  Write AI Prompt", "🗣️  Voice Dictation"};
+        new AlertDialog.Builder(this)
+                .setTitle("🤖 AI Assistant")
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0: startVoiceRecognition(300); break;
+                        case 1: showWriteAIDialog(); break;
+                        case 2: startVoiceRecognition(400); break;
+                    }
+                })
+                .show();
+    }
+
+    private void showPCControlMenu() {
+        String[] options = {
+                "🔊  Volume Up", "🔉  Volume Down", "🔇  Mute Toggle",
+                "🔆  Brightness Up", "🔅  Brightness Down",
+                "🖥️  Show Desktop", "🔄  App Switcher",
+                "📸  Screenshot (Save)", "📸  Screenshot (Send)",
+                "📋  Clipboard Sync", "⏱️  Schedule Shutdown",
+                "🔍  Zoom In", "🔎  Zoom Out", "💯  Reset Zoom",
+                "🖥️  Screen Black / Wake", "⎋  Escape Key"
+        };
+        new AlertDialog.Builder(this)
+                .setTitle("🎮 PC Control")
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0: connectionManager.sendCommand("VOL_UP"); break;
+                        case 1: connectionManager.sendCommand("VOL_DOWN"); break;
+                        case 2: connectionManager.sendCommand("MUTE_TOGGLE"); break;
+                        case 3: connectionManager.sendCommand("BRIGHT_UP"); break;
+                        case 4: connectionManager.sendCommand("BRIGHT_DOWN"); break;
+                        case 5: connectionManager.sendCommand("SHOW_DESKTOP"); break;
+                        case 6: connectionManager.sendCommand("APP_SWITCHER"); break;
+                        case 7:
+                            connectionManager.sendCommand("SCREENSHOT_LOCAL");
+                            Toast.makeText(this, "Screenshot saved on PC", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 8:
+                            connectionManager.sendCommand("SCREENSHOT_SEND");
+                            Toast.makeText(this, "Capturing & transferring...", Toast.LENGTH_LONG).show();
+                            break;
+                        case 9: showClipboardDialog(); break;
+                        case 10: showSchedulerDialog(); break;
+                        case 11: connectionManager.sendCommand("ZOOM_IN"); break;
+                        case 12: connectionManager.sendCommand("ZOOM_OUT"); break;
+                        case 13: connectionManager.sendCommand("ZOOM_RESET"); break;
+                        case 14: connectionManager.sendCommand("SCREEN_BLACK"); break;
+                        case 15: connectionManager.sendCommand("KEY:ESC"); break;
+                    }
+                })
+                .show();
+    }
+
+    private void showMediaMenu() {
+        String[] options = {"📝  Open Notepad", "📷  Webcam Stream"};
+        new AlertDialog.Builder(this)
+                .setTitle("🎬 Media & Apps")
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0: connectionManager.sendCommand("OPEN_NOTEPAD"); break;
+                        case 1: connectionManager.sendCommand("CAMERA_STREAM"); break;
+                    }
+                })
+                .show();
     }
 
     private void setupKeyboard(EditText hiddenInput) {
@@ -515,25 +961,37 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnKeyboard).setOnClickListener(v -> {
             hiddenInput.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) imm.showSoftInput(hiddenInput, InputMethodManager.SHOW_IMPLICIT);
+            if (imm != null)
+                imm.showSoftInput(hiddenInput, InputMethodManager.SHOW_IMPLICIT);
         });
 
         hiddenInput.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() == 0) connectionManager.sendCommand("KEY:BACKSPACE");
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 0)
+                    connectionManager.sendCommand("KEY:BACKSPACE");
                 else if (s.length() > 1) {
                     char c = s.charAt(s.length() - 1);
                     String newChar = String.valueOf(c);
-                    if (newChar.equals(" ")) connectionManager.sendCommand("KEY:SPACE");
-                    else if (newChar.equals("\n")) connectionManager.sendCommand("KEY:ENTER");
-                    else connectionManager.sendCommand("KEY:" + newChar);
+                    if (newChar.equals(" "))
+                        connectionManager.sendCommand("KEY:SPACE");
+                    else if (newChar.equals("\n"))
+                        connectionManager.sendCommand("KEY:ENTER");
+                    else
+                        connectionManager.sendCommand("KEY:" + newChar);
                 }
             }
-            @Override public void afterTextChanged(Editable s) {
+
+            @Override
+            public void afterTextChanged(Editable s) {
                 if (s.length() != 1 || !s.toString().equals(" ")) {
                     hiddenInput.removeTextChangedListener(this);
-                    s.clear(); s.append(" ");
+                    s.clear();
+                    s.append(" ");
                     hiddenInput.addTextChangedListener(this);
                 }
             }
@@ -548,7 +1006,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Handle QR scan result (ZXing uses its own result codes)
+        IntentResult qrResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (qrResult != null) {
+            if (qrResult.getContents() != null) {
+                handleQRResult(qrResult.getContents());
+            } else {
+                Toast.makeText(this, "QR scan cancelled", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
+
+        // Handle overlay permission result
+        if (requestCode == 600) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this)) {
+                startDynamicBarService();
+            } else {
+                Toast.makeText(this, "Overlay permission denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
         if (resultCode == RESULT_OK && data != null) {
 
             // File Handling
@@ -558,8 +1038,7 @@ public class MainActivity extends AppCompatActivity {
                     connectionManager.sendFileToLaptop(this, uri,
                             () -> runOnUiThread(() -> Toast.makeText(this, "Sending...", Toast.LENGTH_SHORT).show()),
                             () -> runOnUiThread(() -> Toast.makeText(this, "Sent!", Toast.LENGTH_SHORT).show()),
-                            () -> runOnUiThread(() -> Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show())
-                    );
+                            () -> runOnUiThread(() -> Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()));
                 }
                 return;
             }
@@ -576,7 +1055,7 @@ public class MainActivity extends AppCompatActivity {
                     new AlertDialog.Builder(this)
                             .setTitle("Confirm Command")
                             .setMessage(text)
-                            .setPositiveButton("Execute", (d,w) -> connectionManager.sendCommand("VOICE:" + text))
+                            .setPositiveButton("Execute", (d, w) -> connectionManager.sendCommand("VOICE:" + text))
                             .setNegativeButton("Cancel", null)
                             .show();
                 } else if (requestCode == 500) {
@@ -587,8 +1066,71 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override public void onBackPressed() {
-        if (presenterModeUI != null && presenterModeUI.getVisibility() == View.VISIBLE) togglePresenterMode(false);
-        else super.onBackPressed();
+    @Override
+    public void onBackPressed() {
+        if (presenterModeUI != null && presenterModeUI.getVisibility() == View.VISIBLE) {
+            togglePresenterMode(false);
+        } else if (touchpadScreen != null && touchpadScreen.getVisibility() == View.VISIBLE) {
+            navigateToHome();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (reverseCommandListener != null) {
+            reverseCommandListener.stop();
+        }
+    }
+
+    // ═══ DYNAMIC BAR ═══
+
+//    private void toggleDynamicBar() {
+//        if (DynamicBarService.isServiceRunning()) {
+//            // Stop it
+//            Intent stopIntent = new Intent(this, DynamicBarService.class);
+//            stopIntent.setAction("STOP_DYNAMIC_BAR");
+//            startService(stopIntent);
+//            Toast.makeText(this, "Dynamic Bar disabled", Toast.LENGTH_SHORT).show();
+//        } else {
+//            // Check overlay permission first
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+//                new AlertDialog.Builder(this)
+//                        .setTitle("Overlay Permission Needed")
+//                        .setMessage("Dynamic Bar needs \"Display over other apps\" permission to float on your screen.")
+//                        .setPositiveButton("Grant", (d, w) -> {
+//                            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                                    Uri.parse("package:" + getPackageName()));
+//                            startActivityForResult(intent, 600);
+//                        })
+//                        .setNegativeButton("Cancel", null)
+//                        .show();
+//            } else {
+//                startDynamicBarService();
+//            }
+//        }
+//    }
+
+    private void startDynamicBarService() {
+        Intent serviceIntent = new Intent(this, DynamicBarService.class);
+        serviceIntent.putExtra("laptop_ip", connectionManager.getLaptopIp());
+        serviceIntent.putExtra("is_connected", isServerCurrentlyRunning);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+        Toast.makeText(this, "Dynamic Bar enabled ✨", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateDynamicBar() {
+        if (DynamicBarService.isServiceRunning()) {
+            DynamicBarService svc = DynamicBarService.getInstance();
+            if (svc != null) {
+                svc.updateConnectionStatus(isServerCurrentlyRunning, connectionManager.getLaptopIp());
+            }
+        }
     }
 }

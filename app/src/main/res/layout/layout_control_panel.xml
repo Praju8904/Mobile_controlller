@@ -4,14 +4,16 @@
     android:id="@+id/controlPanel"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:background="#0D1117">
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/modeSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Symbol Mode "
-        android:textColor="#FFFFFF"
+        android:text="Symbol Mode"
+        android:textColor="#90CAF9"
+        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/btnKeyboard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -19,9 +21,14 @@
     <Button
         android:id="@+id/btnKeyboard"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="46dp"
         android:layout_marginBottom="8dp"
-        android:text="Open Keyboard"
+        android:backgroundTint="#1565C0"
+        android:text="⌨  Open Keyboard"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        app:cornerRadius="12dp"
         app:layout_constraintBottom_toTopOf="@+id/btnLeftClick" />
 
 <!--    <Button-->
@@ -48,8 +55,14 @@
     <Button
         android:id="@+id/btnLeftClick"
         android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_height="72dp"
+        android:layout_marginEnd="4dp"
+        android:backgroundTint="#263238"
         android:text="LEFT"
+        android:textColor="#B0BEC5"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:cornerRadius="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnEnter"
         app:layout_constraintHorizontal_weight="1"
@@ -58,9 +71,14 @@
     <Button
         android:id="@+id/btnEnter"
         android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_height="72dp"
+        android:layout_marginHorizontal="4dp"
+        android:backgroundTint="#2E7D32"
         android:text="ENTER"
-        android:backgroundTint="#4CAF50"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:cornerRadius="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnRightClick"
         app:layout_constraintHorizontal_weight="1"
@@ -69,8 +87,14 @@
     <Button
         android:id="@+id/btnRightClick"
         android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="4dp"
+        android:backgroundTint="#263238"
         android:text="RIGHT"
+        android:textColor="#B0BEC5"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:cornerRadius="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"

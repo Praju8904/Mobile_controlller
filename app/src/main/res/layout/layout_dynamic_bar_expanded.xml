@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dynamic Bar - Expanded Panel (media controls, volume, quick actions) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="310dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dynamic_bar_expanded_bg"
+    android:orientation="vertical"
+    android:paddingHorizontal="18dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="14dp"
+    android:elevation="10dp">
+
+    <!-- ═══ STATUS ROW ═══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="14dp">
+
+        <!-- Connection Dot -->
+        <View
+            android:id="@+id/dbExpandedDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp" />
+
+        <!-- Status Text -->
+        <TextView
+            android:id="@+id/dbExpandedStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Connected"
+            android:textColor="#999999"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif" />
+
+        <!-- Close Button -->
+        <Button
+            android:id="@+id/dbClose"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:text="X"
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:stateListAnimator="@null"
+            android:padding="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp" />
+
+    </LinearLayout>
+
+    <!-- ═══ MEDIA CONTROLS ═══ -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MEDIA"
+        android:textColor="#667EEA"
+        android:textSize="9sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.2"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="14dp">
+
+        <Button
+            android:id="@+id/dbBtnPrev"
+            android:layout_width="60dp"
+            android:layout_height="44dp"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="⏮"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/dbBtnPlayPause"
+            android:layout_width="80dp"
+            android:layout_height="44dp"
+            android:background="@drawable/dynamic_bar_btn_accent_bg"
+            android:text="⏯"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/dbBtnNext"
+            android:layout_width="60dp"
+            android:layout_height="44dp"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="⏭"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null" />
+
+    </LinearLayout>
+
+    <!-- ═══ VOLUME ═══ -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="VOLUME"
+        android:textColor="#667EEA"
+        android:textSize="9sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.2"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="14dp">
+
+        <Button
+            android:id="@+id/dbBtnVolDown"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="🔉"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/dbBtnMute"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="🔇"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/dbBtnVolUp"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="🔊"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null" />
+
+    </LinearLayout>
+
+    <!-- ═══ QUICK ACTIONS ═══ -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QUICK ACTIONS"
+        android:textColor="#667EEA"
+        android:textSize="9sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.2"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/dbBtnDesktop"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="🖥"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/dbBtnScreenshot"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="📸"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/dbBtnAppSwitch"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="🔄"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/dbBtnLock"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/dynamic_bar_btn_bg"
+            android:text="🔒"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null" />
+
+    </LinearLayout>
+
+</LinearLayout>

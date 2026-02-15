@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dynamic Bar - Collapsed Pill (like iPhone Dynamic Island) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="190dp"
+    android:layout_height="38dp"
+    android:background="@drawable/dynamic_bar_pill_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingEnd="12dp"
+    android:elevation="8dp">
+
+    <!-- Connection Status Dot -->
+    <View
+        android:id="@+id/dbConnectionDot"
+        android:layout_width="8dp"
+        android:layout_height="8dp" />
+
+    <!-- Status Text -->
+    <TextView
+        android:id="@+id/dbStatusText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:text="🎵 Connected"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:singleLine="true"
+        android:ellipsize="end" />
+
+    <!-- Mini Action Indicator -->
+    <TextView
+        android:id="@+id/dbMiniAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="▶"
+        android:textColor="#667EEA"
+        android:textSize="14sp" />
+
+</LinearLayout>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/home_gradient_bg"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="20dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📋 Task Manager"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/tvTaskCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 tasks"
+            android:textColor="#6B7B8D"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+            android:background="@drawable/presenter_btn_dark"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp" />
+    </LinearLayout>
+
+    <!-- Add Task Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/glass_card_bg"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp">
+
+        <!-- Section label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="NEW TASK"
+            android:textSize="11sp"
+            android:textColor="#667EEA"
+            android:letterSpacing="0.15"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="10dp" />
+
+        <EditText
+            android:id="@+id/etTaskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="What needs to be done?"
+            android:textColorHint="#3D4B5E"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/task_input_bg"
+            android:paddingHorizontal="14dp"
+            android:singleLine="true"
+            android:fontFamily="sans-serif" />
+
+        <!-- Priority + Date + Time row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical">
+
+            <Spinner
+                android:id="@+id/spinnerPriority"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/task_input_bg"
+                android:layout_marginEnd="6dp"
+                android:popupBackground="#111827" />
+
+            <Button
+                android:id="@+id/btnDueDate"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:text="📅 Date"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:textColor="#90CAF9"
+                android:backgroundTint="#131B2E"
+                android:layout_marginEnd="6dp"
+                app:cornerRadius="10dp" />
+
+            <Button
+                android:id="@+id/btnDueTime"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:text="⏰ Time"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:textColor="#90CAF9"
+                android:backgroundTint="#131B2E"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+
+        <!-- Add + Sync buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/btnAddTask"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="2"
+                android:text="➕ Add Task"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#2E7D32"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnSyncTasks"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:text="🔄 Sync"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:textColor="#90CAF9"
+                android:backgroundTint="#1A237E"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Task List -->
+    <ListView
+        android:id="@+id/taskListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:scrollbars="none"
+        android:paddingBottom="12dp"
+        android:clipToPadding="false" />
+
+</LinearLayout>

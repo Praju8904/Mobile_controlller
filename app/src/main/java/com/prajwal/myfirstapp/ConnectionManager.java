@@ -5,13 +5,20 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.widget.Toast;
-
+import android.os.Environment;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.ServerSocket;   // To listen for the laptop's connection
+import java.io.IOException;     // To handle network errors
+import android.util.Log;        // For debugging in Logcat
+
+import java.io.DataInputStream;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -90,6 +97,69 @@ public class ConnectionManager {
         }).start();
     }
 
+    public void startFileReceiver(Context context) {
+        new Thread(() -> {
+            Log.i("RE_SYSTEM", "--- STARTING FILE RECEIVER THREAD ---");
+
+            // Use Public Documents folder so you can see the files easily
+            File docFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            File receivedFolder = new File(docFolder, "Received_Files");
+            if (!receivedFolder.exists()) receivedFolder.mkdirs();
+
+            try (ServerSocket serverSocket = new ServerSocket(5006)) {
+                while (true) {
+                    try (Socket socket = serverSocket.accept()) {
+                        InputStream is = socket.getInputStream();
+
+                        // 1. Read the Header (Byte by byte until newline '\n')
+                        // We can't use BufferedReader because it might steal file bytes!
+                        StringBuilder headerBuilder = new StringBuilder();
+                        int b;
+                        while ((b = is.read()) != -1) {
+                            if (b == '\n') break; // End of header found
+                            headerBuilder.append((char) b);
+                        }
+
+                        String header = headerBuilder.toString();
+                        if (!header.contains("|")) continue; // Invalid header
+
+                        // 2. Parse Filename and Size
+                        String[] parts = header.split("\\|");
+                        String filename = parts[0];
+                        long filesize = Long.parseLong(parts[1]);
+
+                        Log.i("RE_SYSTEM", "Incoming File: " + filename + " Size: " + filesize);
+
+                        // 3. Create the file with the REAL name
+                        File targetFile = new File(receivedFolder, filename);
+
+                        // 4. Write the Data
+                        try (FileOutputStream fos = new FileOutputStream(targetFile)) {
+                            byte[] buffer = new byte[8192];
+                            int bytesRead;
+                            long totalRead = 0;
+
+                            // Read until we get the full file size
+                            while (totalRead < filesize && (bytesRead = is.read(buffer)) != -1) {
+                                fos.write(buffer, 0, bytesRead);
+                                totalRead += bytesRead;
+                            }
+                            Log.i("RE_SYSTEM", "SAVED: " + targetFile.getAbsolutePath());
+
+                            // Optional: Tell the MediaScanner about the new file so it appears in Gallery immediately
+                            android.media.MediaScannerConnection.scanFile(context,
+                                    new String[]{targetFile.toString()}, null, null);
+                        }
+                    } catch (Exception e) {
+                        Log.e("RE_SYSTEM", "Transfer Error: " + e.getMessage());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     public void wakeUpWatchdog() {
         new Thread(() -> {
             try {
@@ -156,6 +226,64 @@ public class ConnectionManager {
                 socket.close();
                 if (onSuccess != null) onSuccess.run();
             } catch (Exception e) { e.printStackTrace(); }
+        }).start();
+    }
+
+    //
+
+    // 1. Add this Interface inside ConnectionManager class
+    public interface FileListCallback {
+        void onReceived(String fileList);
+        void onError();
+    }
+
+    // 2. Add this Function inside ConnectionManager class
+    public void fetchLaptopFiles(FileListCallback callback) {
+        new Thread(() -> {
+            try {
+                DatagramSocket socket = new DatagramSocket();
+                socket.setSoTimeout(3000); // Wait up to 3 seconds for reply
+
+                // --- A. Prepare the Secure Command ---
+                String command = "REQUEST_FILE_LIST";
+                String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+                String processedCommand = command;
+
+                // Apply Encryption if enabled
+                if (SecurityUtils.USE_ENCRYPTION) {
+                    processedCommand = SecurityUtils.encryptAES(command);
+                }
+
+                // Sign the message
+                String messageToSign = processedCommand + "|" + timestamp;
+                String signature = SecurityUtils.calculateHMAC(messageToSign);
+                String finalPacket = messageToSign + "|" + signature;
+
+                // --- B. Send to Laptop ---
+                InetAddress serverAddr = InetAddress.getByName(laptopIp);
+                byte[] buf = finalPacket.getBytes();
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, serverAddr, PORT_COMMAND);
+                socket.send(packet);
+
+                // --- C. Listen for the List ---
+                byte[] recvBuf = new byte[8192]; // Big buffer for long file lists
+                DatagramPacket recvPacket = new DatagramPacket(recvBuf, recvBuf.length);
+                socket.receive(recvPacket);
+
+                String response = new String(recvPacket.getData(), 0, recvPacket.getLength()).trim();
+
+                // Check if it's the file list
+                if (response.startsWith("FILE_LIST:")) {
+                    String listData = response.substring(10); // Remove "FILE_LIST:" prefix
+                    if (callback != null) callback.onReceived(listData);
+                }
+
+                socket.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (callback != null) callback.onError();
+            }
         }).start();
     }
 

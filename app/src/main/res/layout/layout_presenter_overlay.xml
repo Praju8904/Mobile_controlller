@@ -4,7 +4,7 @@
     android:id="@+id/presenterModeUI"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="@drawable/home_gradient_bg"
     android:visibility="gone"
     android:clickable="true"
     android:focusable="true"
@@ -13,76 +13,149 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="16dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="16dp">
+
+            <!-- ═══ SECTION: Header ═══ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🎯 Presenter Mode"
+                android:textSize="24sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="20dp" />
+
+            <!-- ═══ SECTION: Volume &amp; Brightness ═══ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="VOLUME &amp; BRIGHTNESS"
+                android:textSize="11sp"
+                android:textColor="#667EEA"
+                android:letterSpacing="0.15"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:alignmentMode="alignMargins"
+                android:columnOrderPreserved="false"
+                android:layout_marginBottom="16dp">
+
+                <Button android:id="@+id/btnVolUp"    android:text="🔊 VOL+"   android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#1A237E" android:textColor="#90CAF9" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnVolDown"  android:text="🔉 VOL-"   android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#1A237E" android:textColor="#90CAF9" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnMute"     android:text="🔇 MUTE"   android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#311B92" android:textColor="#B39DDB" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+
+                <Button android:id="@+id/btnBrightUp"   android:text="🔆 BR+"  android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#E65100" android:textColor="#FFE0B2" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnBrightDown" android:text="🔅 BR-"  android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#E65100" android:textColor="#FFE0B2" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnBlackout"   android:text="🌑 BLANK" android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#B71C1C" android:textColor="#FFCDD2" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+            </GridLayout>
+
+            <!-- ═══ SECTION: System Controls ═══ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SYSTEM CONTROLS"
+                android:textSize="11sp"
+                android:textColor="#667EEA"
+                android:letterSpacing="0.15"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp" />
 
             <GridLayout
                 android:id="@+id/utilityGrid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="3"
-                android:rowCount="4"
                 android:alignmentMode="alignMargins"
                 android:columnOrderPreserved="false"
-                android:useDefaultMargins="true">
+                android:layout_marginBottom="16dp">
 
-                <Button android:id="@+id/btnEsc" android:text="ESC" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#424242" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnVolUp" android:text="VOL+" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#3700B3" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnBrightUp" android:text="BR+" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#FF9800" android:textAllCaps="false"/>
+                <Button android:id="@+id/btnEsc"          android:text="⎋ ESC"     android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#263238" android:textColor="#B0BEC5" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnShowDesktop"   android:text="🖥 MIN ALL" android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#004D40" android:textColor="#80CBC4" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnAppSwitcher"   android:text="🔄 SWITCH" android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#4A148C" android:textColor="#CE93D8" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
 
-                <Button android:id="@+id/btnBlackout" android:text="BLANK" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#CF6679" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnVolDown" android:text="VOL-" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#3700B3" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnBrightDown" android:text="BR-" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#FF9800" android:textAllCaps="false"/>
-
-                <Button android:id="@+id/btnMute" android:text="MUTE" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#6200EE" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnShowDesktop" android:text="MIN ALL" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#018786" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnTogglePreview" android:text="LIVE: OFF" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#FF5722" android:textAllCaps="false"/>
-
-                <Button android:id="@+id/btnAppSwitcher" android:text="SWITCH" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#FFC107" android:textColor="#000000" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnScheduler" android:text="TIMER" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#8BC34A" android:textAllCaps="false"/>
-                <Button android:id="@+id/btnSyncClipboard" android:text="CLIP SYNC" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#FFEB3B" android:textColor="#000000" android:textAllCaps="false"/>
-
-                <Button android:id="@+id/btnVoiceType" android:text="VOICE TYPE" android:layout_width="0dp" android:layout_columnWeight="1" android:layout_columnSpan="3" android:layout_margin="4dp" android:backgroundTint="#00BCD4" android:textColor="#000000" android:textAllCaps="false"/>
-                <Button
-                    android:id="@+id/btnZoomIn"
-                    android:text="ZOOM +"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:backgroundTint="#9C27B0"
-                    android:textAllCaps="false"/>
-
-                <Button
-                    android:id="@+id/btnZoomOut"
-                    android:text="ZOOM -"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:backgroundTint="#9C27B0"
-                    android:textAllCaps="false"/>
-
-                <Button
-                    android:id="@+id/btnResetZoom"
-                    android:text="100 %"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:backgroundTint="#607D8B"
-                    android:textAllCaps="false"/>
+                <Button android:id="@+id/btnTogglePreview" android:text="📺 LIVE: OFF" android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#BF360C" android:textColor="#FFCCBC" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnScheduler"     android:text="⏱ TIMER"  android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#1B5E20" android:textColor="#A5D6A7" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnSyncClipboard" android:text="📋 CLIP"  android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#F57F17" android:textColor="#FFF9C4" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
             </GridLayout>
+
+            <!-- ═══ SECTION: Quick Actions ═══ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="QUICK ACTIONS"
+                android:textSize="11sp"
+                android:textColor="#667EEA"
+                android:letterSpacing="0.15"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:alignmentMode="alignMargins"
+                android:columnOrderPreserved="false"
+                android:layout_marginBottom="8dp">
+
+                <Button android:id="@+id/btnScreenshot" android:text="📸 SNAP"   android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#880E4F" android:textColor="#F8BBD0" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnOpenFolder" android:text="📂 FILES"  android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#004D40" android:textColor="#80CBC4" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnZoomIn"     android:text="🔍 ZOOM+" android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#4A148C" android:textColor="#CE93D8" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+
+                <Button android:id="@+id/btnZoomOut"     android:text="🔎 ZOOM-" android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#4A148C" android:textColor="#CE93D8" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Button android:id="@+id/btnResetZoom"   android:text="💯 100%"  android:layout_width="0dp" android:layout_height="50dp" android:layout_columnWeight="1" android:layout_margin="3dp" android:backgroundTint="#37474F" android:textColor="#B0BEC5" android:textSize="12sp" android:textAllCaps="false" app:cornerRadius="12dp"/>
+                <Space android:layout_columnWeight="1" />
+            </GridLayout>
+
+            <!-- Voice Type: full width accent -->
+            <Button
+                android:id="@+id/btnVoiceType"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginHorizontal="3dp"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="#0277BD"
+                android:text="🎙️  VOICE TYPE"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                app:cornerRadius="14dp" />
+
+            <!-- ═══ SECTION: Live Preview ═══ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LIVE PREVIEW"
+                android:textSize="11sp"
+                android:textColor="#667EEA"
+                android:letterSpacing="0.15"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp" />
 
             <FrameLayout
                 android:id="@+id/previewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="#000000"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/preview_container_bg"
                 android:elevation="4dp">
 
                 <ImageView
@@ -96,26 +169,38 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="bottom|end"
-                    android:layout_margin="8dp"
+                    android:layout_margin="10dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_menu_zoom"
-                    app:tint="#03DAC5" />
+                    app:tint="#667EEA" />
             </FrameLayout>
+
+            <!-- ═══ SECTION: Navigation ═══ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SLIDE NAVIGATION"
+                android:textSize="11sp"
+                android:textColor="#667EEA"
+                android:letterSpacing="0.15"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp" />
 
             <GridLayout
                 android:id="@+id/navigationGrid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="3"
-                android:layout_marginTop="16dp">
+                android:layout_marginBottom="8dp">
 
                 <Space android:layout_columnWeight="1" />
-                <Button android:id="@+id/btnUp" android:text="▲" android:textSize="20sp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#03DAC5" android:textColor="#000000"/>
+                <Button android:id="@+id/btnUp"    android:text="▲" android:textSize="22sp" android:layout_width="0dp" android:layout_height="56dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#1565C0" android:textColor="#FFFFFF" app:cornerRadius="14dp"/>
                 <Space android:layout_columnWeight="1" />
 
-                <Button android:id="@+id/btnLeft" android:text="◀" android:textSize="20sp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#03DAC5" android:textColor="#000000"/>
-                <Button android:id="@+id/btnDown" android:text="▼" android:textSize="20sp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#03DAC5" android:textColor="#000000"/>
-                <Button android:id="@+id/btnRight" android:text="▶" android:textSize="20sp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#03DAC5" android:textColor="#000000"/>
+                <Button android:id="@+id/btnLeft"  android:text="◀" android:textSize="22sp" android:layout_width="0dp" android:layout_height="56dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#1565C0" android:textColor="#FFFFFF" app:cornerRadius="14dp"/>
+                <Button android:id="@+id/btnDown"  android:text="▼" android:textSize="22sp" android:layout_width="0dp" android:layout_height="56dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#1565C0" android:textColor="#FFFFFF" app:cornerRadius="14dp"/>
+                <Button android:id="@+id/btnRight" android:text="▶" android:textSize="22sp" android:layout_width="0dp" android:layout_height="56dp" android:layout_columnWeight="1" android:layout_margin="4dp" android:backgroundTint="#1565C0" android:textColor="#FFFFFF" app:cornerRadius="14dp"/>
             </GridLayout>
 
         </LinearLayout>
