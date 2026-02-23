@@ -105,7 +105,24 @@ def receive_file():
                     remaining -= len(chunk)
             
             print(f"[*] Media Saved: {filename}")
+
+            try:
+                import chat_module
+                # Pass the 'filepath' (Full Path) instead of just 'filename'
+                # This ensures os.path.exists() returns True, so the Open button appears
+                chat_module.append_chat_message(filepath, msg_type="file", is_user=False) 
+            except ImportError:
+                pass
             # Automatically handle opening media or folders 
+
+            # 1. Check if the chat module is running and notify it
+            try:
+                import chat_module
+                # Add a system message to the chat history
+                chat_module.append_chat_message(f"File Received: {filename}", is_user=False) 
+            except ImportError:
+                pass
+
             ext = filename.lower()
             if ext.endswith(('.mp4', '.mkv', '.avi', '.mp3', '.wav', '.flac', '.jpg', '.png')):
                 os.startfile(full_path)

@@ -1,28 +1,58 @@
 [
   {
-    "id": 1771007745225,
+    "id": 1771149796728,
     "sender": "system",
     "content": "Chat history cleared",
     "type": "system",
-    "timestamp": "2026-02-14T00:05:45.225054",
+    "timestamp": "2026-02-15T15:33:16.728344",
     "metadata": {}
   },
   {
-    "id": 1771007836957,
-    "sender": "pc",
-    "content": "/info",
-    "type": "command",
-    "timestamp": "2026-02-14T00:07:16.957476",
-    "metadata": {
-      "result": "💻 System Info\n  CPU: 1.5%\n  RAM: 79.8%  (12/15 GB)\n  Disk: 12.1%  (103 GB free)\n  Battery: 80% ⚡"
-    }
+    "id": 1771151987516,
+    "sender": "phone",
+    "content": "Hi",
+    "type": "text",
+    "timestamp": "2026-02-15T16:09:47.516192",
+    "metadata": {}
   },
   {
-    "id": 1771007873264,
-    "sender": "pc",
-    "content": "filter messages instantly",
+    "id": 1771151991477,
+    "sender": "phone",
+    "content": "Notes",
     "type": "text",
-    "timestamp": "2026-02-14T00:07:53.264661",
+    "timestamp": "2026-02-15T16:09:51.477808",
+    "metadata": {}
+  },
+  {
+    "id": 1771152001417,
+    "sender": "phone",
+    "content": "Hohi how are you doing i am doing great",
+    "type": "text",
+    "timestamp": "2026-02-15T16:10:01.417113",
+    "metadata": {}
+  },
+  {
+    "id": 1771284656637,
+    "sender": "phone",
+    "content": "Hi",
+    "type": "text",
+    "timestamp": "2026-02-17T05:00:56.637200",
+    "metadata": {}
+  },
+  {
+    "id": 1771284660208,
+    "sender": "phone",
+    "content": "Hi",
+    "type": "text",
+    "timestamp": "2026-02-17T05:01:00.208056",
+    "metadata": {}
+  },
+  {
+    "id": 1771284663388,
+    "sender": "phone",
+    "content": "Hi",
+    "type": "text",
+    "timestamp": "2026-02-17T05:01:03.388805",
     "metadata": {}
   }
 ]

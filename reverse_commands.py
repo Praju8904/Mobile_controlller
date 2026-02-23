@@ -8,6 +8,7 @@ import socket
 import json
 import time
 import threading
+import notes_module
 
 # The phone's IP (set when phone connects)
 _phone_ip = None
@@ -46,19 +47,29 @@ def _notify(event_name, data):
                 print(f"Callback error: {e}")
 
 def send_to_phone(command):
-    """Send a UDP command to the connected phone."""
-    if not _phone_ip:
-        print("[Reverse] No phone connected.")
-        return False
+    # """Send a UDP command to the connected phone."""
+    # if not _phone_ip:
+    #     print("[Reverse] No phone connected.")
+    #     return False
+    # try:
+    #     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #     sock.sendto(command.encode('utf-8'), (_phone_ip, _phone_port))
+    #     sock.close()
+    #     print(f"[PC→Phone] {command}")
+    #     return True
+    # except Exception as e:
+    #     print(f"[Reverse] Send error: {e}")
+    #     return False
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(command.encode('utf-8'), (_phone_ip, _phone_port))
-        sock.close()
-        print(f"[PC→Phone] {command}")
-        return True
-    except Exception as e:
-        print(f"[Reverse] Send error: {e}")
-        return False
+        import reverse_commands
+        if reverse_commands.is_connected():
+            # If the command is already formatted, send it directly
+            if command.startswith("CHAT_MSG:"):
+                    reverse_commands.send_to_phone(command)
+            else:
+                    reverse_commands.send_chat_message(command) 
+    except Exception:
+        pass
 
 # ─── HIGH-LEVEL PHONE CONTROL COMMANDS ─────────────────────────
 
@@ -125,6 +136,11 @@ def send_file_to_phone(filepath):
 def lock_phone():
     """Lock the phone screen."""
     return send_to_phone("LOCK_SCREEN")
+
+def send_chat_message(text):
+    """Send a chat message to the phone."""
+    # Prefix is crucial so the phone knows it's a chat message, not a command
+    return send_to_phone(f"CHAT_MSG:{text}")
 
 def play_tts(text):
     """Make the phone speak text using TTS."""
@@ -195,3 +211,5 @@ def start_heartbeat_monitor(on_status_change=None):
             time.sleep(1)
     
     threading.Thread(target=monitor, daemon=True).start()
+
+

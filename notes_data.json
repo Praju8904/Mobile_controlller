@@ -1,0 +1,14 @@
+{
+  "id": "root",
+  "name": "Root",
+  "type": "folder",
+  "children": [
+    {
+      "id": "25894e0b",
+      "name": "ne file",
+      "type": "note",
+      "timestamp": 1771151727.827138,
+      "content": "hoo \n\n\n"
+    }
+  ]
+}

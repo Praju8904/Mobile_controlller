@@ -15,7 +15,14 @@ from Crypto.Util.Padding import unpad
 import base64
 import socket
 import file_service
+import notes_module
 import task_manager
+import reverse_commands
+import clipboard_sync
+import notification_manager
+import media_controller
+import system_monitor
+import file_explorer
 
 SCREENSHOT_DIR = os.path.join(os.getcwd(), "screenshots")
 if not os.path.exists(SCREENSHOT_DIR):
@@ -232,6 +239,31 @@ def execute_command(data,addr,sock):
         elif command == "SHUTDOWN_LAPTOP":
             os.system("shutdown /s /t 60")
 
+        elif command == "GET_SYSTEM_STATS":
+            # Phone requested a single update
+            phone_ip = reverse_commands.get_phone_ip()
+            if phone_ip:
+                system_monitor.send_snapshot(phone_ip)
+        
+        elif command.startswith("GET_FILES:"):
+            path = command.split(":", 1)[1]
+            
+            # Get list
+            json_data = file_explorer.list_directory(path)
+            
+            # Send
+            reverse_commands.send_to_phone(f"FILE_LIST:{json_data}")
+            print("[+] Sent FILE_LIST to phone")
+
+        elif command.startswith("MEDIA:"):
+            # Format: MEDIA:MUTE, MEDIA:VOL_UP, MEDIA:PLAY
+            action = command.split(":")[1]
+            
+            if action in ["MUTE", "UP", "DOWN"]:
+                media_controller.set_volume(action)
+            else:
+                media_controller.media_action(action)
+
         elif command.startswith("SCHEDULE:"):
             _, mins, cmd_to_run = command.split(":")
             threading.Thread(target=scheduled_task, args=(int(mins)*60, cmd_to_run), daemon=True).start()
@@ -296,6 +328,21 @@ def execute_command(data,addr,sock):
         elif command == "SCREEN_BLACK":
             pyautogui.press('b')
             print("   [Action] Presentation Blackout")
+
+        elif command == "GET_NOTES":
+            print("[*] Syncing Notes to Phone...")
+            json_data = notes_module.get_all_notes_json()
+            # Send the JSON back to the phone on Port 6000
+            reverse_commands.send_to_phone(f"NOTES_DATA:{json_data}")
+            
+        elif command.startswith("UPDATE_NOTE:"):
+            # Format: UPDATE_NOTE:note_id:new_content
+            try:
+                _, note_id, content = command.split(":", 2)
+                notes_module.update_note_from_mobile(note_id, content)
+                print(f"[*] Note updated from mobile: {note_id}")
+            except ValueError:
+                print("[!] Invalid Update Note format")
         
         elif command.startswith("KEY:"):
             try:
@@ -364,6 +411,26 @@ def execute_command(data,addr,sock):
                 print("   [Action] All systems silenced and hidden.")
             except Exception as e:
                 print(f"Panic Error: {e}")
+        
+        elif command.startswith("CLIPBOARD_DATA:"):
+            # Format: CLIPBOARD_DATA:Text content here
+            text = command[15:].replace("\\n", "\n") # Unescape
+            clipboard_sync.update_from_mobile(text)
+            print("[*] PC Clipboard set from Mobile")
+        
+        elif command.startswith("NOTIF_MIRROR:"):
+            # Format: NOTIF_MIRROR:Title|Body|Package
+            try:
+                payload = command[13:]
+                parts = payload.split("|")
+                if len(parts) >= 3:
+                    title = parts[0]
+                    body = parts[1]
+                    pkg = parts[2]
+                    notification_manager.show_notification(title, body, pkg)
+            except Exception as e:
+                print(f"[!] Notification parse error: {e}")
+
         elif command == "SCREENSHOT_LOCAL":
             handle_screenshot("LOCAL")
 
@@ -385,6 +452,9 @@ def execute_command(data,addr,sock):
             # Start TCP transfer in background
             threading.Thread(target=file_service.send_specific_file, 
                             args=(filename, addr[0])).start()
+            
+            
+        
 
         # Gesture Recognition (Uses cleaned coordinates)
         elif command.startswith("GESTURE:"):

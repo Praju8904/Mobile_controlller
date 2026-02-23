@@ -26,6 +26,8 @@ import psutil
 from PIL import Image, ImageTk, ImageDraw
 from io import BytesIO
 from datetime import datetime
+import notes_module
+import clipboard_sync
 
 # Add parent to path for imports
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -126,6 +128,12 @@ class ControlPanel(ctk.CTk):
         
         # Start background monitors
         self._start_monitors()
+
+        # Create Tab
+        self.tabview.add("Notes")
+        
+        # Initialize Notes UI inside the tab
+        self.notes_ui = notes_module.NotesTab(self.tabview.tab("Notes"))
         
         # Redirect logs
         self.log_redirector = LogRedirector(self._append_log)
@@ -144,6 +152,8 @@ class ControlPanel(ctk.CTk):
         
         # Setup system tray icon
         self._setup_tray_icon()
+
+        clipboard_sync.start_watching()
 
     # ─── HEADER ─────────────────────────────────────────────────
     def _build_header(self):
