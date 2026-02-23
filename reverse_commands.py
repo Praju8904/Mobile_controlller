@@ -206,6 +206,34 @@ def request_notes_from_phone():
     """Request the phone to send its local notes."""
     return send_to_phone("NOTES_REQUEST")
 
+# ─── CALENDAR COMMANDS ─────────────────────────────────────────
+
+def sync_calendar_to_phone(calendar_json):
+    """Send full calendar event list to phone for sync."""
+    return send_to_phone(f"CAL_SYNC:{calendar_json}")
+
+def notify_event_added(event_id, event_title):
+    """Notify phone that a calendar event was added."""
+    return send_to_phone(f"CAL_NOTIFY_ADDED:{event_id}:{event_title}")
+
+def notify_event_updated(event_id, event_title):
+    """Notify phone that a calendar event was updated."""
+    return send_to_phone(f"CAL_NOTIFY_UPDATED:{event_id}:{event_title}")
+
+def notify_event_deleted(event_id):
+    """Notify phone that a calendar event was deleted."""
+    return send_to_phone(f"CAL_NOTIFY_DELETED:{event_id}")
+
+def request_calendar_from_phone():
+    """Request the phone to send its local calendar events."""
+    return send_to_phone("CAL_REQUEST")
+
+# ─── NOTIFICATION MIRROR COMMANDS ──────────────────────────────
+
+def dismiss_notification(key):
+    """Tell the phone to dismiss a notification."""
+    return send_to_phone(f"NOTIF_DISMISS:{key}")
+
 # ─── CONNECTION MONITOR ─────────────────────────────────────────
 
 _last_phone_heartbeat = 0

@@ -17,6 +17,7 @@ import socket
 import file_service
 import notes_module
 import task_manager
+import calendar_module
 import reverse_commands
 import clipboard_sync
 import notification_manager
@@ -393,6 +394,47 @@ def execute_command(data,addr,sock):
                 print(f"[*] Note updated from mobile: {note_id} (title={title})")
             except Exception as e:
                 print(f"[!] Note update error: {e}")
+
+        # ─── CALENDAR COMMANDS ────────────────────────────────────────
+        elif command == "CAL_SYNC" or command == "GET_CALENDAR":
+            print("[*] Syncing Calendar to Phone...")
+            json_data = calendar_module.get_all_events_json()
+            reverse_commands.send_to_phone(f"CAL_SYNC:{json_data}")
+
+        elif command.startswith("CAL_ADD:"):
+            # Format: CAL_ADD:<json_event>
+            try:
+                event_json = command.split(":", 1)[1]
+                result = calendar_module.add_event_from_mobile(event_json)
+                if result:
+                    print(f"[*] Calendar event added from mobile: {result['title']}")
+                    json_data = calendar_module.get_all_events_json()
+                    reverse_commands.send_to_phone(f"CAL_SYNC:{json_data}")
+            except Exception as e:
+                print(f"[!] Calendar add error: {e}")
+
+        elif command.startswith("CAL_UPDATE:"):
+            # Format: CAL_UPDATE:<json_event>
+            try:
+                event_json = command.split(":", 1)[1]
+                result = calendar_module.update_event_from_mobile(event_json)
+                if result:
+                    print(f"[*] Calendar event updated from mobile: {result['title']}")
+                    json_data = calendar_module.get_all_events_json()
+                    reverse_commands.send_to_phone(f"CAL_SYNC:{json_data}")
+            except Exception as e:
+                print(f"[!] Calendar update error: {e}")
+
+        elif command.startswith("CAL_DELETE:"):
+            # Format: CAL_DELETE:<event_id>
+            try:
+                event_id = command.split(":", 1)[1]
+                calendar_module.delete_event_from_mobile(event_id)
+                print(f"[*] Calendar event deleted from mobile: {event_id}")
+                json_data = calendar_module.get_all_events_json()
+                reverse_commands.send_to_phone(f"CAL_SYNC:{json_data}")
+            except Exception as e:
+                print(f"[!] Calendar delete error: {e}")
         
         elif command.startswith("KEY:"):
             try:
@@ -469,17 +511,20 @@ def execute_command(data,addr,sock):
             print("[*] PC Clipboard set from Mobile")
         
         elif command.startswith("NOTIF_MIRROR:"):
-            # Format: NOTIF_MIRROR:Title|Body|Package
+            # Format: NOTIF_MIRROR:<JSON>
             try:
                 payload = command[13:]
-                parts = payload.split("|")
-                if len(parts) >= 3:
-                    title = parts[0]
-                    body = parts[1]
-                    pkg = parts[2]
-                    notification_manager.show_notification(title, body, pkg)
+                notification_manager.handle_notification(payload)
             except Exception as e:
                 print(f"[!] Notification parse error: {e}")
+
+        elif command.startswith("NOTIF_DISMISSED:"):
+            # Phone reports a notification was dismissed
+            try:
+                key = command[16:]
+                notification_manager.handle_dismissed(key)
+            except Exception as e:
+                print(f"[!] Notification dismiss error: {e}")
 
         elif command == "SCREENSHOT_LOCAL":
             handle_screenshot("LOCAL")

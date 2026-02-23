@@ -27,7 +27,9 @@ from PIL import Image, ImageTk, ImageDraw
 from io import BytesIO
 from datetime import datetime
 import notes_module
+import calendar_module
 import clipboard_sync
+import notification_manager
 
 # Add parent to path for imports
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -191,6 +193,8 @@ class ControlPanel(ctk.CTk):
         self.tab_chat = self.tabview.add("💬 Chat")
         self.tab_tasks = self.tabview.add("Tasks")
         self.tab_notes = self.tabview.add("📝 Notes")
+        self.tab_calendar = self.tabview.add("📅 Calendar")
+        self.tab_notifications = self.tabview.add("🔔 Notifications")
         self.tab_actions = self.tabview.add("Quick Actions")
         self.tab_logs = self.tabview.add("Logs")
         
@@ -200,6 +204,8 @@ class ControlPanel(ctk.CTk):
         self._build_chat_tab()
         self._build_tasks_tab()
         self._build_notes_tab()
+        self._build_calendar_tab()
+        self._build_notifications_tab()
         self._build_actions_tab()
         self._build_logs_tab()
         
@@ -275,6 +281,149 @@ class ControlPanel(ctk.CTk):
     def _build_notes_tab(self):
         self.notes_ui = notes_module.NotesTab(self.tab_notes)
         notes_module.set_notes_tab(self.notes_ui)
+
+    # ─── CALENDAR TAB ───────────────────────────────────────────
+    def _build_calendar_tab(self):
+        self.calendar_ui = calendar_module.CalendarTab(self.tab_calendar)
+        calendar_module.set_calendar_tab(self.calendar_ui)
+
+    # ─── NOTIFICATIONS TAB ──────────────────────────────────────
+    def _build_notifications_tab(self):
+        tab = self.tab_notifications
+        
+        # Main card
+        card = ctk.CTkFrame(tab, fg_color=COLORS["bg_card"], corner_radius=12)
+        card.pack(fill="both", expand=True, padx=8, pady=8)
+        
+        # Header
+        header = ctk.CTkFrame(card, fg_color="transparent")
+        header.pack(fill="x", padx=20, pady=(16, 8))
+        
+        ctk.CTkLabel(header, text="🔔  Phone Notifications", font=("Segoe UI Semibold", 18),
+                     text_color=COLORS["accent_bright"]).pack(side="left")
+        
+        self.notif_count_label = ctk.CTkLabel(header, text="0 notifications",
+                                               font=("Segoe UI", 12), text_color=COLORS["text_dim"])
+        self.notif_count_label.pack(side="right", padx=(0, 8))
+        
+        ctk.CTkButton(header, text="Clear All", width=80, height=28, font=("Segoe UI", 12),
+                      fg_color=COLORS["danger"], hover_color="#ff4444",
+                      command=self._clear_all_notifications).pack(side="right", padx=(0, 8))
+        
+        # Scrollable notification list
+        self.notif_scroll = ctk.CTkScrollableFrame(card, fg_color=COLORS["bg_dark"],
+                                                    corner_radius=8)
+        self.notif_scroll.pack(fill="both", expand=True, padx=16, pady=(0, 16))
+        
+        # Empty state label
+        self.notif_empty_label = ctk.CTkLabel(self.notif_scroll, 
+                                               text="📭  No notifications yet\n\nNotifications from your phone will appear here.\nMake sure Notification Access is enabled in Android Settings.",
+                                               font=("Segoe UI", 14), text_color=COLORS["text_dim"],
+                                               justify="center")
+        self.notif_empty_label.pack(expand=True, pady=60)
+        
+        # Track notification card widgets
+        self.notif_card_widgets = {}  # key -> frame
+        
+        # Register for notification events
+        notification_manager.on_notification(
+            lambda notif: self.after(0, lambda n=notif: self._add_notification_card(n))
+        )
+        notification_manager.on_dismissed(
+            lambda key: self.after(0, lambda k=key: self._on_notification_dismissed(k))
+        )
+    
+    def _add_notification_card(self, notif):
+        """Add a notification card to the scroll panel."""
+        # Hide empty state
+        self.notif_empty_label.pack_forget()
+        
+        key = notif["key"]
+        app_icon = notif["app_icon"]
+        app_name = notif["app_name"]
+        title = notif["title"]
+        body = notif["body"]
+        time_str = notif["time_str"]
+        
+        # Card frame
+        frame = ctk.CTkFrame(self.notif_scroll, fg_color=COLORS["bg_card"], corner_radius=10, height=80)
+        frame.pack(fill="x", pady=4, padx=2)
+        frame.pack_propagate(False)
+        
+        # Inner layout
+        inner = ctk.CTkFrame(frame, fg_color="transparent")
+        inner.pack(fill="both", expand=True, padx=12, pady=8)
+        
+        # Top row: app icon + app name + time + dismiss button
+        top_row = ctk.CTkFrame(inner, fg_color="transparent")
+        top_row.pack(fill="x")
+        
+        ctk.CTkLabel(top_row, text=f"{app_icon}  {app_name}", font=("Segoe UI Semibold", 12),
+                     text_color=COLORS["accent_bright"]).pack(side="left")
+        
+        ctk.CTkLabel(top_row, text=time_str, font=("Consolas", 10),
+                     text_color=COLORS["text_dim"]).pack(side="right", padx=(8, 0))
+        
+        dismiss_btn = ctk.CTkButton(top_row, text="✕", width=24, height=24, font=("Segoe UI", 11),
+                                     fg_color=COLORS["danger"], hover_color="#ff4444",
+                                     command=lambda k=key: self._dismiss_notification(k))
+        dismiss_btn.pack(side="right", padx=(4, 0))
+        
+        # Bottom row: title + body
+        content_row = ctk.CTkFrame(inner, fg_color="transparent")
+        content_row.pack(fill="x", pady=(4, 0))
+        
+        title_text = title if len(title) <= 40 else title[:37] + "..."
+        body_text = body if len(body) <= 80 else body[:77] + "..."
+        display_text = f"{title_text}" + (f"  —  {body_text}" if body_text else "")
+        
+        ctk.CTkLabel(content_row, text=display_text, font=("Segoe UI", 12),
+                     text_color=COLORS["text"], anchor="w").pack(side="left", fill="x", expand=True)
+        
+        self.notif_card_widgets[key] = frame
+        
+        # Update count
+        count = notification_manager.get_active_count()
+        self.notif_count_label.configure(text=f"{count} notification{'s' if count != 1 else ''}")
+    
+    def _dismiss_notification(self, key):
+        """Dismiss a notification from the PC (also dismisses on phone)."""
+        notification_manager.dismiss_from_pc(key)
+    
+    def _on_notification_dismissed(self, key):
+        """Update UI when a notification is dismissed (from phone or PC)."""
+        if key in self.notif_card_widgets:
+            frame = self.notif_card_widgets[key]
+            frame.configure(fg_color="#1a1a2e")  # Dim the card
+            # Add strikethrough effect by changing text color
+            for widget in frame.winfo_children():
+                try:
+                    for inner_widget in widget.winfo_children():
+                        for w in inner_widget.winfo_children():
+                            if isinstance(w, ctk.CTkLabel):
+                                w.configure(text_color=COLORS["text_dim"])
+                            if isinstance(w, ctk.CTkButton):
+                                w.configure(state="disabled")
+                except Exception:
+                    pass
+            del self.notif_card_widgets[key]
+        
+        # Update count
+        count = notification_manager.get_active_count()
+        self.notif_count_label.configure(text=f"{count} notification{'s' if count != 1 else ''}")
+        
+        # Show empty state if no active notifications
+        if count == 0 and not self.notif_card_widgets:
+            self.notif_empty_label.pack(expand=True, pady=60)
+    
+    def _clear_all_notifications(self):
+        """Clear all notification cards."""
+        for frame in self.notif_card_widgets.values():
+            frame.destroy()
+        self.notif_card_widgets.clear()
+        notification_manager.clear_all()
+        self.notif_count_label.configure(text="0 notifications")
+        self.notif_empty_label.pack(expand=True, pady=60)
 
     # ─── QR PAIRING SECTION ─────────────────────────────────────
     def _build_qr_section(self, parent):
