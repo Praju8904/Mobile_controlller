@@ -20,6 +20,9 @@ import android.util.Log;        // For debugging in Logcat
 
 import java.io.DataInputStream;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.content.Intent;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Formatter;
@@ -32,6 +35,7 @@ public class ConnectionManager {
     private static final int PORT_WATCHDOG = 5007;
     private static final int PORT_PING = 5008;
     private static final String HMAC_KEY = "my_super_secret_project_key";
+
 
     public interface PingCallback {
         void onSuccess(long responseTime);
@@ -146,6 +150,18 @@ public class ConnectionManager {
                             }
                             Log.i("RE_SYSTEM", "SAVED: " + targetFile.getAbsolutePath());
 
+                            // 👇 ADD THIS BLOCK TO NOTIFY UI 👇
+                            // 1. Tell MediaStore (so it shows in Gallery)
+                            android.media.MediaScannerConnection.scanFile(context,
+                                    new String[]{targetFile.toString()}, null, null);
+
+                            // 2. Broadcast to Chat Activity (So bubble appears)
+                            android.content.Intent intent = new android.content.Intent("com.prajwal.myfirstapp.CHAT_EVENT");
+                            intent.putExtra("type", "file");
+                            intent.putExtra("content", targetFile.getAbsolutePath()); // Pass full path
+                            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                            // 👆 END ADDITION
+
                             // Optional: Tell the MediaScanner about the new file so it appears in Gallery immediately
                             android.media.MediaScannerConnection.scanFile(context,
                                     new String[]{targetFile.toString()}, null, null);
@@ -156,6 +172,57 @@ public class ConnectionManager {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public void startListening(Context context) {
+        new Thread(() -> {
+            Log.d("ConnectionManager", "--- STARTING UDP LISTENER ON PORT 6000 ---");
+            DatagramSocket socket = null;
+            try {
+                // Critical: This matches the port in reverse_commands.py (_phone_port = 6000)
+                socket = new DatagramSocket(6000);
+                byte[] buffer = new byte[65535]; // Max UDP size
+
+                while (true) {
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                    socket.receive(packet); // Blocks until data arrives
+
+                    String message = new String(packet.getData(), 0, packet.getLength()).trim();
+                    Log.d("ConnectionManager", "Received from PC: " + message);
+
+                    // --- 1. HANDLE CHAT MESSAGES ---
+                    if (message.startsWith("CHAT_MSG:")) {
+                        String chatContent = message.substring(9); // Remove prefix
+
+                        // Broadcast to ChatActivity
+                        Intent intent = new Intent("com.prajwal.myfirstapp.CHAT_EVENT");
+                        intent.putExtra("type", "text");
+                        intent.putExtra("content", chatContent);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
+                        // Optional: Save to repository here if you want it saved even when app is closed
+                    }
+
+                    // --- 2. HANDLE TOASTS (Example) ---
+                    else if (message.startsWith("TOAST:")) {
+                        String msg = message.substring(6);
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        );
+                    }
+
+                    // --- 3. HANDLE NOTIFICATIONS ---
+                    else if (message.startsWith("NOTIFY:")) {
+                        // You can add notification logic here later
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("ConnectionManager", "Listener Error: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                if (socket != null && !socket.isClosed()) socket.close();
             }
         }).start();
     }

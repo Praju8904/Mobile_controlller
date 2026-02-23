@@ -26,6 +26,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import dynamic_bar.DynamicBarService;
+
 import java.io.File;
 import android.net.Uri;
 import android.content.Intent;
@@ -94,9 +96,31 @@ public class MainActivity extends AppCompatActivity {
 
         // --- Reverse Command Listener (PC → Phone) ---
         reverseCommandListener = new ReverseCommandListener(this, initialIp);
+
         reverseCommandListener.setCallback(command -> {
-            // Optional: show a small indicator when PC sends a command
-            Log.d("ReverseCmd", "Received from PC: " + command);
+    // Existing Logs
+            Log.d("ReverseCmd", "Received: " + command);
+
+            if (command.startsWith("CHAT_MSG:")) {
+                String msg = command.substring(9);
+                
+                // 1. Notify ChatActivity if open
+                Intent intent = new Intent("com.prajwal.myfirstapp.CHAT_EVENT");
+                intent.putExtra("type", "text");
+                intent.putExtra("content", msg);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+                // 2. Ideally, if ChatActivity is NOT open, save to Repository here too
+                // (Optional for advanced polish)
+                
+            } else if (command.startsWith("CHAT_FILE_INFO:")) {
+                // Handle file notifications if you implement that on PC
+                String filename = command.substring(15);
+                Intent intent = new Intent("com.prajwal.myfirstapp.CHAT_EVENT");
+                intent.putExtra("type", "file");
+                intent.putExtra("content", filename); // Or full path if you have it
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            }
         });
 
         // Auto-start reverse listener if already paired
@@ -227,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         // air mouse
         /*
          * View laserTrigger = findViewById(R.id.touchPad);
-         *
+         * 
          * laserTrigger.setOnTouchListener((v, event) -> {
          * switch (event.getAction()) {
          * case MotionEvent.ACTION_DOWN:
@@ -236,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
          * v.setBackgroundColor(Color.parseColor("#33FF0000")); // Tint red for "Laser"
          * feel
          * break;
-         *
+         * 
          * case MotionEvent.ACTION_UP:
          * // Stop the laser when finger lifts
          * sensorHandler.stop();
@@ -245,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
          * }
          * return true;
          * });
-         *
+         * 
          */
 
         // Scroll Strip
@@ -657,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
             new Thread(() -> {
                 try {
                     java.net.DatagramSocket sock = new java.net.DatagramSocket();
-                    byte[] buf = ("PAIRED:" + android.os.Build.MODEL).getBytes();
+                    byte[] buf = ("PAIRED:" + Build.MODEL).getBytes();
                     java.net.InetAddress addr = java.net.InetAddress.getByName(ip);
                     java.net.DatagramPacket pkt = new java.net.DatagramPacket(buf, buf.length, addr, 6001);
                     sock.send(pkt);
@@ -750,7 +774,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check overlay permission (Android 6+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            new androidx.appcompat.app.AlertDialog.Builder(this)
+            new AlertDialog.Builder(this)
                     .setTitle("Overlay Permission Required")
                     .setMessage("The Dynamic Bar needs 'Display over other apps' permission to float on top of your screen.\n\nTap 'Grant' to open settings.")
                     .setPositiveButton("Grant", (d, w) -> {
@@ -769,26 +793,26 @@ public class MainActivity extends AppCompatActivity {
         startDynamicBarService();
     }
 
-//    private void startDynamicBarService() {
-//        Intent serviceIntent = new Intent(this, DynamicBarService.class);
-//        serviceIntent.putExtra("laptop_ip", connectionManager.getLaptopIp());
-//        serviceIntent.putExtra("is_connected", isServerCurrentlyRunning);
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            startForegroundService(serviceIntent);
-//        } else {
-//            startService(serviceIntent);
-//        }
-//        Toast.makeText(this, "Dynamic Bar enabled ✨", Toast.LENGTH_SHORT).show();
-//    }
+    private void startDynamicBarService() {
+        Intent serviceIntent = new Intent(this, DynamicBarService.class);
+        serviceIntent.putExtra("laptop_ip", connectionManager.getLaptopIp());
+        serviceIntent.putExtra("is_connected", isServerCurrentlyRunning);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+        Toast.makeText(this, "Dynamic Bar enabled ✨", Toast.LENGTH_SHORT).show();
+    }
 
     /** Keep Dynamic Bar in sync when connection changes */
-//    private void updateDynamicBar() {
-//        DynamicBarService bar = DynamicBarService.getInstance();
-//        if (bar != null) {
-//            bar.updateConnectionStatus(isServerCurrentlyRunning, connectionManager.getLaptopIp());
-//        }
-//    }
+    private void updateDynamicBar() {
+        DynamicBarService bar = DynamicBarService.getInstance();
+        if (bar != null) {
+            bar.updateConnectionStatus(isServerCurrentlyRunning, connectionManager.getLaptopIp());
+        }
+    }
 
     // ═══ HOME SCREEN NAVIGATION ═══
 
@@ -817,6 +841,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.cardMedia).setOnClickListener(v -> showMediaMenu());
+
+        // Notes Card
+        findViewById(R.id.cardNotes).setOnClickListener(v -> {
+            Intent notesIntent = new Intent(MainActivity.this, NotesActivity.class);
+            notesIntent.putExtra("server_ip", connectionManager.getLaptopIp());
+            startActivity(notesIntent);
+        });
 
         // Dynamic Bar Card
         findViewById(R.id.cardDynamicBar).setOnClickListener(v -> toggleDynamicBar());
@@ -854,7 +885,7 @@ public class MainActivity extends AppCompatActivity {
         });
         touchpadScreen.startAnimation(slideOut);
         btnBackHome.animate().alpha(0f).setDuration(200).withEndAction(() ->
-                btnBackHome.setVisibility(View.GONE)
+            btnBackHome.setVisibility(View.GONE)
         ).start();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
@@ -863,97 +894,97 @@ public class MainActivity extends AppCompatActivity {
     private void showFilesMenu() {
         String[] options = {"📄  Send File", "🎬  Send Video", "🎵  Send Audio", "📂  Browse Received Files"};
         new AlertDialog.Builder(this)
-                .setTitle("📁 File Transfer")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: openMediaPicker("*/*", 200); break;
-                        case 1: openMediaPicker("video/*", 201); break;
-                        case 2: openMediaPicker("audio/*", 202); break;
-                        case 3:
-                            File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
-                            File receivedFolder = new File(docFolder, "Received_Files");
-                            if (receivedFolder.exists()) {
-                                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                                intent.setDataAndType(Uri.parse(receivedFolder.getPath()), "*/*");
-                                try { startActivity(Intent.createChooser(intent, "Open Received Files")); }
-                                catch (android.content.ActivityNotFoundException ex) {
-                                    Toast.makeText(this, "Install a File Manager", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(this, "No files received yet!", Toast.LENGTH_SHORT).show();
+            .setTitle("📁 File Transfer")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: openMediaPicker("*/*", 200); break;
+                    case 1: openMediaPicker("video/*", 201); break;
+                    case 2: openMediaPicker("audio/*", 202); break;
+                    case 3:
+                        File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
+                        File receivedFolder = new File(docFolder, "Received_Files");
+                        if (receivedFolder.exists()) {
+                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                            intent.setDataAndType(Uri.parse(receivedFolder.getPath()), "*/*");
+                            try { startActivity(Intent.createChooser(intent, "Open Received Files")); }
+                            catch (android.content.ActivityNotFoundException ex) {
+                                Toast.makeText(this, "Install a File Manager", Toast.LENGTH_SHORT).show();
                             }
-                            break;
-                    }
-                })
-                .show();
+                        } else {
+                            Toast.makeText(this, "No files received yet!", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+            })
+            .show();
     }
 
     private void showAIMenu() {
         String[] options = {"🎙️  Voice Command", "✍️  Write AI Prompt", "🗣️  Voice Dictation"};
         new AlertDialog.Builder(this)
-                .setTitle("🤖 AI Assistant")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: startVoiceRecognition(300); break;
-                        case 1: showWriteAIDialog(); break;
-                        case 2: startVoiceRecognition(400); break;
-                    }
-                })
-                .show();
+            .setTitle("🤖 AI Assistant")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: startVoiceRecognition(300); break;
+                    case 1: showWriteAIDialog(); break;
+                    case 2: startVoiceRecognition(400); break;
+                }
+            })
+            .show();
     }
 
     private void showPCControlMenu() {
         String[] options = {
-                "🔊  Volume Up", "🔉  Volume Down", "🔇  Mute Toggle",
-                "🔆  Brightness Up", "🔅  Brightness Down",
-                "🖥️  Show Desktop", "🔄  App Switcher",
-                "📸  Screenshot (Save)", "📸  Screenshot (Send)",
-                "📋  Clipboard Sync", "⏱️  Schedule Shutdown",
-                "🔍  Zoom In", "🔎  Zoom Out", "💯  Reset Zoom",
-                "🖥️  Screen Black / Wake", "⎋  Escape Key"
+            "🔊  Volume Up", "🔉  Volume Down", "🔇  Mute Toggle",
+            "🔆  Brightness Up", "🔅  Brightness Down",
+            "🖥️  Show Desktop", "🔄  App Switcher",
+            "📸  Screenshot (Save)", "📸  Screenshot (Send)",
+            "📋  Clipboard Sync", "⏱️  Schedule Shutdown",
+            "🔍  Zoom In", "🔎  Zoom Out", "💯  Reset Zoom",
+            "🖥️  Screen Black / Wake", "⎋  Escape Key"
         };
         new AlertDialog.Builder(this)
-                .setTitle("🎮 PC Control")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: connectionManager.sendCommand("VOL_UP"); break;
-                        case 1: connectionManager.sendCommand("VOL_DOWN"); break;
-                        case 2: connectionManager.sendCommand("MUTE_TOGGLE"); break;
-                        case 3: connectionManager.sendCommand("BRIGHT_UP"); break;
-                        case 4: connectionManager.sendCommand("BRIGHT_DOWN"); break;
-                        case 5: connectionManager.sendCommand("SHOW_DESKTOP"); break;
-                        case 6: connectionManager.sendCommand("APP_SWITCHER"); break;
-                        case 7:
-                            connectionManager.sendCommand("SCREENSHOT_LOCAL");
-                            Toast.makeText(this, "Screenshot saved on PC", Toast.LENGTH_SHORT).show();
-                            break;
-                        case 8:
-                            connectionManager.sendCommand("SCREENSHOT_SEND");
-                            Toast.makeText(this, "Capturing & transferring...", Toast.LENGTH_LONG).show();
-                            break;
-                        case 9: showClipboardDialog(); break;
-                        case 10: showSchedulerDialog(); break;
-                        case 11: connectionManager.sendCommand("ZOOM_IN"); break;
-                        case 12: connectionManager.sendCommand("ZOOM_OUT"); break;
-                        case 13: connectionManager.sendCommand("ZOOM_RESET"); break;
-                        case 14: connectionManager.sendCommand("SCREEN_BLACK"); break;
-                        case 15: connectionManager.sendCommand("KEY:ESC"); break;
-                    }
-                })
-                .show();
+            .setTitle("🎮 PC Control")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: connectionManager.sendCommand("VOL_UP"); break;
+                    case 1: connectionManager.sendCommand("VOL_DOWN"); break;
+                    case 2: connectionManager.sendCommand("MUTE_TOGGLE"); break;
+                    case 3: connectionManager.sendCommand("BRIGHT_UP"); break;
+                    case 4: connectionManager.sendCommand("BRIGHT_DOWN"); break;
+                    case 5: connectionManager.sendCommand("SHOW_DESKTOP"); break;
+                    case 6: connectionManager.sendCommand("APP_SWITCHER"); break;
+                    case 7:
+                        connectionManager.sendCommand("SCREENSHOT_LOCAL");
+                        Toast.makeText(this, "Screenshot saved on PC", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 8:
+                        connectionManager.sendCommand("SCREENSHOT_SEND");
+                        Toast.makeText(this, "Capturing & transferring...", Toast.LENGTH_LONG).show();
+                        break;
+                    case 9: showClipboardDialog(); break;
+                    case 10: showSchedulerDialog(); break;
+                    case 11: connectionManager.sendCommand("ZOOM_IN"); break;
+                    case 12: connectionManager.sendCommand("ZOOM_OUT"); break;
+                    case 13: connectionManager.sendCommand("ZOOM_RESET"); break;
+                    case 14: connectionManager.sendCommand("SCREEN_BLACK"); break;
+                    case 15: connectionManager.sendCommand("KEY:ESC"); break;
+                }
+            })
+            .show();
     }
 
     private void showMediaMenu() {
         String[] options = {"📝  Open Notepad", "📷  Webcam Stream"};
         new AlertDialog.Builder(this)
-                .setTitle("🎬 Media & Apps")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: connectionManager.sendCommand("OPEN_NOTEPAD"); break;
-                        case 1: connectionManager.sendCommand("CAMERA_STREAM"); break;
-                    }
-                })
-                .show();
+            .setTitle("🎬 Media & Apps")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: connectionManager.sendCommand("OPEN_NOTEPAD"); break;
+                    case 1: connectionManager.sendCommand("CAMERA_STREAM"); break;
+                }
+            })
+            .show();
     }
 
     private void setupKeyboard(EditText hiddenInput) {
@@ -1087,31 +1118,31 @@ public class MainActivity extends AppCompatActivity {
 
     // ═══ DYNAMIC BAR ═══
 
-//    private void toggleDynamicBar() {
-//        if (DynamicBarService.isServiceRunning()) {
-//            // Stop it
-//            Intent stopIntent = new Intent(this, DynamicBarService.class);
-//            stopIntent.setAction("STOP_DYNAMIC_BAR");
-//            startService(stopIntent);
-//            Toast.makeText(this, "Dynamic Bar disabled", Toast.LENGTH_SHORT).show();
-//        } else {
-//            // Check overlay permission first
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-//                new AlertDialog.Builder(this)
-//                        .setTitle("Overlay Permission Needed")
-//                        .setMessage("Dynamic Bar needs \"Display over other apps\" permission to float on your screen.")
-//                        .setPositiveButton("Grant", (d, w) -> {
-//                            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-//                                    Uri.parse("package:" + getPackageName()));
-//                            startActivityForResult(intent, 600);
-//                        })
-//                        .setNegativeButton("Cancel", null)
-//                        .show();
-//            } else {
-//                startDynamicBarService();
-//            }
-//        }
-//    }
+    private void toggleDynamicBar() {
+        if (DynamicBarService.isServiceRunning()) {
+            // Stop it
+            Intent stopIntent = new Intent(this, DynamicBarService.class);
+            stopIntent.setAction("STOP_DYNAMIC_BAR");
+            startService(stopIntent);
+            Toast.makeText(this, "Dynamic Bar disabled", Toast.LENGTH_SHORT).show();
+        } else {
+            // Check overlay permission first
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                new AlertDialog.Builder(this)
+                    .setTitle("Overlay Permission Needed")
+                    .setMessage("Dynamic Bar needs \"Display over other apps\" permission to float on your screen.")
+                    .setPositiveButton("Grant", (d, w) -> {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(intent, 600);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            } else {
+                startDynamicBarService();
+            }
+        }
+    }
 
     private void startDynamicBarService() {
         Intent serviceIntent = new Intent(this, DynamicBarService.class);
