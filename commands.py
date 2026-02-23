@@ -329,20 +329,70 @@ def execute_command(data,addr,sock):
             pyautogui.press('b')
             print("   [Action] Presentation Blackout")
 
-        elif command == "GET_NOTES":
+        # ─── NOTES COMMANDS ──────────────────────────────────────
+        elif command == "GET_NOTES" or command == "NOTE_SYNC":
             print("[*] Syncing Notes to Phone...")
             json_data = notes_module.get_all_notes_json()
-            # Send the JSON back to the phone on Port 6000
-            reverse_commands.send_to_phone(f"NOTES_DATA:{json_data}")
-            
-        elif command.startswith("UPDATE_NOTE:"):
-            # Format: UPDATE_NOTE:note_id:new_content
+            reverse_commands.send_to_phone(f"NOTES_SYNC:{json_data}")
+
+        elif command.startswith("NOTE_ADD:"):
+            # Format: NOTE_ADD:parent_id:mob_id:name:type
             try:
-                _, note_id, content = command.split(":", 2)
-                notes_module.update_note_from_mobile(note_id, content)
-                print(f"[*] Note updated from mobile: {note_id}")
-            except ValueError:
-                print("[!] Invalid Update Note format")
+                parts = command.split(":", 4)
+                parent_id = parts[1]
+                mob_id = parts[2] if len(parts) > 2 else None
+                name = parts[3] if len(parts) > 3 else "Untitled"
+                item_type = parts[4] if len(parts) > 4 else "note"
+                result = notes_module.add_note_from_mobile(parent_id, name, item_type, mob_id)
+                if result:
+                    print(f"[*] Note added from mobile: {name}")
+                    # Send full sync back
+                    json_data = notes_module.get_all_notes_json()
+                    reverse_commands.send_to_phone(f"NOTES_SYNC:{json_data}")
+                    return f"NOTE_ADDED:{result['id']}:{name}"
+                else:
+                    print(f"[!] Note add failed — parent '{parent_id}' not found")
+            except Exception as e:
+                print(f"[!] Note add error: {e}")
+
+        elif command.startswith("NOTE_DELETE:"):
+            # Format: NOTE_DELETE:item_id
+            try:
+                item_id = command.split(":", 1)[1]
+                notes_module.delete_note_from_mobile(item_id)
+                print(f"[*] Note deleted from mobile: {item_id}")
+                json_data = notes_module.get_all_notes_json()
+                reverse_commands.send_to_phone(f"NOTES_SYNC:{json_data}")
+            except Exception as e:
+                print(f"[!] Note delete error: {e}")
+
+        elif command.startswith("NOTE_RENAME:"):
+            # Format: NOTE_RENAME:item_id:new_name
+            try:
+                _, item_id, new_name = command.split(":", 2)
+                notes_module.rename_note_from_mobile(item_id, new_name)
+                print(f"[*] Note renamed from mobile: {item_id} -> {new_name}")
+                json_data = notes_module.get_all_notes_json()
+                reverse_commands.send_to_phone(f"NOTES_SYNC:{json_data}")
+            except Exception as e:
+                print(f"[!] Note rename error: {e}")
+
+        elif command.startswith("NOTE_UPDATE:") or command.startswith("UPDATE_NOTE:"):
+            # Format: NOTE_UPDATE:note_id:title:content  (content may contain colons)
+            try:
+                parts = command.split(":", 3)
+                note_id = parts[1]
+                rest = parts[2] if len(parts) > 2 else ""
+                # rest = "title:content" — split once more to separate title from content
+                title_content = rest.split(":", 1)
+                title = title_content[0] if title_content else ""
+                content = title_content[1] if len(title_content) > 1 else ""
+                # Unescape newlines/colons from mobile
+                content = content.replace("\\n", "\n").replace("\\:", ":")
+                notes_module.update_note_from_mobile(note_id, content, title)
+                print(f"[*] Note updated from mobile: {note_id} (title={title})")
+            except Exception as e:
+                print(f"[!] Note update error: {e}")
         
         elif command.startswith("KEY:"):
             try:

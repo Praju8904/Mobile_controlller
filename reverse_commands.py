@@ -184,6 +184,28 @@ def request_tasks_from_phone():
     """Request the phone to send its local task list."""
     return send_to_phone("TASKS_REQUEST")
 
+# ─── NOTES COMMANDS ─────────────────────────────────────────────
+
+def sync_notes_to_phone(notes_json):
+    """Send full notes tree to phone for sync."""
+    return send_to_phone(f"NOTES_SYNC:{notes_json}")
+
+def notify_note_added(note_id, note_name):
+    """Notify phone that a note was added."""
+    return send_to_phone(f"NOTE_NOTIFY_ADDED:{note_id}:{note_name}")
+
+def notify_note_updated(note_id, note_name):
+    """Notify phone that a note was updated."""
+    return send_to_phone(f"NOTE_NOTIFY_UPDATED:{note_id}:{note_name}")
+
+def notify_note_deleted(note_id):
+    """Notify phone that a note was deleted."""
+    return send_to_phone(f"NOTE_NOTIFY_DELETED:{note_id}")
+
+def request_notes_from_phone():
+    """Request the phone to send its local notes."""
+    return send_to_phone("NOTES_REQUEST")
+
 # ─── CONNECTION MONITOR ─────────────────────────────────────────
 
 _last_phone_heartbeat = 0

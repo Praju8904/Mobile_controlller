@@ -128,12 +128,6 @@ class ControlPanel(ctk.CTk):
         
         # Start background monitors
         self._start_monitors()
-
-        # Create Tab
-        self.tabview.add("Notes")
-        
-        # Initialize Notes UI inside the tab
-        self.notes_ui = notes_module.NotesTab(self.tabview.tab("Notes"))
         
         # Redirect logs
         self.log_redirector = LogRedirector(self._append_log)
@@ -196,6 +190,7 @@ class ControlPanel(ctk.CTk):
         self.tab_phone = self.tabview.add("Phone Controls")
         self.tab_chat = self.tabview.add("💬 Chat")
         self.tab_tasks = self.tabview.add("Tasks")
+        self.tab_notes = self.tabview.add("📝 Notes")
         self.tab_actions = self.tabview.add("Quick Actions")
         self.tab_logs = self.tabview.add("Logs")
         
@@ -204,6 +199,7 @@ class ControlPanel(ctk.CTk):
         self._build_phone_tab()
         self._build_chat_tab()
         self._build_tasks_tab()
+        self._build_notes_tab()
         self._build_actions_tab()
         self._build_logs_tab()
         
@@ -274,6 +270,11 @@ class ControlPanel(ctk.CTk):
     def _build_tasks_tab(self):
         tab = self.tab_tasks
         self._build_tasks_panel(tab)
+
+    # ─── NOTES TAB ──────────────────────────────────────────────
+    def _build_notes_tab(self):
+        self.notes_ui = notes_module.NotesTab(self.tab_notes)
+        notes_module.set_notes_tab(self.notes_ui)
 
     # ─── QR PAIRING SECTION ─────────────────────────────────────
     def _build_qr_section(self, parent):

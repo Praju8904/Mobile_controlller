@@ -7,8 +7,28 @@
       "id": "25894e0b",
       "name": "ne file",
       "type": "note",
-      "timestamp": 1771151727.827138,
-      "content": "hoo \n\n\n"
+      "timestamp": 1771824795.0517857,
+      "content": "hoo ",
+      "color": "red"
+    },
+    {
+      "id": "9ce007cd",
+      "name": "Prajwal",
+      "type": "folder",
+      "timestamp": 1771824792.9473934,
+      "pinned": false,
+      "color": "default",
+      "children": [
+        {
+          "id": "9148fba0",
+          "name": "hello world",
+          "type": "note",
+          "timestamp": 1771825078.3217647,
+          "pinned": false,
+          "color": "default",
+          "content": ""
+        }
+      ]
     }
   ]
 }
