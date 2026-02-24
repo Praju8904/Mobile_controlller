@@ -218,11 +218,7 @@ def execute_command(data,addr,sock):
         elif command.startswith("CHAT_FILE:"):
             file_info = command.split(":", 1)[1]
             print(f"   [💬 Chat] Phone sent file: {file_info}")
-            if _chat_callback:
-                try:
-                    _chat_callback(file_info, "file")
-                except Exception as e:
-                    print(f"   [Chat] Callback error: {e}")
+            # File message is added to chat by services.py after the file transfer completes
             return None
         
         if command == "PREVIEW_ON":

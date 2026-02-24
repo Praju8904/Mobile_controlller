@@ -218,10 +218,17 @@ def _notify_both_devices(task: Dict, action: str, source: str):
     # Mobile Notification (if connected)
     if reverse_commands and reverse_commands.is_connected():
         try:
-            reverse_commands.show_notification(mobile_title, mobile_body)
-            # Also vibrate briefly for task notifications
+            # Send task-specific notification command
+            task_id = task.get("id", 0)
             if action == "added":
+                reverse_commands.notify_task_added(title, task_id)
                 reverse_commands.vibrate(200)
+            elif action == "completed":
+                reverse_commands.notify_task_completed(title, task_id)
+            elif action == "deleted":
+                reverse_commands.notify_task_deleted(task_id)
+            # Send full task list sync so phone's list stays up-to-date
+            sync_tasks_to_mobile()
         except Exception as e:
             print(f"[TaskManager] Mobile notify error: {e}")
 

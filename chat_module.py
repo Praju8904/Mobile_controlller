@@ -188,8 +188,10 @@ class ChatTab:
         self._image_refs = []       # prevent GC of CTkImage
         self._bubble_widgets = []   # all rendered row widgets
         self._last_date = None      # for date separators
+        self._scroll_anim_id = None # smooth scroll animation handle
 
         self._build_ui()
+        self._setup_smooth_scroll()
         self._load_history()
 
     # ─── THEME HELPER ───────────────────────────────────────────
@@ -262,6 +264,53 @@ class ChatTab:
             scrollbar_button_hover_color=t["accent"])
         self.chat_scroll.pack(fill="both", expand=True, padx=0, pady=0)
 
+    # ─── SMOOTH SCROLLING ───────────────────────────────────────
+
+    def _setup_smooth_scroll(self):
+        """Replace the default jerky scroll with smooth animated scrolling."""
+        canvas = self.chat_scroll._parent_canvas
+
+        # Unbind the default mousewheel handler that CTkScrollableFrame sets
+        canvas.unbind_all("<MouseWheel>")
+        canvas.unbind_all("<Button-4>")
+        canvas.unbind_all("<Button-5>")
+
+        # Rebind with our smooth version
+        self.chat_scroll.bind("<MouseWheel>", self._on_smooth_scroll, add="+")
+        canvas.bind("<MouseWheel>", self._on_smooth_scroll, add="+")
+
+        # Also bind on every child added later
+        self.chat_scroll.bind_all("<MouseWheel>", self._on_smooth_scroll)
+
+    def _on_smooth_scroll(self, event):
+        """Animate the scroll over several small steps for a smooth feel."""
+        canvas = self.chat_scroll._parent_canvas
+
+        # Cancel any running scroll animation
+        if self._scroll_anim_id is not None:
+            canvas.after_cancel(self._scroll_anim_id)
+            self._scroll_anim_id = None
+
+        # Determine scroll direction
+        # event.delta is typically ±120 on Windows per notch
+        direction = -1 if event.delta > 0 else 1
+        steps = 4                        # number of animation frames
+        interval_ms = 8                  # ms between frames (~32ms total)
+        units_per_step = 2               # scroll units per frame
+
+        current_step = [0]               # mutable counter for the closure
+
+        def _animate():
+            if current_step[0] >= steps:
+                self._scroll_anim_id = None
+                return
+            canvas.yview_scroll(direction * units_per_step, "units")
+            current_step[0] += 1
+            self._scroll_anim_id = canvas.after(interval_ms, _animate)
+
+        _animate()
+        return "break"  # prevent default scroll handling
+
     def _build_input_bar(self):
         t = self._t()
 
@@ -310,7 +359,12 @@ class ChatTab:
 
     def _scroll_to_bottom(self):
         try:
-            self.chat_scroll._parent_canvas.yview_moveto(1.0)
+            canvas = self.chat_scroll._parent_canvas
+            # Cancel any in-progress smooth scroll
+            if self._scroll_anim_id is not None:
+                canvas.after_cancel(self._scroll_anim_id)
+                self._scroll_anim_id = None
+            canvas.yview_moveto(1.0)
         except Exception:
             pass
 

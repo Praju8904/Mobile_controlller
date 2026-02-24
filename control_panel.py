@@ -189,13 +189,13 @@ class ControlPanel(ctk.CTk):
         
         # Add tabs
         self.tab_dashboard = self.tabview.add("Dashboard")
-        self.tab_phone = self.tabview.add("Phone Controls")
+        self.tab_phone = self.tabview.add("📱 Phone & Actions")
         self.tab_chat = self.tabview.add("💬 Chat")
         self.tab_tasks = self.tabview.add("Tasks")
         self.tab_notes = self.tabview.add("📝 Notes")
         self.tab_calendar = self.tabview.add("📅 Calendar")
         self.tab_notifications = self.tabview.add("🔔 Notifications")
-        self.tab_actions = self.tabview.add("Quick Actions")
+
         self.tab_logs = self.tabview.add("Logs")
         
         # Build each tab
@@ -206,7 +206,6 @@ class ControlPanel(ctk.CTk):
         self._build_notes_tab()
         self._build_calendar_tab()
         self._build_notifications_tab()
-        self._build_actions_tab()
         self._build_logs_tab()
         
         # Register for task events
@@ -253,19 +252,40 @@ class ControlPanel(ctk.CTk):
         
         # Register callback so commands.py can route incoming CHAT_MSG
         import commands as cmd_module
-        cmd_module.set_chat_callback(
-            lambda text, mtype: self.after(0, lambda: self.chat_tab.receive_message(text, mtype))
-        )
+        def _on_chat_from_phone(text, mtype):
+            if mtype == "file":
+                filename = os.path.basename(text)
+                received_dir = os.path.join(os.getcwd(), "Received_Files")
+                full_path = os.path.join(received_dir, filename)
+                filesize = ""
+                if os.path.exists(full_path):
+                    filesize = str(os.path.getsize(full_path))
+                self.after(0, lambda: self.chat_tab.receive_message(
+                    full_path, "file", 
+                    {"filename": filename, "filepath": full_path, "filesize": filesize}))
+            else:
+                self.after(0, lambda: self.chat_tab.receive_message(text, mtype))
+        cmd_module.set_chat_callback(_on_chat_from_phone)
 
-    # ─── PHONE CONTROLS TAB ─────────────────────────────────────
+    # ─── PHONE & ACTIONS TAB (combined) ─────────────────────────
     def _build_phone_tab(self):
         tab = self.tab_phone
-        self._build_phone_controls(tab)
-    
-    # ─── QUICK ACTIONS TAB ──────────────────────────────────────
-    def _build_actions_tab(self):
-        tab = self.tab_actions
-        self._build_quick_actions(tab)
+
+        # Use a pack-managed wrapper, then grid inside it
+        wrapper = ctk.CTkFrame(tab, fg_color="transparent")
+        wrapper.pack(fill="both", expand=True)
+        wrapper.grid_columnconfigure(0, weight=1)
+        wrapper.grid_columnconfigure(1, weight=1)
+        wrapper.grid_rowconfigure(0, weight=1)
+
+        left = ctk.CTkFrame(wrapper, fg_color="transparent")
+        left.grid(row=0, column=0, sticky="nsew", padx=(0, 4))
+
+        right = ctk.CTkFrame(wrapper, fg_color="transparent")
+        right.grid(row=0, column=1, sticky="nsew", padx=(4, 0))
+
+        self._build_phone_controls(left)
+        self._build_quick_actions(right)
     
     # ─── LOGS TAB ───────────────────────────────────────────────
     def _build_logs_tab(self):
@@ -1316,8 +1336,16 @@ class ControlPanel(ctk.CTk):
                     
                     elif message.startswith("CHAT_FILE:"):
                         file_info = message[10:]
+                        filename = os.path.basename(file_info)
+                        received_dir = os.path.join(os.getcwd(), "Received_Files")
+                        full_path = os.path.join(received_dir, filename)
+                        filesize = ""
+                        if os.path.exists(full_path):
+                            filesize = str(os.path.getsize(full_path))
                         if hasattr(self, 'chat_tab'):
-                            self.after(0, lambda f=file_info: self.chat_tab.receive_message(f, "file", {"filename": os.path.basename(f)}))
+                            self.after(0, lambda fp=full_path, fn=filename, fs=filesize: 
+                                       self.chat_tab.receive_message(fp, "file", 
+                                           {"filename": fn, "filepath": fp, "filesize": fs}))
                         
                 except socket.timeout:
                     continue
@@ -1340,6 +1368,7 @@ class ControlPanel(ctk.CTk):
     def _check_phone(self):
         if not reverse_commands.is_connected():
             self._append_log("No phone connected!")
+            messagebox.showwarning("Not Connected", "No phone connected! Connect your phone first.")
             return False
         return True
     
@@ -1395,8 +1424,14 @@ class ControlPanel(ctk.CTk):
 
     def _toggle_camera(self):
         if self._check_phone():
-            reverse_commands.start_camera_stream()
-            self._append_log("[→ Phone] Camera stream started")
+            if not getattr(self, '_camera_streaming', False):
+                reverse_commands.start_camera_stream()
+                self._camera_streaming = True
+                self._append_log("[→ Phone] Camera stream started")
+            else:
+                reverse_commands.stop_camera_stream()
+                self._camera_streaming = False
+                self._append_log("[→ Phone] Camera stream stopped")
 
     def _on_volume_change(self, value):
         if reverse_commands.is_connected():

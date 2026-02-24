@@ -12,14 +12,22 @@ import numpy as np
 def receive_camera_stream():
     # Listen on Port 37023
     stream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    stream_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     stream_sock.bind(('0.0.0.0', 37023))
+    stream_sock.settimeout(2.0)
     print("[*] Waiting for Phone Camera stream on port 37023...")
+
+    frame_count = 0
+    fps_start = time.time()
+    fps = 0
 
     try:
         while True:
-            # Receive packet (Max UDP size is around 65535, so we use 60000 to be safe)
-            data, addr = stream_sock.recvfrom(60000)
-            print(f"Received {len(data)} bytes from phone!")
+            try:
+                # Receive packet (Max UDP size is around 65535, so we use 60000 to be safe)
+                data, addr = stream_sock.recvfrom(60000)
+            except socket.timeout:
+                continue
             
             # 1. Convert raw bytes to numpy array
             np_arr = np.frombuffer(data, dtype=np.uint8)
@@ -28,10 +36,19 @@ def receive_camera_stream():
             frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
             
             if frame is not None:
-                # 3. Rotate if needed (Phones often send rotated images)
-                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-                
-                # 4. Show the window
+                # 3. Calculate FPS
+                frame_count += 1
+                elapsed = time.time() - fps_start
+                if elapsed >= 1.0:
+                    fps = frame_count / elapsed
+                    frame_count = 0
+                    fps_start = time.time()
+
+                # 4. Add FPS overlay
+                cv2.putText(frame, f"FPS: {fps:.1f}", (10, 30),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+
+                # 5. Show the window
                 cv2.imshow("Phone Camera Stream", frame)
                 
                 # Press 'q' on the laptop to close the window
@@ -108,19 +125,9 @@ def receive_file():
 
             try:
                 import chat_module
-                # Pass the 'filepath' (Full Path) instead of just 'filename'
-                # This ensures os.path.exists() returns True, so the Open button appears
-                chat_module.append_chat_message(filepath, msg_type="file", is_user=False) 
-            except ImportError:
-                pass
-            # Automatically handle opening media or folders 
-
-            # 1. Check if the chat module is running and notify it
-            try:
-                import chat_module
-                # Add a system message to the chat history
-                chat_module.append_chat_message(f"File Received: {filename}", is_user=False) 
-            except ImportError:
+                # Pass the full_path so os.path.exists() returns True and the Open button appears
+                chat_module.append_chat_message(full_path, msg_type="file", is_user=False) 
+            except Exception:
                 pass
 
             ext = filename.lower()
