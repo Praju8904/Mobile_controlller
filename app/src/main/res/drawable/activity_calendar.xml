@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/home_gradient_bg">
+
+    <!-- ═══ TOOLBAR ═══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp">
+
+        <Button
+            android:id="@+id/btnBackCalendar"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="‹"
+            android:textSize="28sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvCalendarTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📅 Calendar"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:id="@+id/tvEventCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 events"
+            android:textColor="#6B7B8D"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+            android:background="@drawable/presenter_btn_dark"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp" />
+
+        <Button
+            android:id="@+id/btnSyncCalendar"
+            android:layout_width="46dp"
+            android:layout_height="42dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="🔄"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- ═══ MONTH NAVIGATION ═══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:background="#0D1117">
+
+        <Button
+            android:id="@+id/btnPrevMonth"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="◀"
+            android:textSize="18sp"
+            android:textColor="#90CAF9" />
+
+        <TextView
+            android:id="@+id/tvMonthYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="January 2026"
+            android:textColor="#F1F5F9"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/btnNextMonth"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="▶"
+            android:textSize="18sp"
+            android:textColor="#90CAF9" />
+
+        <Button
+            android:id="@+id/btnToday"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Today"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1D4ED8"
+            android:paddingHorizontal="14dp"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+
+    <!-- ═══ DAY-OF-WEEK HEADERS ═══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:background="#0D1117">
+
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Mon" android:textColor="#64748B" android:textSize="12sp" android:textStyle="bold" android:gravity="center" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Tue" android:textColor="#64748B" android:textSize="12sp" android:textStyle="bold" android:gravity="center" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Wed" android:textColor="#64748B" android:textSize="12sp" android:textStyle="bold" android:gravity="center" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Thu" android:textColor="#64748B" android:textSize="12sp" android:textStyle="bold" android:gravity="center" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Fri" android:textColor="#64748B" android:textSize="12sp" android:textStyle="bold" android:gravity="center" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Sat" android:textColor="#3B82F6" android:textSize="12sp" android:textStyle="bold" android:gravity="center" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="Sun" android:textColor="#EF4444" android:textSize="12sp" android:textStyle="bold" android:gravity="center" />
+    </LinearLayout>
+
+    <!-- ═══ CALENDAR GRID (6 rows x 7 cols) ═══ -->
+    <LinearLayout
+        android:id="@+id/calendarGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:background="#0A0E1A" />
+
+    <!-- ═══ SELECTED DATE HEADER ═══ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp"
+        android:background="#111827">
+
+        <TextView
+            android:id="@+id/tvSelectedDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Today"
+            android:textColor="#F1F5F9"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvSelectedDateSub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="January 1, 2026"
+            android:textColor="#64748B"
+            android:textSize="13sp"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- ═══ EVENTS LIST ═══ -->
+    <ListView
+        android:id="@+id/eventsListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="6dp"
+        android:scrollbars="none"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false" />
+
+    <!-- ═══ FAB: Add Event ═══ -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        app:backgroundTint="#1D4ED8"
+        app:tint="#FFFFFF"
+        android:src="@android:drawable/ic_input_add"
+        android:contentDescription="Add Event" />
+
+</LinearLayout>

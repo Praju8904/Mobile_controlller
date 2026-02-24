@@ -371,12 +371,12 @@ public class NotesActivity extends AppCompatActivity {
     private void showAddDialog() {
         String[] options = {"📝 New Note", "📁 New Folder"};
         new AlertDialog.Builder(this)
-            .setTitle("Create")
-            .setItems(options, (d, which) -> {
-                if (which == 0) addNote();
-                else addFolder();
-            })
-            .show();
+                .setTitle("Create")
+                .setItems(options, (d, which) -> {
+                    if (which == 0) addNote();
+                    else addFolder();
+                })
+                .show();
     }
 
     private void addNote() {
@@ -405,8 +405,10 @@ public class NotesActivity extends AppCompatActivity {
                 saveNotes();
                 refreshList();
 
-                // Send to PC
-                connectionManager.sendCommand("NOTE_ADD:" + id + ":" + name.replace(":", "_"));
+                // Send to PC: NOTE_ADD:parent_id:note_id:name:type
+                String parentId = resolveCurrentFolderId();
+                if (parentId == null) parentId = "root";
+                connectionManager.sendCommand("NOTE_ADD:" + parentId + ":" + id + ":" + name.replace(":", "_") + ":note");
             } catch (JSONException e) { e.printStackTrace(); }
         });
         b.setNegativeButton("Cancel", null);
@@ -437,7 +439,10 @@ public class NotesActivity extends AppCompatActivity {
                 saveNotes();
                 refreshList();
 
-                connectionManager.sendCommand("NOTE_ADD:" + id + ":" + name.replace(":", "_"));
+                // Send to PC: NOTE_ADD:parent_id:folder_id:name:type
+                String parentId = resolveCurrentFolderId();
+                if (parentId == null) parentId = "root";
+                connectionManager.sendCommand("NOTE_ADD:" + parentId + ":" + id + ":" + name.replace(":", "_") + ":folder");
             } catch (JSONException e) { e.printStackTrace(); }
         });
         b.setNegativeButton("Cancel", null);
@@ -451,36 +456,36 @@ public class NotesActivity extends AppCompatActivity {
 
         String[] options = {pinLabel, "✏️ Rename", "🗑️ Delete"};
         new AlertDialog.Builder(this)
-            .setTitle(name)
-            .setItems(options, (d, which) -> {
-                String itemId = item.optString("id");
-                switch (which) {
-                    case 0: // Toggle pin
-                        try {
-                            item.put("pinned", !isPinned);
-                            saveNotes();
-                            refreshList();
-                        } catch (JSONException e) {}
-                        break;
-                    case 1: // Rename
-                        showRenameDialog(item);
-                        break;
-                    case 2: // Delete
-                        new AlertDialog.Builder(this)
-                            .setTitle("Delete \"" + name + "\"?")
-                            .setMessage("This cannot be undone.")
-                            .setPositiveButton("Delete", (dd, ww) -> {
-                                removeItemFromTree(rootTree.optJSONArray("items"), itemId);
+                .setTitle(name)
+                .setItems(options, (d, which) -> {
+                    String itemId = item.optString("id");
+                    switch (which) {
+                        case 0: // Toggle pin
+                            try {
+                                item.put("pinned", !isPinned);
                                 saveNotes();
-                                navigateToFolder(resolveCurrentFolderId());
-                                connectionManager.sendCommand("NOTE_DELETE:" + itemId);
-                            })
-                            .setNegativeButton("Cancel", null)
-                            .show();
-                        break;
-                }
-            })
-            .show();
+                                refreshList();
+                            } catch (JSONException e) {}
+                            break;
+                        case 1: // Rename
+                            showRenameDialog(item);
+                            break;
+                        case 2: // Delete
+                            new AlertDialog.Builder(this)
+                                    .setTitle("Delete \"" + name + "\"?")
+                                    .setMessage("This cannot be undone.")
+                                    .setPositiveButton("Delete", (dd, ww) -> {
+                                        removeItemFromTree(rootTree.optJSONArray("items"), itemId);
+                                        saveNotes();
+                                        navigateToFolder(resolveCurrentFolderId());
+                                        connectionManager.sendCommand("NOTE_DELETE:" + itemId);
+                                    })
+                                    .setNegativeButton("Cancel", null)
+                                    .show();
+                            break;
+                    }
+                })
+                .show();
     }
 
     private void showRenameDialog(JSONObject item) {

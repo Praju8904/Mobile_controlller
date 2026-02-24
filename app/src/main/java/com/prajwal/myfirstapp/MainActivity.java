@@ -26,7 +26,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import dynamic_bar.DynamicBarService;
+//import dynamic_bar.DynamicBarService;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
 import android.net.Uri;
@@ -114,11 +115,17 @@ public class MainActivity extends AppCompatActivity {
                 // (Optional for advanced polish)
                 
             } else if (command.startsWith("CHAT_FILE_INFO:")) {
-                // Handle file notifications if you implement that on PC
+                // Handle file notifications from PC
                 String filename = command.substring(15);
+                
+                // Build the full local path where the file was saved on the phone
+                File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
+                File receivedFile = new File(new File(docFolder, "Received_Files"), filename);
+                String fullPath = receivedFile.getAbsolutePath();
+                
                 Intent intent = new Intent("com.prajwal.myfirstapp.CHAT_EVENT");
                 intent.putExtra("type", "file");
-                intent.putExtra("content", filename); // Or full path if you have it
+                intent.putExtra("content", fullPath);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
             }
         });
@@ -645,6 +652,9 @@ public class MainActivity extends AppCompatActivity {
         reverseCommandListener = new ReverseCommandListener(this, ipAddress);
         reverseCommandListener.start();
 
+        // Set server IP for notification mirroring
+        NotifMirrorService.setServerIp(ipAddress);
+
         // Start monitoring now that server is selected
         if (!isServerCurrentlyRunning) {
             backgroundServices.startAutoDiscovery(() -> lastServerHeartbeat = System.currentTimeMillis());
@@ -830,7 +840,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.cardPresenter).setOnClickListener(v -> togglePresenterMode(true));
-        findViewById(R.id.cardFiles).setOnClickListener(v -> showFilesMenu());
+        // File Transfer — tap to send, long-press to view received
+        findViewById(R.id.cardFiles).setOnClickListener(v -> openMediaPicker("*/*", 200));
+        findViewById(R.id.cardFiles).setOnLongClickListener(v -> {
+            File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
+            File receivedFolder = new File(docFolder, "Received_Files");
+            if (receivedFolder.exists()) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setDataAndType(Uri.parse(receivedFolder.getPath()), "*/*");
+                try { startActivity(Intent.createChooser(intent, "Open Received Files")); }
+                catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(this, "Install a File Manager", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "No files received yet!", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        });
         findViewById(R.id.cardAI).setOnClickListener(v -> showAIMenu());
         findViewById(R.id.cardPCControl).setOnClickListener(v -> showPCControlMenu());
 
@@ -851,6 +877,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Dynamic Bar Card
         findViewById(R.id.cardDynamicBar).setOnClickListener(v -> toggleDynamicBar());
+
+        // Calendar Card
+        findViewById(R.id.cardCalendar).setOnClickListener(v -> {
+            Intent calendarIntent = new Intent(MainActivity.this, CalendarActivity.class);
+            calendarIntent.putExtra("server_ip", connectionManager.getLaptopIp());
+            startActivity(calendarIntent);
+        });
+
+        // Chat Card
+        findViewById(R.id.cardChat).setOnClickListener(v -> {
+            Intent chatIntent = new Intent(MainActivity.this, ChatActivity.class);
+            chatIntent.putExtra("server_ip", connectionManager.getLaptopIp());
+            startActivity(chatIntent);
+        });
     }
 
     private void navigateToTouchpad() {
@@ -1116,52 +1156,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // ═══ DYNAMIC BAR ═══
-
-    private void toggleDynamicBar() {
-        if (DynamicBarService.isServiceRunning()) {
-            // Stop it
-            Intent stopIntent = new Intent(this, DynamicBarService.class);
-            stopIntent.setAction("STOP_DYNAMIC_BAR");
-            startService(stopIntent);
-            Toast.makeText(this, "Dynamic Bar disabled", Toast.LENGTH_SHORT).show();
-        } else {
-            // Check overlay permission first
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                new AlertDialog.Builder(this)
-                    .setTitle("Overlay Permission Needed")
-                    .setMessage("Dynamic Bar needs \"Display over other apps\" permission to float on your screen.")
-                    .setPositiveButton("Grant", (d, w) -> {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(intent, 600);
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-            } else {
-                startDynamicBarService();
-            }
-        }
-    }
-
-    private void startDynamicBarService() {
-        Intent serviceIntent = new Intent(this, DynamicBarService.class);
-        serviceIntent.putExtra("laptop_ip", connectionManager.getLaptopIp());
-        serviceIntent.putExtra("is_connected", isServerCurrentlyRunning);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
-        }
-        Toast.makeText(this, "Dynamic Bar enabled ✨", Toast.LENGTH_SHORT).show();
-    }
-
-    private void updateDynamicBar() {
-        if (DynamicBarService.isServiceRunning()) {
-            DynamicBarService svc = DynamicBarService.getInstance();
-            if (svc != null) {
-                svc.updateConnectionStatus(isServerCurrentlyRunning, connectionManager.getLaptopIp());
-            }
-        }
-    }
 }

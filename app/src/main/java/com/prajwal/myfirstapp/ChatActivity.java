@@ -91,12 +91,12 @@ public class ChatActivity extends AppCompatActivity {
                 () -> {
                     // On Success: Add bubble to chat
                     runOnUiThread(() -> {
-                        String filename = getFileName(uri); // You can use a helper to get name
-                        addMessage(new ChatMessage(filename, "file", true));
+                        // Store the URI string so "Open File" can use it later
+                        addMessage(new ChatMessage(uri.toString(), "file", true));
                         Toast.makeText(this, "File Sent!", Toast.LENGTH_SHORT).show();
 
                         // Optional: Tell PC a file was sent so it updates its chat too
-                        connectionManager.sendCommand("CHAT_FILE:" + filename);
+                        connectionManager.sendCommand("CHAT_FILE:" + getFileName(uri));
                     });
                 },
                 () -> {

@@ -190,7 +190,7 @@
                 android:id="@+id/btnSaveNote"
                 android:layout_width="wrap_content"
                 android:layout_height="38dp"
-                android:text="💾 Save & Sync"
+                android:text="💾 Save and Sync"
                 android:textAllCaps="false"
                 android:textSize="13sp"
                 android:textColor="#FFFFFF"

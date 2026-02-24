@@ -37,7 +37,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(ChatViewHolder holder, int position) {
         ChatMessage msg = messages.get(position);
-        
+
         // 1. Style based on sender
         if (msg.isMe) {
             holder.wrapper.setGravity(Gravity.END);
@@ -51,11 +51,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         // 2. Content based on type
         if (msg.type.equals("file")) {
-            holder.text.setText("📄 File: " + new File(msg.content).getName());
-            holder.bubble.setOnClickListener(v -> openFile(msg.content));
+            String fileName = getDisplayName(msg.content);
+            holder.text.setText("📄 File: " + fileName);
+            holder.bubble.setOnClickListener(null);
+
+            // Show the Open File button
+            holder.openFileBtn.setVisibility(View.VISIBLE);
+            holder.openFileBtn.setOnClickListener(v -> openFile(msg.content));
         } else {
             holder.text.setText(msg.content);
             holder.bubble.setOnClickListener(null);
+
+            // Hide the Open File button for non-file messages
+            holder.openFileBtn.setVisibility(View.GONE);
         }
 
         // 3. Timestamp
@@ -63,17 +71,74 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         holder.time.setText(time);
     }
 
+    /**
+     * Extract display name from a path or content URI.
+     */
+    private String getDisplayName(String pathOrUri) {
+        if (pathOrUri.startsWith("content://")) {
+            try {
+                Uri uri = Uri.parse(pathOrUri);
+                android.database.Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int idx = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                    if (idx >= 0) {
+                        String name = cursor.getString(idx);
+                        cursor.close();
+                        return name;
+                    }
+                    cursor.close();
+                }
+            } catch (Exception e) { /* fall through to path-based */ }
+        }
+        return new File(pathOrUri).getName();
+    }
+
     private void openFile(String path) {
         try {
+            // Case 1: Content URI (files sent FROM this phone)
+            if (path.startsWith("content://")) {
+                Uri uri = Uri.parse(path);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, "*/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return;
+            }
+
+            // Case 2: File path (files received FROM laptop)
             File file = new File(path);
-            if (!file.exists()) return;
-            
+
+            if (!file.exists()) {
+                // Try app-specific Documents folder
+                File docFolder = context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
+                File fallback = new File(new File(docFolder, "Received_Files"), file.getName());
+                if (fallback.exists()) {
+                    file = fallback;
+                } else {
+                    // Try public Documents folder
+                    File publicDoc = android.os.Environment.getExternalStoragePublicDirectory(
+                            android.os.Environment.DIRECTORY_DOCUMENTS);
+                    File publicFallback = new File(new File(publicDoc, "Received_Files"), file.getName());
+                    if (publicFallback.exists()) {
+                        file = publicFallback;
+                    } else {
+                        android.widget.Toast.makeText(context, "File not found: " + file.getName(),
+                                android.widget.Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+            }
+
             Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(uri, "*/*");
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+            android.widget.Toast.makeText(context, "Cannot open file: " + e.getMessage(),
+                    android.widget.Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -81,7 +146,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
     static class ChatViewHolder extends RecyclerView.ViewHolder {
         LinearLayout wrapper, bubble;
-        TextView text, time;
+        TextView text, time, openFileBtn;
 
         public ChatViewHolder(View itemView) {
             super(itemView);
@@ -89,6 +154,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             bubble = itemView.findViewById(R.id.msg_bubble);
             text = itemView.findViewById(R.id.msg_text);
             time = itemView.findViewById(R.id.msg_time);
+            openFileBtn = itemView.findViewById(R.id.btn_open_file);
         }
     }
 }

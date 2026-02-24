@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.prajwal.myfirstapp">
 
     <!-- Permissions -->
@@ -11,6 +12,11 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -50,19 +56,17 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
-        <activity
-            android:name=".ChatActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
-
+        <!-- Notes Activity -->
         <activity
             android:name=".NotesActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
+        <!-- Chat Activity -->
         <activity
-            android:name=".FileManagerActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:screenOrientation="portrait" />
+            android:name=".ChatActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <!-- Foreground Service -->
         <service
@@ -78,14 +82,38 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <service android:name=".NotificationForwarder"
-            android:label="PC Notification Sync"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
-            android:exported="true">
+        <!-- Notification Mirror Service -->
+        <service
+            android:name=".NotifMirrorService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+        <!-- Device Admin Receiver (for Lock Screen) -->
+        <receiver
+            android:name=".MyDeviceAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policies" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- FileProvider for sharing files with other apps -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 
