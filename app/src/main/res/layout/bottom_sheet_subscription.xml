@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bottom_sheet_bg"
+    android:padding="24dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="#2A2F3E" />
+
+    <TextView
+        android:id="@+id/tvSheetTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD SUBSCRIPTION"
+        android:textSize="13sp"
+        android:textColor="#7C3AED"
+        android:letterSpacing="0.15"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Service Name with Autocomplete Suggestions -->
+    <EditText
+        android:id="@+id/etServiceName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Service Name (e.g. Netflix)"
+        android:textColorHint="#3D4B5E"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:background="@drawable/task_input_bg"
+        android:paddingHorizontal="14dp"
+        android:singleLine="true"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Suggestion Chips (auto-fill when tapped) -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
+            android:id="@+id/suggestionsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="4dp" />
+    </HorizontalScrollView>
+
+    <!-- Amount + Currency -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <EditText
+            android:id="@+id/etSubAmount"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:hint="Amount"
+            android:textColorHint="#3D4B5E"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:inputType="numberDecimal"
+            android:background="@drawable/task_input_bg"
+            android:paddingHorizontal="14dp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/tvCurrency"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:text="₹"
+            android:textColor="#C084FC"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/expense_chip_bg"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- Category Picker Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category"
+        android:textColor="#6B7B8D"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <!-- Category Grid -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
+            android:id="@+id/subCategoryRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:id="@+id/subCategoryRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </LinearLayout>
+
+    <!-- Payment Method -->
+    <EditText
+        android:id="@+id/etPaymentMethod"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:hint="Payment Method (optional)"
+        android:textColorHint="#3D4B5E"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="@drawable/task_input_bg"
+        android:paddingHorizontal="14dp"
+        android:singleLine="true"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Recurrence Type -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recurrence"
+        android:textColor="#6B7B8D"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
+            android:id="@+id/recurrenceContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <!-- Start Date -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Date"
+            android:textColor="#6B7B8D"
+            android:textSize="12sp"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:id="@+id/tvStartDate"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:text="Select date"
+            android:textColor="#B0B8CC"
+            android:textSize="14sp"
+            android:gravity="center_vertical|end"
+            android:paddingHorizontal="12dp"
+            android:background="@drawable/expense_chip_bg"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- End Date (optional toggle) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="End Date"
+            android:textColor="#6B7B8D"
+            android:textSize="12sp"
+            android:layout_marginEnd="12dp" />
+
+        <CheckBox
+            android:id="@+id/cbHasEndDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set end date"
+            android:textColor="#6B7B8D"
+            android:textSize="12sp"
+            android:buttonTint="#7C3AED" />
+
+        <TextView
+            android:id="@+id/tvEndDate"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="#B0B8CC"
+            android:textSize="14sp"
+            android:gravity="center_vertical|end"
+            android:paddingHorizontal="12dp"
+            android:background="@drawable/expense_chip_bg"
+            android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- Reminder -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <CheckBox
+            android:id="@+id/cbReminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remind me"
+            android:textColor="#B0B8CC"
+            android:textSize="13sp"
+            android:buttonTint="#7C3AED"
+            android:checked="true" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/reminderDaysContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </LinearLayout>
+
+    <!-- Color Picker -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Color"
+        android:textColor="#6B7B8D"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <LinearLayout
+        android:id="@+id/colorPickerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Notes -->
+    <EditText
+        android:id="@+id/etSubNotes"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="Notes (optional)"
+        android:textColorHint="#3D4B5E"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="@drawable/task_input_bg"
+        android:paddingHorizontal="14dp"
+        android:paddingTop="10dp"
+        android:gravity="top"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/btnSaveSubscription"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="💾 Save Subscription"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#7C3AED"
+        app:cornerRadius="14dp" />
+
+</LinearLayout>

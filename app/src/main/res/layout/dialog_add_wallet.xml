@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/wallet_bottom_sheet_bg"
+    android:scrollbars="none"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Handle bar -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#4DFFFFFF"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/tvDialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Wallet"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Wallet Name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wallet Name"
+            android:textColor="#9CA3AF"
+            android:textSize="12sp"
+            android:layout_marginBottom="6dp" />
+
+        <EditText
+            android:id="@+id/etWalletName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/edit_text_background"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:hint="e.g. Main Account"
+            android:textColorHint="#4B5563"
+            android:paddingHorizontal="14dp"
+            android:maxLines="1"
+            android:inputType="text"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Wallet Type -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wallet Type"
+            android:textColor="#9CA3AF"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:id="@+id/walletTypeChips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- Bank/Service (conditional) -->
+        <LinearLayout
+            android:id="@+id/bankSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:id="@+id/tvBankLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bank"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/bankChips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <!-- Initial Balance -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Balance"
+            android:textColor="#9CA3AF"
+            android:textSize="12sp"
+            android:layout_marginBottom="6dp" />
+
+        <EditText
+            android:id="@+id/etWalletBalance"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/edit_text_background"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:hint="0.00"
+            android:textColorHint="#4B5563"
+            android:paddingHorizontal="14dp"
+            android:maxLines="1"
+            android:inputType="numberDecimal|numberSigned"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Account Number Last 4 (optional) -->
+        <EditText
+            android:id="@+id/etAccountLast4"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/edit_text_background"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:hint="Last 4 digits (optional)"
+            android:textColorHint="#4B5563"
+            android:paddingHorizontal="14dp"
+            android:maxLines="1"
+            android:maxLength="4"
+            android:inputType="number"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Credit Card Specific -->
+        <LinearLayout
+            android:id="@+id/creditCardFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Credit Limit"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etCreditLimit"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/edit_text_background"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:hint="e.g. 100000"
+                android:textColorHint="#4B5563"
+                android:paddingHorizontal="14dp"
+                android:maxLines="1"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="14dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Billing Cycle Date (day of month)"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etBillingDate"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/edit_text_background"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:hint="e.g. 15"
+                android:textColorHint="#4B5563"
+                android:paddingHorizontal="14dp"
+                android:maxLines="1"
+                android:maxLength="2"
+                android:inputType="number"
+                android:layout_marginBottom="14dp" />
+        </LinearLayout>
+
+        <!-- Color Picker -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Color"
+            android:textColor="#9CA3AF"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:id="@+id/colorPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- Options row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <CheckBox
+                android:id="@+id/cbIncludeInTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:buttonTint="#7C3AED" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Include in total balance"
+                android:textColor="#D1D5DB"
+                android:textSize="13sp"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="14dp">
+
+            <CheckBox
+                android:id="@+id/cbSetDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:buttonTint="#7C3AED" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Set as default wallet"
+                android:textColor="#D1D5DB"
+                android:textSize="13sp"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <!-- Notes -->
+        <EditText
+            android:id="@+id/etWalletNotes"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/edit_text_background"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:hint="Notes (optional)"
+            android:textColorHint="#4B5563"
+            android:paddingHorizontal="14dp"
+            android:paddingTop="12dp"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/btnSaveWallet"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Add Wallet"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#7C3AED"
+            app:cornerRadius="14dp" />
+    </LinearLayout>
+</ScrollView>

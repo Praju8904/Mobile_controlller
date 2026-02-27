@@ -15,8 +15,19 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
+
+    <!-- Bluetooth permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
 
     <application
         android:allowBackup="true"
@@ -56,15 +67,190 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
+        <!-- Task Categories Activity -->
+        <activity
+            android:name=".TaskCategoriesActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Task Trash Activity -->
+        <activity
+            android:name=".TaskTrashActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Task Detail Activity -->
+        <activity
+            android:name=".TaskDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Task Stats / Productivity Activity -->
+        <activity
+            android:name=".TaskStatsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Task Search Activity -->
+        <activity
+            android:name=".TaskSearchActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
         <!-- Notes Activity -->
         <activity
             android:name=".NotesActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
+        <!-- Notes Archive Activity -->
+        <activity
+            android:name=".NotesArchiveActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Notes Trash Activity -->
+        <activity
+            android:name=".NotesTrashActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Tags Manager Activity -->
+        <activity
+            android:name=".TagsManagerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Note Editor Activity -->
+        <activity
+            android:name=".NoteEditorActivity"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
         <!-- Chat Activity -->
         <activity
             android:name=".ChatActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Calendar Activity -->
+        <activity
+            android:name=".CalendarActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Calendar Event Detail Activity -->
+        <activity
+            android:name=".CalendarEventDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Calendar Categories Activity -->
+        <activity
+            android:name=".CalendarCategoriesActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Calendar Settings Activity -->
+        <activity
+            android:name=".CalendarSettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Calendar Search Activity -->
+        <activity
+            android:name=".CalendarSearchActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Calendar Dashboard Activity -->
+        <activity
+            android:name=".CalendarDashboardActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Calendar Analytics Activity -->
+        <activity
+            android:name=".CalendarAnalyticsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- File Manager Activity -->
+        <activity
+            android:name=".FileManagerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Settings Activity -->
+        <activity
+            android:name=".SettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Expense Tracker Activity -->
+        <activity
+            android:name=".ExpenseTrackerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Subscriptions / Recurring Expenses Activity -->
+        <activity
+            android:name=".SubscriptionsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Budget Goals per Category Activity -->
+        <activity
+            android:name=".BudgetGoalsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Wallets Activity -->
+        <activity
+            android:name=".WalletsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Wallet Detail Activity -->
+        <activity
+            android:name=".WalletDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Split Groups Activity -->
+        <activity
+            android:name=".SplitGroupsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Group Detail Activity -->
+        <activity
+            android:name=".GroupDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Password Manager Activity -->
+        <activity
+            android:name=".PasswordManagerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Borrow & Lend Activity -->
+        <activity
+            android:name=".BorrowLendActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Person Detail Activity -->
+        <activity
+            android:name=".PersonDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Money Record Detail Activity -->
+        <activity
+            android:name=".MoneyRecordDetailActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
@@ -101,6 +287,74 @@
                 android:resource="@xml/device_admin_policies" />
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Task Reminder Alarm Receiver -->
+        <receiver
+            android:name=".TaskReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.prajwal.myfirstapp.ACTION_MARK_COMPLETE" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_SNOOZE_15" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_SNOOZE_1H" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Note Reminder Alarm Receiver -->
+        <receiver
+            android:name=".NoteReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.prajwal.myfirstapp.NOTE_REMINDER" />
+                <action android:name="com.prajwal.myfirstapp.DISMISS_REMINDER" />
+                <action android:name="com.prajwal.myfirstapp.SNOOZE_REMINDER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Expense Notification Receiver (subscriptions, budget alerts, auto-logging) -->
+        <receiver
+            android:name=".ExpenseNotificationHelper"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.prajwal.myfirstapp.ACTION_SUBSCRIPTION_REMINDER" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_EXPENSE_LOGGED" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_BUDGET_THRESHOLD" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_BUDGET_EXCEEDED" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_CHECK_RECURRING" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Calendar Reminder Receiver -->
+        <receiver
+            android:name=".CalendarReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.prajwal.myfirstapp.CALENDAR_EVENT_REMINDER" />
+                <action android:name="com.prajwal.myfirstapp.CALENDAR_DAILY_AGENDA" />
+                <action android:name="com.prajwal.myfirstapp.CALENDAR_VIEW_EVENT" />
+                <action android:name="com.prajwal.myfirstapp.CALENDAR_SNOOZE_15" />
+            </intent-filter>
+        </receiver>
+
+        <!-- IOU Notification Receiver -->
+        <receiver
+            android:name=".IouNotificationHelper"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.prajwal.myfirstapp.ACTION_IOU_OVERDUE" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_IOU_REMINDER" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_IOU_SETTLED" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_CHECK_IOU" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Boot Receiver — reschedules task alarms after reboot -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

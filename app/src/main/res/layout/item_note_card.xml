@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note card for staggered masonry grid -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
+
+    <LinearLayout
+        android:id="@+id/cardRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/notes_card_bg"
+        android:minHeight="80dp">
+
+        <!-- Left accent border -->
+        <View
+            android:id="@+id/leftAccent"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:background="#F59E0B" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Top Row: Title + Pin/Lock/Reminder icons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvNoteTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Note Title"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:id="@+id/tvPinIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📌"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    android:layout_marginStart="4dp" />
+
+                <TextView
+                    android:id="@+id/tvReminderIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔔"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <!-- Content Preview -->
+            <TextView
+                android:id="@+id/tvNotePreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Note content preview..."
+                android:textColor="#94A3B8"
+                android:textSize="13sp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:lineSpacingExtra="2dp"
+                android:layout_marginTop="6dp" />
+
+            <!-- Tags Row -->
+            <LinearLayout
+                android:id="@+id/tagsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+            <!-- Bottom: Date -->
+            <TextView
+                android:id="@+id/tvNoteDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2h ago"
+                android:textColor="#475569"
+                android:textSize="11sp"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Selection checkbox (hidden, shown in multi-select mode) -->
+    <CheckBox
+        android:id="@+id/cbSelect"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:visibility="gone"
+        android:buttonTint="#F59E0B" />
+
+    <!-- Lock overlay -->
+    <FrameLayout
+        android:id="@+id/lockOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/notes_locked_overlay_bg"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔒"
+                android:textSize="28sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Locked"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

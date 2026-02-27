@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_gradient_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ═══ TOP TOOLBAR ═══ -->
+        <LinearLayout
+            android:id="@+id/topToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            android:background="#0A0E21">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                android:tint="#FFFFFF"
+                android:scaleType="centerInside"
+                android:contentDescription="Back" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Pin toggle -->
+            <ImageButton
+                android:id="@+id/btnPin"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/btn_star_big_off"
+                android:tint="#64748B"
+                android:scaleType="centerInside"
+                android:contentDescription="Pin" />
+
+            <!-- Lock toggle -->
+            <ImageButton
+                android:id="@+id/btnLock"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_lock_idle_lock"
+                android:tint="#64748B"
+                android:scaleType="centerInside"
+                android:contentDescription="Lock" />
+
+            <!-- Reminder -->
+            <ImageButton
+                android:id="@+id/btnReminder"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_popup_reminder"
+                android:tint="#64748B"
+                android:scaleType="centerInside"
+                android:contentDescription="Reminder" />
+
+            <!-- More menu -->
+            <ImageButton
+                android:id="@+id/btnMoreMenu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_more"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="More" />
+        </LinearLayout>
+
+        <!-- ═══ MAIN EDITOR AREA ═══ -->
+        <ScrollView
+            android:id="@+id/editorScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            android:clipToPadding="false"
+            android:paddingBottom="140dp">
+
+            <LinearLayout
+                android:id="@+id/editorContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="16dp">
+
+                <!-- Category chip -->
+                <TextView
+                    android:id="@+id/tvCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Personal"
+                    android:textColor="#F59E0B"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:background="@drawable/notes_tag_chip_bg"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Title field -->
+                <EditText
+                    android:id="@+id/etTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Title"
+                    android:textColorHint="#475569"
+                    android:textColor="#F1F5F9"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:background="@null"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLines="3"
+                    android:imeOptions="actionNext" />
+
+                <!-- Tags row -->
+                <LinearLayout
+                    android:id="@+id/tagsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🏷️"
+                        android:textSize="14sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <LinearLayout
+                        android:id="@+id/tagsList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+
+                    <TextView
+                        android:id="@+id/btnAddTag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+ Add"
+                        android:textColor="#64748B"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp" />
+                </LinearLayout>
+
+                <!-- Reminder banner -->
+                <LinearLayout
+                    android:id="@+id/reminderBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/notes_chip_bg"
+                    android:padding="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔔"
+                        android:textSize="16sp"
+                        android:layout_marginEnd="10dp" />
+
+                    <TextView
+                        android:id="@+id/tvReminderTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Reminder set"
+                        android:textColor="#F59E0B"
+                        android:textSize="13sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnClearReminder"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_menu_close_clear_cancel"
+                        android:tint="#64748B"
+                        android:scaleType="centerInside" />
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#1E293B"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Rich text editor -->
+                <EditText
+                    android:id="@+id/etBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="300dp"
+                    android:hint="Start writing..."
+                    android:textColorHint="#475569"
+                    android:textColor="#E2E8F0"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="6dp"
+                    android:background="@null"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:gravity="top"
+                    android:scrollbars="none" />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ═══ BOTTOM STATUS BAR ═══ -->
+        <LinearLayout
+            android:id="@+id/statusBar"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="20dp"
+            android:background="#0A0E21">
+
+            <TextView
+                android:id="@+id/tvWordCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 words"
+                android:textColor="#475569"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="12dp"
+                android:background="#2D3748"
+                android:layout_marginHorizontal="12dp" />
+
+            <TextView
+                android:id="@+id/tvCharCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 chars"
+                android:textColor="#475569"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="12dp"
+                android:background="#2D3748"
+                android:layout_marginHorizontal="12dp" />
+
+            <TextView
+                android:id="@+id/tvReadTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&lt; 1 min read"
+                android:textColor="#475569"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvLastSaved"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saved"
+                android:textColor="#22C55E"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ═══ FORMATTING TOOLBAR ═══ -->
+    <HorizontalScrollView
+        android:id="@+id/formattingToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="32dp"
+        android:scrollbars="none"
+        android:background="@drawable/notes_bottom_bar_bg"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp">
+
+            <!-- Bold -->
+            <ImageButton
+                android:id="@+id/btnBold"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Bold" />
+
+            <!-- Italic -->
+            <ImageButton
+                android:id="@+id/btnItalic"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Italic"
+                android:layout_marginStart="4dp" />
+
+            <!-- Underline -->
+            <ImageButton
+                android:id="@+id/btnUnderline"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Underline"
+                android:layout_marginStart="4dp" />
+
+            <!-- Strikethrough -->
+            <ImageButton
+                android:id="@+id/btnStrikethrough"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Strikethrough"
+                android:layout_marginStart="4dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:background="#2D3748"
+                android:layout_marginHorizontal="8dp" />
+
+            <!-- Highlight -->
+            <ImageButton
+                android:id="@+id/btnHighlight"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Highlight" />
+
+            <!-- Text color -->
+            <ImageButton
+                android:id="@+id/btnTextColor"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Text Color"
+                android:layout_marginStart="4dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:background="#2D3748"
+                android:layout_marginHorizontal="8dp" />
+
+            <!-- Heading -->
+            <ImageButton
+                android:id="@+id/btnHeading"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Heading" />
+
+            <!-- Bullet list -->
+            <ImageButton
+                android:id="@+id/btnBulletList"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Bullet List"
+                android:layout_marginStart="4dp" />
+
+            <!-- Numbered list -->
+            <ImageButton
+                android:id="@+id/btnNumberedList"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Numbered List"
+                android:layout_marginStart="4dp" />
+
+            <!-- Checklist -->
+            <ImageButton
+                android:id="@+id/btnChecklist"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Checklist"
+                android:layout_marginStart="4dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:background="#2D3748"
+                android:layout_marginHorizontal="8dp" />
+
+            <!-- Alignment -->
+            <ImageButton
+                android:id="@+id/btnAlignment"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Alignment" />
+
+            <!-- Insert divider -->
+            <ImageButton
+                android:id="@+id/btnInsertDivider"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Insert Divider"
+                android:layout_marginStart="4dp" />
+
+            <!-- Code block -->
+            <ImageButton
+                android:id="@+id/btnCodeBlock"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Code Block"
+                android:layout_marginStart="4dp" />
+
+            <!-- Insert image -->
+            <ImageButton
+                android:id="@+id/btnInsertImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_gallery"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Insert Image"
+                android:layout_marginStart="4dp" />
+
+            <!-- Voice input -->
+            <ImageButton
+                android:id="@+id/btnVoiceInput"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_btn_speak_now"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Voice Input"
+                android:layout_marginStart="4dp" />
+
+            <!-- Sketch/draw -->
+            <ImageButton
+                android:id="@+id/btnSketch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_edit"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Sketch"
+                android:layout_marginStart="4dp" />
+
+            <!-- Undo -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:background="#2D3748"
+                android:layout_marginHorizontal="8dp" />
+
+            <ImageButton
+                android:id="@+id/btnUndo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_revert"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Undo" />
+
+            <ImageButton
+                android:id="@+id/btnRedo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/editor_btn_bg"
+                android:src="@android:drawable/ic_menu_rotate"
+                android:tint="#94A3B8"
+                android:scaleType="centerInside"
+                android:contentDescription="Redo"
+                android:layout_marginStart="4dp" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</FrameLayout>

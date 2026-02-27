@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/glass_card_bg"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvDialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Split Expense"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Title -->
+        <EditText
+            android:id="@+id/etTitle"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="What's this for? (e.g. Dinner)"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#6B7280"
+            android:textSize="15sp"
+            android:paddingHorizontal="16dp"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Amount -->
+        <EditText
+            android:id="@+id/etAmount"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Total amount (₹)"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#6B7280"
+            android:textSize="15sp"
+            android:paddingHorizontal="16dp"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Paid By -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Paid by"
+            android:textColor="#9CA3AF"
+            android:textSize="13sp"
+            android:layout_marginBottom="6dp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:id="@+id/paidByContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- Category -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textColor="#9CA3AF"
+            android:textSize="13sp"
+            android:layout_marginBottom="6dp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:id="@+id/categoryContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- Split Type -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Split type"
+            android:textColor="#9CA3AF"
+            android:textSize="13sp"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/export_format_toggle_bg"
+            android:padding="3dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/btnSplitEqual"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Equal"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/export_format_selected_bg" />
+
+            <TextView
+                android:id="@+id/btnSplitPercentage"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="%"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/btnSplitCustom"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Custom"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/btnSplitShares"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Shares"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Split Details (dynamic) -->
+        <LinearLayout
+            android:id="@+id/splitDetailsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Split preview -->
+        <TextView
+            android:id="@+id/tvSplitPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#9CA3AF"
+            android:textSize="12sp"
+            android:textAlignment="center"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Notes (optional) -->
+        <EditText
+            android:id="@+id/etNotes"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Notes (optional)"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#6B7280"
+            android:textSize="15sp"
+            android:paddingHorizontal="16dp"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Add Button -->
+        <Button
+            android:id="@+id/btnAddExpense"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/export_btn_bg"
+            android:text="Add Expense"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+</ScrollView>

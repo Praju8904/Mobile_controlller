@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/glass_card_bg"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📊 Export Data"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Format Toggle -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Format"
+            android:textColor="#9CA3AF"
+            android:textSize="13sp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/export_format_toggle_bg"
+            android:padding="3dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/btnFormatCSV"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="📄 CSV"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:background="@drawable/export_format_selected_bg" />
+
+            <TextView
+                android:id="@+id/btnFormatPDF"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="📑 PDF"
+                android:textColor="#9CA3AF"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Date Range -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date Range"
+            android:textColor="#9CA3AF"
+            android:textSize="13sp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/btnDateThisMonth"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="This Month"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/split_chip_selected_bg"
+                android:layout_marginEnd="4dp" />
+
+            <TextView
+                android:id="@+id/btnDateLast3"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="3 Months"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp"
+                android:background="@drawable/split_chip_bg"
+                android:layout_marginHorizontal="4dp" />
+
+            <TextView
+                android:id="@+id/btnDateAll"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="All Time"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp"
+                android:background="@drawable/split_chip_bg"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <!-- Data to Include -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Include"
+            android:textColor="#9CA3AF"
+            android:textSize="13sp"
+            android:layout_marginBottom="8dp" />
+
+        <CheckBox
+            android:id="@+id/cbExpenses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Expenses"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:checked="true"
+            android:buttonTint="#7C3AED"
+            android:layout_marginBottom="4dp" />
+
+        <CheckBox
+            android:id="@+id/cbIncome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Income"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:checked="true"
+            android:buttonTint="#7C3AED"
+            android:layout_marginBottom="4dp" />
+
+        <CheckBox
+            android:id="@+id/cbWalletInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wallet details"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:checked="true"
+            android:buttonTint="#7C3AED"
+            android:layout_marginBottom="4dp" />
+
+        <CheckBox
+            android:id="@+id/cbCategorySummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Category summary (PDF only)"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:checked="true"
+            android:buttonTint="#7C3AED"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Preview info -->
+        <TextView
+            android:id="@+id/tvExportPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Estimated: 0 transactions"
+            android:textColor="#6B7280"
+            android:textSize="12sp"
+            android:textAlignment="center"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Export Button -->
+        <Button
+            android:id="@+id/btnExport"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/export_btn_bg"
+            android:text="Export &amp; Share"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAllCaps="false" />
+
+        <!-- Recent exports -->
+        <TextView
+            android:id="@+id/tvRecentExportsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recent Exports"
+            android:textColor="#9CA3AF"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="6dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/recentExportsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+</ScrollView>

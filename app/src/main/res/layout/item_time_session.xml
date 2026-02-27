@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Timer session history item -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/task_time_session_bg"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="8dp"
+    android:layout_marginBottom="6dp">
+
+    <TextView
+        android:id="@+id/tvSessionDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="#94A3B8"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvSessionTimeRange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#6B7280"
+        android:textSize="12sp"
+        android:layout_marginEnd="12dp" />
+
+    <TextView
+        android:id="@+id/tvSessionDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#60A5FA"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+</LinearLayout>

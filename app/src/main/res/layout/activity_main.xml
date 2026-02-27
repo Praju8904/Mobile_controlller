@@ -692,6 +692,146 @@
 
                 </LinearLayout>
 
+                <!-- ══ ROW 7: Settings + Expenses ══ -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="14dp">
+
+                    <LinearLayout
+                        android:id="@+id/cardSettings"
+                        android:layout_width="0dp"
+                        android:layout_height="150dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="7dp"
+                        android:background="@drawable/card_tasks_bg"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="bottom"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⚙️"
+                            android:textSize="36sp"
+                            android:layout_marginBottom="10dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Settings"
+                            android:textColor="#FFFFFF"
+                            android:textSize="19sp"
+                            android:textStyle="bold"
+                            android:shadowColor="#40000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="App Configuration"
+                            android:textColor="#B0B8CC"
+                            android:textSize="12sp"
+                            android:alpha="0.85" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/cardExpenses"
+                        android:layout_width="0dp"
+                        android:layout_height="150dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="7dp"
+                        android:background="@drawable/card_expense_bg"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="bottom"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💰"
+                            android:textSize="36sp"
+                            android:layout_marginBottom="10dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Expenses"
+                            android:textColor="#FFFFFF"
+                            android:textSize="19sp"
+                            android:textStyle="bold"
+                            android:shadowColor="#40000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3" />
+
+                        <TextView
+                            android:id="@+id/tvExpenseCardSummary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Track &amp; Manage"
+                            android:textColor="#E0D4FF"
+                            android:textSize="12sp"
+                            android:alpha="0.85" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- ══ ROW 8: Password Manager (full-width premium card) ══ -->
+                <LinearLayout
+                    android:id="@+id/cardPasswordManager"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:layout_marginBottom="14dp"
+                    android:background="@drawable/card_password_bg"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔐"
+                        android:textSize="36sp"
+                        android:layout_marginBottom="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Password Vault"
+                        android:textColor="#FFFFFF"
+                        android:textSize="21sp"
+                        android:textStyle="bold"
+                        android:shadowColor="#40000000"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="3" />
+
+                    <TextView
+                        android:id="@+id/tvVaultCardSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Secure Password Manager"
+                        android:textColor="#8ECAE6"
+                        android:textSize="13sp"
+                        android:alpha="0.9" />
+
+                </LinearLayout>
+
             </LinearLayout>
         </ScrollView>
 

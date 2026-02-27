@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/groupHeader"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/task_group_header_bg"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="10dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="6dp">
+
+    <TextView
+        android:id="@+id/tvGroupIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📌"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/tvGroupName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Today"
+        android:textColor="#F1F5F9"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium" />
+
+    <TextView
+        android:id="@+id/tvGroupCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"
+        android:textColor="#94A3B8"
+        android:textSize="12sp"
+        android:background="@drawable/task_stat_pill_bg"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="2dp"
+        android:fontFamily="sans-serif"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/tvGroupChevron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="▾"
+        android:textColor="#94A3B8"
+        android:textSize="14sp" />
+</LinearLayout>

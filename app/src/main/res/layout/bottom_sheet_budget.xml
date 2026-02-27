@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bottom_sheet_bg"
+    android:padding="24dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="#2A2F3E" />
+
+    <TextView
+        android:id="@+id/tvBudgetSheetTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SET BUDGET"
+        android:textSize="13sp"
+        android:textColor="#7C3AED"
+        android:letterSpacing="0.15"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Category Selector (shows icon + name + current month spend) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category"
+        android:textColor="#6B7B8D"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
+            android:id="@+id/budgetCategoryContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <!-- Budget Amount -->
+    <EditText
+        android:id="@+id/etBudgetAmount"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:hint="₹ Budget Amount"
+        android:textColorHint="#3D4B5E"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:inputType="numberDecimal"
+        android:background="@drawable/task_input_bg"
+        android:paddingHorizontal="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Period Selector -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Budget Period"
+        android:textColor="#6B7B8D"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <LinearLayout
+        android:id="@+id/periodContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Alert Threshold Slider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Alert me at"
+                android:textColor="#6B7B8D"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvThresholdValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="80%"
+                android:textColor="#C084FC"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/seekThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:min="50"
+            android:max="95"
+            android:progress="80"
+            android:progressTint="#7C3AED"
+            android:thumbTint="#A855F7" />
+    </LinearLayout>
+
+    <!-- Active Toggle -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Active"
+            android:textColor="#B0B8CC"
+            android:textSize="14sp" />
+
+        <CheckBox
+            android:id="@+id/cbBudgetActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:buttonTint="#7C3AED" />
+    </LinearLayout>
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/btnSaveBudget"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="💾 Save Budget"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#7C3AED"
+        app:cornerRadius="14dp" />
+
+</LinearLayout>

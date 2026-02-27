@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/task_card_bg"
+    android:padding="14dp"
+    android:layout_marginBottom="8dp"
+    android:gravity="center_vertical">
+
+    <!-- Priority Strip (left colored bar) -->
+    <View
+        android:id="@+id/viewPriorityStrip"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="12dp"
+        android:background="#3B82F6" />
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/cbComplete"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp"
+        android:buttonTint="#667EEA"
+        android:scaleX="1.1"
+        android:scaleY="1.1" />
+
+    <!-- Content Area -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Title Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvTaskTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Task title"
+                android:textColor="#F1F5F9"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <!-- Star toggle -->
+            <TextView
+                android:id="@+id/btnStar"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:text="☆"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <!-- Description preview -->
+        <TextView
+            android:id="@+id/tvTaskDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description preview..."
+            android:textColor="#6B7280"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <!-- Meta row: Priority + Category + Due -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+
+            <!-- Priority badge -->
+            <TextView
+                android:id="@+id/tvPriorityBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Normal"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/task_priority_pill_bg"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:layout_marginEnd="8dp" />
+
+            <!-- Category chip -->
+            <LinearLayout
+                android:id="@+id/chipCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvCategoryIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📁"
+                    android:textSize="11sp"
+                    android:layout_marginEnd="3dp" />
+
+                <TextView
+                    android:id="@+id/tvCategoryName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Personal"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+
+            <!-- Due date/time -->
+            <LinearLayout
+                android:id="@+id/chipDue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvDueIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📅"
+                    android:textSize="11sp"
+                    android:layout_marginEnd="3dp" />
+
+                <TextView
+                    android:id="@+id/tvDueText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today, 3:00 PM"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Subtask progress bar -->
+        <LinearLayout
+            android:id="@+id/subtaskProgressContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/task_subtask_progress_bg" />
+
+                <View
+                    android:id="@+id/viewSubtaskProgressFill"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/task_subtask_progress_fill" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvSubtaskCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0/0"
+                android:textColor="#94A3B8"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Three-dot menu -->
+    <ImageView
+        android:id="@+id/btnTaskMenu"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@android:drawable/ic_menu_more"
+        android:padding="4dp"
+        android:layout_marginStart="4dp"
+        android:contentDescription="Task menu" />
+</LinearLayout>

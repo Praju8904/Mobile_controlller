@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_gradient_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ═══ TOOLBAR ═══ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="14dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                android:tint="#FFFFFF"
+                android:scaleType="centerInside"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🗑️  Trash"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:id="@+id/tvTrashCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 notes"
+                android:textColor="#94A3B8"
+                android:textSize="12sp"
+                android:background="@drawable/notes_count_pill_bg"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="5dp" />
+
+            <ImageButton
+                android:id="@+id/btnEmptyTrash"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_delete"
+                android:tint="#EF4444"
+                android:scaleType="centerInside"
+                android:contentDescription="Empty Trash"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <!-- Auto-delete notice -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⏱  Notes in trash are automatically deleted after 30 days"
+            android:textColor="#64748B"
+            android:textSize="12sp"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="8dp" />
+
+        <!-- ═══ TRASH GRID ═══ -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trashRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="16dp" />
+
+        <!-- ═══ EMPTY STATE ═══ -->
+        <LinearLayout
+            android:id="@+id/emptyStateContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🗑️"
+                android:textSize="64sp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trash is empty"
+                android:textColor="#E2E8F0"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Deleted notes will appear here for 30 days"
+                android:textColor="#64748B"
+                android:textSize="14sp"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

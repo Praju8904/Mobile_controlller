@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_gradient_bg">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp">
+
+            <!-- ═══ TOOLBAR ═══ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/btnBackWalletDetail"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="‹"
+                    android:textSize="28sp"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvWalletName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Wallet"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium" />
+
+                <Button
+                    android:id="@+id/btnEditWallet"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="✏️"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/btnWalletMenu"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="⋮"
+                    android:textSize="22sp"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- ═══ WALLET BALANCE CARD ═══ -->
+            <LinearLayout
+                android:id="@+id/walletBalanceCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/wallet_header_bg"
+                android:padding="24dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvWalletIcon"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:textSize="24sp"
+                        android:text="💳"
+                        android:background="@drawable/wallet_chip_bg" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:id="@+id/tvWalletType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bank Account"
+                            android:textSize="12sp"
+                            android:textColor="#C4B5FD" />
+
+                        <TextView
+                            android:id="@+id/tvWalletBankName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="11sp"
+                            android:textColor="#80FFFFFF" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvDefaultBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DEFAULT"
+                        android:textSize="9sp"
+                        android:textColor="#22C55E"
+                        android:background="@drawable/wallet_positive_badge_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="3dp"
+                        android:letterSpacing="0.1"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvWalletBalance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹0.00"
+                    android:textSize="34sp"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginTop="12dp" />
+
+                <!-- Credit card specific section -->
+                <LinearLayout
+                    android:id="@+id/creditCardSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Credit Used"
+                            android:textSize="11sp"
+                            android:textColor="#80FFFFFF" />
+
+                        <TextView
+                            android:id="@+id/tvCreditUsage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textSize="12sp"
+                            android:textColor="#C084FC" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/creditUsageBar"
+                        style="@android:style/Widget.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:layout_marginTop="4dp"
+                        android:max="100"
+                        android:progress="0" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+
+                        <TextView
+                            android:id="@+id/tvAvailableCredit"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Available: ₹0"
+                            android:textSize="11sp"
+                            android:textColor="#22C55E" />
+
+                        <TextView
+                            android:id="@+id/tvBillingDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Billing: —"
+                            android:textSize="11sp"
+                            android:textColor="#80FFFFFF" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnPayBill"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="12dp"
+                        android:text="Pay Credit Card Bill"
+                        android:textAllCaps="false"
+                        android:textSize="13sp"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#7C3AED"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
+
+                <!-- Monthly stats -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="This Month Income"
+                            android:textSize="10sp"
+                            android:textColor="#80FFFFFF" />
+
+                        <TextView
+                            android:id="@+id/tvWalletIncome"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textSize="15sp"
+                            android:textColor="#22C55E"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="end">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="This Month Expenses"
+                            android:textSize="10sp"
+                            android:textColor="#80FFFFFF" />
+
+                        <TextView
+                            android:id="@+id/tvWalletExpenses"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textSize="15sp"
+                            android:textColor="#EF4444"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ═══ FILTER CHIPS ═══ -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/filterChips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <!-- ═══ TRANSACTIONS LIST ═══ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TRANSACTIONS"
+                android:textSize="11sp"
+                android:textColor="#7C3AED"
+                android:letterSpacing="0.15"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:id="@+id/transactionsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/tvNoTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No transactions yet"
+                android:textColor="#6B7280"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:padding="40dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

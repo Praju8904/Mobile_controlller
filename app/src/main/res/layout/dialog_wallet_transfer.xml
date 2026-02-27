@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/wallet_bottom_sheet_bg"
+    android:padding="20dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="#4DFFFFFF"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Transfer Funds"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="20dp" />
+
+    <!-- From Wallet -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From"
+        android:textColor="#9CA3AF"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:id="@+id/fromWalletSelector"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/edit_text_background"
+        android:paddingHorizontal="14dp"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvFromWalletIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="💳" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp">
+
+            <TextView
+                android:id="@+id/tvFromWalletName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select wallet"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvFromWalletBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Balance: ₹0"
+                android:textSize="11sp"
+                android:textColor="#80FFFFFF" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▼"
+            android:textColor="#7C3AED"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Swap Button -->
+    <Button
+        android:id="@+id/btnSwapWallets"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_horizontal"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:text="⇅"
+        android:textSize="22sp"
+        android:textColor="#7C3AED" />
+
+    <!-- To Wallet -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To"
+        android:textColor="#9CA3AF"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:id="@+id/toWalletSelector"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/edit_text_background"
+        android:paddingHorizontal="14dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvToWalletIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="💳" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp">
+
+            <TextView
+                android:id="@+id/tvToWalletName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select wallet"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvToWalletBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Balance: ₹0"
+                android:textSize="11sp"
+                android:textColor="#80FFFFFF" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▼"
+            android:textColor="#7C3AED"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Amount -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amount"
+        android:textColor="#9CA3AF"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/etTransferAmount"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:hint="₹ 0.00"
+        android:textColorHint="#4B5563"
+        android:paddingHorizontal="14dp"
+        android:maxLines="1"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="14dp" />
+
+    <!-- Notes -->
+    <EditText
+        android:id="@+id/etTransferNotes"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:hint="Notes (optional)"
+        android:textColorHint="#4B5563"
+        android:paddingHorizontal="14dp"
+        android:maxLines="1"
+        android:inputType="text"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Transfer Button -->
+    <Button
+        android:id="@+id/btnExecuteTransfer"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="Transfer"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:backgroundTint="#7C3AED"
+        app:cornerRadius="14dp" />
+</LinearLayout>

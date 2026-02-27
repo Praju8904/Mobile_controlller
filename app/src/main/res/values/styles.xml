@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         DARK ALERT DIALOG STYLE
+         ═══════════════════════════════════════════════════════════════════════════ -->
+    <style name="DarkAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">#1E293B</item>
+        <item name="android:textColor">#F1F5F9</item>
+        <item name="android:textColorPrimary">#F1F5F9</item>
+        <item name="android:textColorSecondary">#94A3B8</item>
+        <item name="colorAccent">#F59E0B</item>
+        <item name="android:windowBackground">#1E293B</item>
+        <item name="android:windowTitleStyle">@style/DarkDialogTitle</item>
+    </style>
+
+    <!-- Alias for DarkAlertDialog used by wallet activities -->
+    <style name="DarkDialogTheme" parent="DarkAlertDialog" />
+
+    <style name="DarkDialogTitle" parent="@android:style/TextAppearance.DialogWindowTitle">
+        <item name="android:textColor">#F1F5F9</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         DARK DATE PICKER DIALOG STYLE
+         ═══════════════════════════════════════════════════════════════════════════ -->
+    <style name="DarkDatePickerDialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">#F59E0B</item>
+        <item name="colorPrimary">#F59E0B</item>
+        <item name="colorPrimaryDark">#0A0E21</item>
+        <item name="android:textColorPrimary">#F1F5F9</item>
+        <item name="android:textColorSecondary">#94A3B8</item>
+        <item name="android:windowBackground">#1E293B</item>
+        <item name="android:headerBackground">#0F172A</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         DARK TIME PICKER DIALOG STYLE
+         ═══════════════════════════════════════════════════════════════════════════ -->
+    <style name="DarkTimePickerDialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">#F59E0B</item>
+        <item name="colorPrimary">#F59E0B</item>
+        <item name="colorPrimaryDark">#0A0E21</item>
+        <item name="android:textColorPrimary">#F1F5F9</item>
+        <item name="android:textColorSecondary">#94A3B8</item>
+        <item name="android:windowBackground">#1E293B</item>
+        <item name="android:headerBackground">#0F172A</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         DARK BOTTOM SHEET DIALOG STYLE
+         ═══════════════════════════════════════════════════════════════════════════ -->
+    <style name="DarkBottomSheetDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackground">#0D1117</item>
+        <item name="android:textColorPrimary">#F1F5F9</item>
+        <item name="android:textColorSecondary">#94A3B8</item>
+        <item name="colorAccent">#F59E0B</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         EDIT TEXT STYLE FOR DARK DIALOGS
+         ═══════════════════════════════════════════════════════════════════════════ -->
+    <style name="DarkEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">#F1F5F9</item>
+        <item name="android:textColorHint">#64748B</item>
+        <item name="android:backgroundTint">#F59E0B</item>
+        <item name="colorControlActivated">#F59E0B</item>
+    </style>
+
+</resources>

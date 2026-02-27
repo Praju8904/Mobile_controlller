@@ -1,10 +1,10 @@
 package com.prajwal.myfirstapp;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.widget.Toast;
 import android.os.Environment;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,18 +14,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.ServerSocket;   // To listen for the laptop's connection
-import java.io.IOException;     // To handle network errors
-import android.util.Log;        // For debugging in Logcat
+import java.net.ServerSocket;
+import java.io.IOException;
+import android.util.Log;
 
-import java.io.DataInputStream;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import android.content.Intent;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Formatter;
 
 public class ConnectionManager {
 
@@ -34,7 +28,14 @@ public class ConnectionManager {
     private static final int PORT_FILE = 5006;
     private static final int PORT_WATCHDOG = 5007;
     private static final int PORT_PING = 5008;
-    private static final String HMAC_KEY = "my_super_secret_project_key";
+    private static final int PORT_BACKEND_SHARING = 5009;
+    // ─── Outbox & Reachability───────────────────────────────────
+    private SyncOutbox outbox;
+    private volatile boolean serverReachable = false;
+    private volatile long lastReachabilityCheck = 0;
+    private static final long REACHABILITY_CACHE_MS = 3000; // reuse result for 3s
+    private static final int  PING_TIMEOUT_MS       = 500;  // fast ping for data ops
+    private boolean monitorStarted = false;
 
 
     public interface PingCallback {
@@ -56,9 +57,41 @@ public class ConnectionManager {
         }
     }
 
+    // ─── Singleton Pattern ───────────────────────────────────────
+    private static ConnectionManager sInstance;
+    private static Context sAppContext;
+
+    /**
+     * Get singleton instance. Creates new instance if not exists.
+     * Initializes outbox with the provided context.
+     */
+    public static synchronized ConnectionManager getInstance(Context context) {
+        if (sInstance == null) {
+            // Read saved IP from SharedPreferences
+            String savedIp = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                    .getString("laptop_ip", "192.168.1.1");
+            sInstance = new ConnectionManager(savedIp);
+            sAppContext = context.getApplicationContext();
+            sInstance.initOutbox(sAppContext);
+        }
+        return sInstance;
+    }
+
     public ConnectionManager(String initialIp) {
         this.laptopIp = initialIp;
     }
+
+    /**
+     * Initialise the outbox and start the background connection monitor.
+     * Call this once from the Activity/Service that owns this ConnectionManager.
+     */
+    public void initOutbox(Context context) {
+        this.outbox = new SyncOutbox(context);
+        startConnectionMonitor();
+    }
+
+    /** Return the outbox (may be null if initOutbox was not called). */
+    public SyncOutbox getOutbox() { return outbox; }
 
     public void setLaptopIp(String ip) {
         this.laptopIp = ip;
@@ -162,9 +195,6 @@ public class ConnectionManager {
                             androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                             // 👆 END ADDITION
 
-                            // Optional: Tell the MediaScanner about the new file so it appears in Gallery immediately
-                            android.media.MediaScannerConnection.scanFile(context,
-                                    new String[]{targetFile.toString()}, null, null);
                         }
                     } catch (Exception e) {
                         Log.e("RE_SYSTEM", "Transfer Error: " + e.getMessage());
@@ -176,58 +206,9 @@ public class ConnectionManager {
         }).start();
     }
 
-    public void startListening(Context context) {
-        new Thread(() -> {
-            Log.d("ConnectionManager", "--- STARTING UDP LISTENER ON PORT 6000 ---");
-            DatagramSocket socket = null;
-            try {
-                // Critical: This matches the port in reverse_commands.py (_phone_port = 6000)
-                socket = new DatagramSocket(6000);
-                byte[] buffer = new byte[65535]; // Max UDP size
+    // startListening() removed — ReverseCommandListener handles port 6000
 
-                while (true) {
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                    socket.receive(packet); // Blocks until data arrives
-
-                    String message = new String(packet.getData(), 0, packet.getLength()).trim();
-                    Log.d("ConnectionManager", "Received from PC: " + message);
-
-                    // --- 1. HANDLE CHAT MESSAGES ---
-                    if (message.startsWith("CHAT_MSG:")) {
-                        String chatContent = message.substring(9); // Remove prefix
-
-                        // Broadcast to ChatActivity
-                        Intent intent = new Intent("com.prajwal.myfirstapp.CHAT_EVENT");
-                        intent.putExtra("type", "text");
-                        intent.putExtra("content", chatContent);
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
-                        // Optional: Save to repository here if you want it saved even when app is closed
-                    }
-
-                    // --- 2. HANDLE TOASTS (Example) ---
-                    else if (message.startsWith("TOAST:")) {
-                        String msg = message.substring(6);
-                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
-                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                        );
-                    }
-
-                    // --- 3. HANDLE NOTIFICATIONS ---
-                    else if (message.startsWith("NOTIFY:")) {
-                        // You can add notification logic here later
-                    }
-                }
-            } catch (Exception e) {
-                Log.e("ConnectionManager", "Listener Error: " + e.getMessage());
-                e.printStackTrace();
-            } finally {
-                if (socket != null && !socket.isClosed()) socket.close();
-            }
-        }).start();
-    }
-
-    public void wakeUpWatchdog() {
+    public void wakeUpWatchdog(){
         new Thread(() -> {
             try {
                 DatagramSocket socket = new DatagramSocket();
@@ -423,53 +404,201 @@ public class ConnectionManager {
             try {
                 if (onStart != null) onStart.run();
 
-                try (Socket socket = new Socket(laptopIp, PORT_FILE);
-                     OutputStream output = socket.getOutputStream();
-                     InputStream input = context.getContentResolver().openInputStream(uri)) {
+                InputStream input = context.getContentResolver().openInputStream(uri);
+                if (input == null) {
+                    Log.e("FileTransfer", "Failed to open input stream for URI: " + uri);
+                    if (onError != null) onError.run();
+                    return;
+                }
+
+                try (Socket socket = new Socket(laptopIp, PORT_BACKEND_SHARING);
+                     OutputStream output = socket.getOutputStream()) {
 
                     socket.setSoTimeout(10000);
 
-                    Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-                    if (cursor != null && cursor.moveToFirst()) {
-                        int nameIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                        int sizeIdx = cursor.getColumnIndex(OpenableColumns.SIZE);
-                        String name = (nameIdx >= 0) ? cursor.getString(nameIdx) : "file";
-                        long size = (sizeIdx >= 0) ? cursor.getLong(sizeIdx) : 0;
-                        cursor.close();
+                    Cursor cursor = null;
+                    try {
+                        cursor = context.getContentResolver().query(uri, null, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            int nameIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                            int sizeIdx = cursor.getColumnIndex(OpenableColumns.SIZE);
+                            String name = (nameIdx >= 0) ? cursor.getString(nameIdx) : "file";
+                            long size = (sizeIdx >= 0) ? cursor.getLong(sizeIdx) : 0;
 
-                        String header = name + "|" + size + "\n";
-                        output.write(header.getBytes("UTF-8"));
-                        output.flush();
+                            String header = name + "|" + size + "\n";
+                            output.write(header.getBytes("UTF-8"));
+                            output.flush();
 
-                        Thread.sleep(200);
+                            Thread.sleep(200);
 
-                        byte[] buffer = new byte[8192];
-                        int bytesRead;
-                        while ((bytesRead = input.read(buffer)) != -1) {
-                            output.write(buffer, 0, bytesRead);
+                            byte[] buffer = new byte[8192];
+                            int bytesRead;
+                            while ((bytesRead = input.read(buffer)) != -1) {
+                                output.write(buffer, 0, bytesRead);
+                            }
+                            output.flush();
+                            if (onComplete != null) onComplete.run();
+                        } else {
+                            Log.e("FileTransfer", "Could not query file metadata for URI: " + uri);
+                            if (onError != null) onError.run();
                         }
-                        output.flush();
-                        if (onComplete != null) onComplete.run();
+                    } finally {
+                        if (cursor != null) cursor.close();
+                        input.close();
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("FileTransfer", "Transfer failed: " + e.getMessage(), e);
                 if (onError != null) onError.run();
             }
         }).start();
     }
 
-    private String calculateHMAC(String data) throws Exception {
-        SecretKeySpec signingKey = new SecretKeySpec(HMAC_KEY.getBytes("UTF-8"), "HmacSHA256");
-        Mac mac = Mac.getInstance("HmacSHA256");
-        mac.init(signingKey);
-        byte[] rawHmac = mac.doFinal(data.getBytes("UTF-8"));
+    /**
+     * Send a file to the PC over Bluetooth RFCOMM instead of Wi-Fi.
+     * Uses the same header protocol as the Wi-Fi path.
+     */
+    public void sendFileOverBluetooth(Context context, BluetoothDevice device, Uri uri,
+                                       Runnable onStart, Runnable onComplete, Runnable onError) {
+        BluetoothFileHelper.sendFile(context, device, uri, new BluetoothFileHelper.TransferCallback() {
+            @Override public void onStart()            { if (onStart != null) onStart.run(); }
+            @Override public void onComplete()         { if (onComplete != null) onComplete.run(); }
+            @Override public void onError(String msg)  { if (onError != null) onError.run(); }
+        });
+    }
 
-        // Convert bytes to Hex string
-        Formatter formatter = new Formatter();
-        for (byte b : rawHmac) {
-            formatter.format("%02x", b);
+    // ─── Outbox / Reliable Delivery─────────────────────────────
+
+    /**
+     * Send a command synchronously (blocks the calling thread).
+     * Returns true if the UDP packet was dispatched without a local error.
+     * Note: UDP is best-effort; "true" means the packet left the device.
+     */
+    public boolean sendCommandSync(String command) {
+        try {
+            String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+            String processed = SecurityUtils.USE_ENCRYPTION
+                    ? SecurityUtils.encryptAES(command) : command;
+            String msgToSign = processed + "|" + timestamp;
+            String signature = SecurityUtils.calculateHMAC(msgToSign);
+            String packet    = msgToSign + "|" + signature;
+
+            DatagramSocket udpSocket = new DatagramSocket();
+            InetAddress serverAddr = InetAddress.getByName(laptopIp);
+            byte[] buf = packet.getBytes();
+            udpSocket.send(new DatagramPacket(buf, buf.length, serverAddr, PORT_COMMAND));
+            udpSocket.close();
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        return formatter.toString();
+    }
+
+    /**
+     * Send a persistent-data command (task, note, calendar).
+     *
+     * If the server is reachable the packet is sent immediately.
+     * Otherwise the command is saved to the outbox and will be
+     * replayed automatically when the server comes back online.
+     */
+    public void sendDataCommand(Context context, String command) {
+        if (outbox == null) initOutbox(context);
+        new Thread(() -> {
+            if (isServerReachable()) {
+                boolean sent = sendCommandSync(command);
+                if (!sent) outbox.enqueue(command);
+            } else {
+                outbox.enqueue(command);
+                Log.w("ConnectionManager",
+                        "Offline — queued: " + command.substring(0, Math.min(60, command.length())));
+            }
+        }).start();
+    }
+
+    /**
+     * Check whether the PC server is currently reachable.
+     * Result is cached for REACHABILITY_CACHE_MS to avoid flooding the network.
+     */
+    public boolean isServerReachable() {
+        long now = System.currentTimeMillis();
+        if (now - lastReachabilityCheck < REACHABILITY_CACHE_MS) {
+            return serverReachable;
+        }
+        lastReachabilityCheck = now;
+        try {
+            DatagramSocket socket = new DatagramSocket();
+            socket.setSoTimeout(PING_TIMEOUT_MS);
+            byte[] sendBuf = "PING".getBytes();
+            InetAddress address = InetAddress.getByName(laptopIp);
+            socket.send(new DatagramPacket(sendBuf, sendBuf.length, address, PORT_COMMAND));
+            byte[] recvBuf = new byte[16];
+            socket.receive(new DatagramPacket(recvBuf, recvBuf.length));
+            socket.close();
+            serverReachable = true;
+        } catch (Exception e) {
+            serverReachable = false;
+        }
+        return serverReachable;
+    }
+
+    /**
+     * Perform the "State Exchange" handshake.
+     *
+     * Sends SYNC_HANDSHAKE:tasks_since=<lastModifiedTs>,chat_since=<epochMs>
+     * The server replies with SYNC_DELTA:{...} containing tasks and chat deltas.
+     *
+     * @param context        app context
+     * @param lastModifiedTs ISO-8601 timestamp of the most-recently synced task,
+     *                       or "1970-01-01T00:00:00" to fetch everything.
+     */
+    public void performHandshake(Context context, String lastModifiedTs) {
+        if (outbox == null) initOutbox(context);
+        // Include chat sync timestamp if available
+        ChatRepository chatRepo = new ChatRepository(context);
+        long chatSince = chatRepo.getLastSyncTimestamp();
+        String cmd = "SYNC_HANDSHAKE:tasks_since=" + lastModifiedTs
+                + ",chat_since=" + chatSince;
+        new Thread(() -> {
+            if (isServerReachable()) {
+                sendCommandSync(cmd);
+                Log.i("ConnectionManager", "Handshake sent: " + cmd);
+            } else {
+                Log.w("ConnectionManager", "Handshake skipped — server unreachable");
+            }
+        }).start();
+    }
+
+    private volatile boolean monitorRunning = false;
+
+    /**
+     * Background thread: pings the server every 5 seconds.
+     * When the server transitions from unreachable → reachable,
+     * the outbox is flushed automatically.
+     */
+    private void startConnectionMonitor() {
+        if (monitorStarted) return;
+        monitorStarted = true;
+        monitorRunning = true;
+        new Thread(() -> {
+            while (monitorRunning) {
+                boolean was = serverReachable;
+                lastReachabilityCheck = 0;
+                boolean now = isServerReachable();
+
+                if (!was && now && outbox != null && outbox.getPendingCount() > 0) {
+                    Log.i("ConnectionManager",
+                            "Server back online — flushing outbox ("
+                            + outbox.getPendingCount() + " items)");
+                    outbox.flush(this, null);
+                }
+                try { Thread.sleep(5000); } catch (InterruptedException e) { break; }
+            }
+        }, "ConnectionMonitor").start();
+    }
+
+    /** Stop the background connection monitor. Call from onDestroy(). */
+    public void stopConnectionMonitor() {
+        monitorRunning = false;
+        monitorStarted = false;
     }
 }

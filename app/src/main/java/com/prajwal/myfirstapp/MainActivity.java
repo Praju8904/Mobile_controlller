@@ -1,5 +1,7 @@
 package com.prajwal.myfirstapp;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -37,6 +39,7 @@ import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.net.Uri;
@@ -542,6 +545,86 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Ask the user whether to send via Wi-Fi or Bluetooth, then dispatch accordingly.
+     */
+    @SuppressWarnings("MissingPermission")
+    private void showTransferMethodDialog(Uri uri) {
+        // Check if Bluetooth is even available
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+        boolean btAvailable = btAdapter != null && btAdapter.isEnabled();
+
+        if (!btAvailable) {
+            // No Bluetooth — send over Wi-Fi directly
+            sendViaWifi(uri);
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Send via")
+                .setItems(new String[]{"📶  Wi-Fi", "📡  Bluetooth"}, (dialog, which) -> {
+                    if (which == 0) {
+                        sendViaWifi(uri);
+                    } else {
+                        sendViaBluetooth(uri);
+                    }
+                })
+                .show();
+    }
+
+    private void sendViaWifi(Uri uri) {
+        connectionManager.sendFileToLaptop(this, uri,
+                () -> runOnUiThread(() -> Toast.makeText(this, "Sending...", Toast.LENGTH_SHORT).show()),
+                () -> runOnUiThread(() -> Toast.makeText(this, "Sent!", Toast.LENGTH_SHORT).show()),
+                () -> runOnUiThread(() -> Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()));
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void sendViaBluetooth(Uri uri) {
+        // Check runtime permission for Android 12+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
+                   != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, 700);
+            Toast.makeText(this, "Please grant Bluetooth permission, then try again", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        BluetoothFileHelper.getPairedDevices(new BluetoothFileHelper.DeviceListCallback() {
+            @Override
+            public void onDevicesFound(java.util.List<BluetoothDevice> devices) {
+                runOnUiThread(() -> {
+                    if (devices.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "No paired Bluetooth devices found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    // Build device name list for chooser
+                    String[] names = new String[devices.size()];
+                    for (int i = 0; i < devices.size(); i++) {
+                        BluetoothDevice d = devices.get(i);
+                        names[i] = d.getName() != null ? d.getName() : d.getAddress();
+                    }
+
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Select Bluetooth Device")
+                            .setItems(names, (dialog, which) -> {
+                                BluetoothDevice selected = devices.get(which);
+                                connectionManager.sendFileOverBluetooth(MainActivity.this, selected, uri,
+                                        () -> runOnUiThread(() -> Toast.makeText(MainActivity.this, "Sending via Bluetooth...", Toast.LENGTH_SHORT).show()),
+                                        () -> runOnUiThread(() -> Toast.makeText(MainActivity.this, "Sent!", Toast.LENGTH_SHORT).show()),
+                                        () -> runOnUiThread(() -> Toast.makeText(MainActivity.this, "BT Transfer Failed", Toast.LENGTH_SHORT).show()));
+                            })
+                            .show();
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
     // --- UI Dialogs & Pickers ---
 
     private void showClipboardDialog() {
@@ -891,6 +974,84 @@ public class MainActivity extends AppCompatActivity {
             chatIntent.putExtra("server_ip", connectionManager.getLaptopIp());
             startActivity(chatIntent);
         });
+
+        // Settings Card
+        findViewById(R.id.cardSettings).setOnClickListener(v -> {
+            Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
+        });
+
+        // Expense Tracker Card
+        findViewById(R.id.cardExpenses).setOnClickListener(v -> {
+            Intent expenseIntent = new Intent(MainActivity.this, ExpenseTrackerActivity.class);
+            startActivity(expenseIntent);
+        });
+
+        // Password Manager Card
+        findViewById(R.id.cardPasswordManager).setOnClickListener(v -> {
+            Intent vaultIntent = new Intent(MainActivity.this, PasswordManagerActivity.class);
+            startActivity(vaultIntent);
+        });
+
+        // Update card summaries on resume
+        updateExpenseCardSummary();
+        updateVaultCardSummary();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateExpenseCardSummary();
+        updateVaultCardSummary();
+    }
+
+    private void updateExpenseCardSummary() {
+        try {
+            ExpenseRepository expRepo = new ExpenseRepository(this);
+            double todaySpend = expRepo.getTodaySpend();
+            double budget = expRepo.getMonthlyBudget();
+            TextView summary = findViewById(R.id.tvExpenseCardSummary);
+            if (summary != null) {
+                if (todaySpend > 0) {
+                    String text = "₹" + (todaySpend >= 1000 ?
+                            String.format("%.1fk", todaySpend / 1000) :
+                            String.format("%.0f", todaySpend)) + " today";
+                    if (budget > 0) {
+                        double monthSpend = expRepo.getMonthSpend();
+                        double pct = monthSpend / budget * 100;
+                        if (pct >= 100) {
+                            summary.setTextColor(0xFFEF4444);
+                            text += " • Over budget!";
+                        } else if (pct >= 80) {
+                            summary.setTextColor(0xFFF59E0B);
+                            text += " • " + String.format("%.0f%%", pct) + " used";
+                        } else {
+                            summary.setTextColor(0xFFE0D4FF);
+                        }
+                    }
+                    summary.setText(text);
+                } else {
+                    summary.setText("Track & Manage");
+                    summary.setTextColor(0xFFE0D4FF);
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void updateVaultCardSummary() {
+        try {
+            PasswordRepository vaultRepo = new PasswordRepository(this);
+            TextView summary = findViewById(R.id.tvVaultCardSummary);
+            if (summary != null) {
+                if (vaultRepo.isMasterPasswordSet()) {
+                    summary.setText("🔒 Vault locked • Tap to open");
+                    summary.setTextColor(0xFF8ECAE6);
+                } else {
+                    summary.setText("Set up your secure vault");
+                    summary.setTextColor(0xFF8ECAE6);
+                }
+            }
+        } catch (Exception ignored) {}
     }
 
     private void navigateToTouchpad() {
@@ -1106,10 +1267,7 @@ public class MainActivity extends AppCompatActivity {
             if (requestCode >= 200 && requestCode <= 202) {
                 Uri uri = data.getData();
                 if (uri != null) {
-                    connectionManager.sendFileToLaptop(this, uri,
-                            () -> runOnUiThread(() -> Toast.makeText(this, "Sending...", Toast.LENGTH_SHORT).show()),
-                            () -> runOnUiThread(() -> Toast.makeText(this, "Sent!", Toast.LENGTH_SHORT).show()),
-                            () -> runOnUiThread(() -> Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()));
+                    showTransferMethodDialog(uri);
                 }
                 return;
             }

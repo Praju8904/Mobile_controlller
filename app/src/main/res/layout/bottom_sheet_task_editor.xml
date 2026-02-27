@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Task Editor Bottom Sheet — expandable from quick-add to full editor -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/task_editor_bg"
+    android:paddingTop="8dp">
+
+    <!-- Drag handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/task_priority_pill_selector" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
+
+            <!-- Title field -->
+            <EditText
+                android:id="@+id/etEditorTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="Task title"
+                android:textColorHint="#6B7280"
+                android:textColor="#F1F5F9"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:inputType="textCapSentences"
+                android:maxLines="2"
+                android:paddingVertical="8dp" />
+
+            <!-- Description field -->
+            <EditText
+                android:id="@+id/etEditorDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="Add details..."
+                android:textColorHint="#4B5563"
+                android:textColor="#94A3B8"
+                android:textSize="15sp"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="2"
+                android:maxLines="6"
+                android:paddingVertical="4dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Expand/collapse toggle -->
+            <TextView
+                android:id="@+id/btnExpandEditor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="＋ Add Details"
+                android:textColor="#60A5FA"
+                android:textSize="14sp"
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- === Expandable Details Section === -->
+            <LinearLayout
+                android:id="@+id/expandedEditorSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- ── Priority Selector ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Priority"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="6dp" />
+
+                <LinearLayout
+                    android:id="@+id/prioritySelectorRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/btnPriorityLow"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:gravity="center"
+                        android:text="Low"
+                        android:textColor="#6B7280"
+                        android:textSize="13sp"
+                        android:background="@drawable/task_priority_pill_selector" />
+
+                    <TextView
+                        android:id="@+id/btnPriorityNormal"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:gravity="center"
+                        android:text="Normal"
+                        android:textColor="#3B82F6"
+                        android:textSize="13sp"
+                        android:background="@drawable/task_priority_pill_selector" />
+
+                    <TextView
+                        android:id="@+id/btnPriorityHigh"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:gravity="center"
+                        android:text="High"
+                        android:textColor="#F97316"
+                        android:textSize="13sp"
+                        android:background="@drawable/task_priority_pill_selector" />
+
+                    <TextView
+                        android:id="@+id/btnPriorityUrgent"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Urgent"
+                        android:textColor="#EF4444"
+                        android:textSize="13sp"
+                        android:background="@drawable/task_priority_pill_selector" />
+                </LinearLayout>
+
+                <!-- ── Category Picker ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:id="@+id/categoryPickerRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <!-- ── Tags ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tags"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:id="@+id/tagChipsContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="6dp" />
+
+                    <EditText
+                        android:id="@+id/etTagInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/task_editor_field_bg"
+                        android:hint="Add tag..."
+                        android:textColorHint="#4B5563"
+                        android:textColor="#F1F5F9"
+                        android:textSize="13sp"
+                        android:paddingHorizontal="12dp"
+                        android:inputType="text"
+                        android:imeOptions="actionDone"
+                        android:maxLines="1" />
+                </LinearLayout>
+
+                <!-- ── Due Date & Time ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Due Date &amp; Time"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/chipDueDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="14dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="📅  Set date"
+                        android:textColor="#94A3B8"
+                        android:textSize="13sp"
+                        android:background="@drawable/task_chip_removable_bg" />
+
+                    <TextView
+                        android:id="@+id/chipDueTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="14dp"
+                        android:text="🕐  Set time"
+                        android:textColor="#94A3B8"
+                        android:textSize="13sp"
+                        android:background="@drawable/task_chip_removable_bg" />
+                </LinearLayout>
+
+                <!-- ── Reminders ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reminders"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:id="@+id/reminderChipsContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" />
+
+                    <TextView
+                        android:id="@+id/btnAddReminder"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:text="＋"
+                        android:textColor="#60A5FA"
+                        android:textSize="20sp"
+                        android:background="@drawable/task_chip_removable_bg" />
+                </LinearLayout>
+
+                <!-- ── Recurrence ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recurrence"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:id="@+id/chipRecurrence"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="14dp"
+                    android:text="🔁  None"
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp"
+                    android:background="@drawable/task_chip_removable_bg"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvRecurrenceSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#4B5563"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- ── Estimated Duration ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Estimated Duration"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:id="@+id/chipEstDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="14dp"
+                    android:text="⏱  Set duration"
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp"
+                    android:background="@drawable/task_chip_removable_bg"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- ── Attachments ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Attachments"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <HorizontalScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:id="@+id/attachmentsContainer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal" />
+                    </HorizontalScrollView>
+
+                    <TextView
+                        android:id="@+id/btnAddAttachment"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:text="📎"
+                        android:textSize="18sp"
+                        android:background="@drawable/task_chip_removable_bg" />
+                </LinearLayout>
+
+                <!-- ── Subtasks ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Subtasks"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <LinearLayout
+                    android:id="@+id/subtasksEditorContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <EditText
+                        android:id="@+id/etNewSubtask"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/task_editor_field_bg"
+                        android:hint="Add subtask..."
+                        android:textColorHint="#4B5563"
+                        android:textColor="#F1F5F9"
+                        android:textSize="13sp"
+                        android:paddingHorizontal="12dp"
+                        android:inputType="textCapSentences"
+                        android:imeOptions="actionDone"
+                        android:maxLines="1" />
+
+                    <TextView
+                        android:id="@+id/btnAddSubtask"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:gravity="center"
+                        android:text="＋"
+                        android:textColor="#60A5FA"
+                        android:textSize="20sp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/task_chip_removable_bg" />
+                </LinearLayout>
+
+                <!-- ── Notes / Extra ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Notes"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <EditText
+                    android:id="@+id/etEditorNotes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/task_editor_field_bg"
+                    android:hint="Extra notes, links, details..."
+                    android:textColorHint="#4B5563"
+                    android:textColor="#94A3B8"
+                    android:textSize="14sp"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:minLines="3"
+                    android:maxLines="8"
+                    android:padding="12dp"
+                    android:layout_marginBottom="16dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ── Bottom Action Bar ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp"
+        android:gravity="center_vertical"
+        android:background="#0D1117">
+
+        <TextView
+            android:id="@+id/btnEditorCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:text="Cancel"
+            android:textColor="#94A3B8"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/btnEditorSave"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:paddingHorizontal="28dp"
+            android:text="Save Task"
+            android:textColor="#0A0E21"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="@drawable/task_save_btn_bg" />
+    </LinearLayout>
+
+</LinearLayout>

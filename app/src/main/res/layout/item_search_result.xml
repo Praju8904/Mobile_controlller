@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Search result item card -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/task_search_result_bg"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="12dp"
+    android:layout_marginBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <View
+            android:id="@+id/viewSearchPriorityDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/tvSearchResultTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#F1F5F9"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tvSearchResultDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#6B7280"
+            android:textSize="11sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSearchResultPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#94A3B8"
+        android:textSize="13sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_marginBottom="6dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvSearchResultCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:paddingHorizontal="8dp"
+            android:textColor="#60A5FA"
+            android:textSize="11sp"
+            android:background="@drawable/task_chip_removable_bg" />
+
+        <TextView
+            android:id="@+id/tvSearchResultMatchType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#4B5563"
+            android:textSize="11sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>

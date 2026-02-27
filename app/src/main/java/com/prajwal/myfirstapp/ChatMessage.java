@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ChatMessage {
+    public String id;           // Unique ID for deduplication
     public String content;      // Text or File Path
     public String type;         // "text", "file", "image", "system"
     public boolean isMe;        // true = Phone, false = PC
@@ -11,6 +12,7 @@ public class ChatMessage {
     public String metadata;     // Extra info (filesize, etc.)
 
     public ChatMessage(String content, String type, boolean isMe) {
+        this.id = "msg_" + (isMe ? "phone" : "pc") + "_" + System.currentTimeMillis();
         this.content = content;
         this.type = type;
         this.isMe = isMe;
@@ -22,6 +24,7 @@ public class ChatMessage {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         try {
+            json.put("id", id);
             json.put("content", content);
             json.put("type", type);
             json.put("isMe", isMe);
@@ -39,6 +42,7 @@ public class ChatMessage {
                 json.getString("type"),
                 json.getBoolean("isMe")
             );
+            msg.id = json.optString("id", msg.id);
             msg.timestamp = json.optLong("timestamp", System.currentTimeMillis());
             msg.metadata = json.optString("metadata", "");
             return msg;

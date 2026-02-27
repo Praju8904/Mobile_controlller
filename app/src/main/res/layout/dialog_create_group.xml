@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/glass_card_bg"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Group"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Group Name -->
+    <EditText
+        android:id="@+id/etGroupName"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Group name (e.g. Trip to Goa)"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#6B7280"
+        android:textSize="15sp"
+        android:paddingHorizontal="16dp"
+        android:inputType="textCapWords"
+        android:maxLines="1"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Description -->
+    <EditText
+        android:id="@+id/etGroupDescription"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Description (optional)"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#6B7280"
+        android:textSize="15sp"
+        android:paddingHorizontal="16dp"
+        android:inputType="textCapSentences"
+        android:maxLines="1"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Members Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Members"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <!-- "Me" chip always present -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/split_chip_selected_bg"
+        android:paddingHorizontal="14dp"
+        android:layout_marginBottom="6dp">
+
+        <TextView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/split_avatar_bg"
+            android:gravity="center"
+            android:text="Me"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Me (You)"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginStart="10dp" />
+    </LinearLayout>
+
+    <!-- Dynamic member list -->
+    <LinearLayout
+        android:id="@+id/membersContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <!-- Add Member Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp">
+
+        <EditText
+            android:id="@+id/etNewMemberName"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:hint="Add member name"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#6B7280"
+            android:textSize="14sp"
+            android:paddingHorizontal="14dp"
+            android:inputType="textPersonName"
+            android:maxLines="1"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnAddMember"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/split_member_add_bg"
+            android:text="+"
+            android:textColor="#7C3AED"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Create Button -->
+    <Button
+        android:id="@+id/btnCreateGroup"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/export_btn_bg"
+        android:text="Create Group"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textAllCaps="false" />
+
+</LinearLayout>
