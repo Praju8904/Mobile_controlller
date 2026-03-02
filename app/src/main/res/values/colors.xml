@@ -1,5 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         DESIGN TOKENS — Premium Dark Theme
+         Base: Deep Navy (#0A0E21)  |  Accent: Amber (#F59E0B)
+         ═══════════════════════════════════════════════════════════════════════════ -->
+
+    <!-- ── BACKGROUND SCALE ─────────────────────────────────── -->
+    <color name="bg_deepest">#080C1A</color>         <!-- Darkest backgrounds, AMOLED areas -->
+    <color name="bg_deep">#0A0E21</color>            <!-- Screen-level background -->
+    <color name="bg_surface">#0D1117</color>         <!-- Bottom sheets, overlays -->
+    <color name="bg_card">#121827</color>            <!-- Card/panel backgrounds -->
+    <color name="bg_card_end">#0D1117</color>        <!-- Card gradient end -->
+    <color name="bg_elevated">#1E293B</color>        <!-- Dialogs, elevated surfaces -->
+    <color name="bg_input">#0F172A</color>           <!-- Input fields, pills -->
+    <color name="bg_hover">#1A2332</color>           <!-- Hover/pressed state -->
+
+    <!-- ── TEXT COLORS ──────────────────────────────────────── -->
+    <color name="text_primary">#F1F5F9</color>       <!-- Headings, body text -->
+    <color name="text_secondary">#94A3B8</color>     <!-- Subtitles, metadata -->
+    <color name="text_tertiary">#64748B</color>      <!-- Placeholders, hints -->
+    <color name="text_disabled">#4B5563</color>      <!-- Disabled elements -->
+    <color name="text_inverse">#0A0E21</color>       <!-- Text on light backgrounds -->
+
+    <!-- ── ACCENT COLORS ────────────────────────────────────── -->
+    <color name="accent_amber">#F59E0B</color>       <!-- Primary CTA, accent -->
+    <color name="accent_amber_soft">#33F59E0B</color><!-- Amber with 20% alpha -->
+    <color name="accent_blue">#667EEA</color>        <!-- Checkbox tint, links -->
+    <color name="accent_blue_light">#60A5FA</color>  <!-- Light blue links -->
+    <color name="accent_purple">#8B5CF6</color>      <!-- Secondary accent -->
+
+    <!-- ── PRIORITY COLORS ──────────────────────────────────── -->
+    <color name="priority_low">#64748B</color>       <!-- Slate -->
+    <color name="priority_normal">#3B82F6</color>    <!-- Blue -->
+    <color name="priority_high">#F97316</color>      <!-- Orange -->
+    <color name="priority_urgent">#EF4444</color>    <!-- Crimson red -->
+
+    <!-- Priority with alpha (for backgrounds, glows) -->
+    <color name="priority_low_bg">#1A64748B</color>
+    <color name="priority_normal_bg">#1A3B82F6</color>
+    <color name="priority_high_bg">#1AF97316</color>
+    <color name="priority_urgent_bg">#1AEF4444</color>
+
+    <!-- ── STATE COLORS ─────────────────────────────────────── -->
+    <color name="state_success">#10B981</color>      <!-- Completion green -->
+    <color name="state_success_bg">#1A10B981</color>
+    <color name="state_warning">#FFB74D</color>      <!-- Due soon amber -->
+    <color name="state_warning_bg">#1AFFB74D</color>
+    <color name="state_error">#EF4444</color>        <!-- Overdue red -->
+    <color name="state_error_bg">#1AEF4444</color>
+    <color name="state_info">#3B82F6</color>
+    <color name="state_inprogress">#F59E0B</color>   <!-- Active timer amber -->
+    <color name="state_inprogress_bg">#1AF59E0B</color>
+
+    <!-- ── CATEGORY COLORS ──────────────────────────────────── -->
+    <color name="category_personal">#8B5CF6</color>  <!-- Purple -->
+    <color name="category_work">#3B82F6</color>      <!-- Blue -->
+    <color name="category_study">#06B6D4</color>     <!-- Cyan -->
+    <color name="category_health">#10B981</color>    <!-- Green -->
+    <color name="category_shopping">#F97316</color>  <!-- Orange -->
+    <color name="category_finance">#F59E0B</color>   <!-- Amber -->
+    <color name="category_others">#64748B</color>    <!-- Slate -->
+
+    <!-- ── TAG PASTEL COLORS (for chips) ────────────────────── -->
+    <color name="tag_pastel_1">#331E90FF</color>     <!-- Blue 20% -->
+    <color name="tag_pastel_2">#338B5CF6</color>     <!-- Purple 20% -->
+    <color name="tag_pastel_3">#3310B981</color>     <!-- Green 20% -->
+    <color name="tag_pastel_4">#33F97316</color>     <!-- Orange 20% -->
+    <color name="tag_pastel_5">#33EF4444</color>     <!-- Red 20% -->
+    <color name="tag_pastel_6">#33F59E0B</color>     <!-- Amber 20% -->
+    <color name="tag_pastel_7">#3306B6D4</color>     <!-- Cyan 20% -->
+    <color name="tag_pastel_8">#33EC4899</color>     <!-- Pink 20% -->
+
+    <!-- ── ENERGY LEVEL COLORS ──────────────────────────────── -->
+    <color name="energy_deep_work">#F59E0B</color>   <!-- ⚡ Deep work amber -->
+    <color name="energy_deep_work_bg">#1AF59E0B</color>
+    <color name="energy_light">#10B981</color>       <!-- 🌿 Light green -->
+    <color name="energy_light_bg">#1A10B981</color>
+    <color name="energy_low">#64748B</color>         <!-- 😴 Low energy slate -->
+    <color name="energy_low_bg">#1A64748B</color>
+
+    <!-- ── CARD BORDERS & OVERLAYS ──────────────────────────── -->
+    <color name="card_border">#10FFFFFF</color>      <!-- Subtle frosted border -->
+    <color name="card_border_selected">#40F59E0B</color> <!-- Amber select -->
+    <color name="card_completed_overlay">#40000000</color> <!-- Dimming overlay -->
+    <color name="card_overdue_glow">#40EF4444</color>
+
+    <!-- ── SWIPE ACTION COLORS ──────────────────────────────── -->
+    <color name="swipe_complete">#10B981</color>     <!-- Green sweep -->
+    <color name="swipe_complete_bg">#1A10B981</color>
+    <color name="swipe_delete">#EF4444</color>       <!-- Red sweep -->
+    <color name="swipe_delete_bg">#1AEF4444</color>
+
+    <!-- ── MISC ─────────────────────────────────────────────── -->
+    <color name="divider">#0DFFFFFF</color>
+    <color name="ripple">#15FFFFFF</color>
+    <color name="scrim">#80000000</color>
+
+    <!-- ── LEGACY / COMPAT ──────────────────────────────────── -->
+    <color name="colorAccent">#F59E0B</color>        <!-- Amber – legacy compat alias -->
+
 </resources>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Attendee row item for the attendees section in create/edit meeting -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="4dp">
+
+    <!-- Colored circle with initials -->
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="12dp">
+
+        <TextView
+            android:id="@+id/tvAttendeeInitials"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="AB"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="@drawable/task_icon_circle_bg" />
+    </FrameLayout>
+
+    <!-- Name + email column -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:id="@+id/tvAttendeeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Attendee Name"
+            android:textColor="#F1F5F9"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tvAttendeeEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="email@example.com"
+            android:textColor="#9E9E9E"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Role badge -->
+    <TextView
+        android:id="@+id/tvAttendeeRole"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:text="Attendee"
+        android:textColor="#60A5FA"
+        android:textSize="11sp"
+        android:background="@drawable/task_chip_removable_bg"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Remove button -->
+    <TextView
+        android:id="@+id/btnRemoveAttendee"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:gravity="center"
+        android:text="✕"
+        android:textColor="#EF5350"
+        android:textSize="16sp"
+        android:background="@drawable/task_icon_circle_bg" />
+
+</LinearLayout>

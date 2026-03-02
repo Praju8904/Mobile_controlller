@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Quick Add Task bottom sheet (for TaskManagerActivity quick add bar) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#1E1E3A"
+    android:paddingBottom="24dp">
+
+    <!-- Handle indicator bar -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:gravity="center">
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center"
+            android:background="#3A3A5A"
+            android:layout_marginTop="10dp" />
+    </FrameLayout>
+
+    <!-- Smart suggestion banner (hidden by default) -->
+    <LinearLayout
+        android:id="@+id/smartSuggestionBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        android:background="#252545"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvSmartSuggestion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#CBD5E1"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnSmartAction"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:minWidth="60dp"
+            android:text="Action"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:background="#4A4A8A"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Large title EditText -->
+    <EditText
+        android:id="@+id/etQuickTaskTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:hint="What needs to be done?"
+        android:textColorHint="#4A4A6A"
+        android:textColor="#F1F5F9"
+        android:textSize="18sp"
+        android:background="@null"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp"
+        android:inputType="textCapSentences"
+        android:focusableInTouchMode="true"
+        android:imeOptions="actionDone"
+        android:maxLines="3" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#2A2A4A"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Quick options chips row -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/chipToday"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="📅 Today"
+                android:textColor="#94A3B8"
+                android:textSize="13sp"
+                android:background="@drawable/task_chip_removable_bg"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/chipTomorrow"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="📅 Tomorrow"
+                android:textColor="#94A3B8"
+                android:textSize="13sp"
+                android:background="@drawable/task_chip_removable_bg"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/chipThisWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="📅 This Week"
+                android:textColor="#94A3B8"
+                android:textSize="13sp"
+                android:background="@drawable/task_chip_removable_bg"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/chipPriority"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="🔺 Priority"
+                android:textColor="#94A3B8"
+                android:textSize="13sp"
+                android:background="@drawable/task_chip_removable_bg" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Bottom action row: More Options + Save -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <TextView
+            android:id="@+id/btnMoreOptions"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="More Options"
+            android:textColor="#9E9E9E"
+            android:textSize="14sp"
+            android:background="@drawable/task_chip_removable_bg"
+            android:layout_marginEnd="10dp" />
+
+        <TextView
+            android:id="@+id/btnQuickSave"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Add Task"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@drawable/task_save_btn_bg" />
+    </LinearLayout>
+
+</LinearLayout>

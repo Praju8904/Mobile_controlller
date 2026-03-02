@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compact folder card for the horizontal strip on notes home screen -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="110dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/notes_folder_card_bg"
+    android:padding="12dp"
+    android:layout_marginEnd="10dp">
+
+    <TextView
+        android:id="@+id/tvFolderIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📁"
+        android:textSize="32sp"
+        android:layout_marginBottom="6dp" />
+
+    <TextView
+        android:id="@+id/tvFolderName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Folder"
+        android:textColor="#F1F5F9"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+    <TextView
+        android:id="@+id/tvFolderCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 notes"
+        android:textColor="#64748B"
+        android:textSize="10sp"
+        android:layout_marginTop="2dp" />
+</LinearLayout>

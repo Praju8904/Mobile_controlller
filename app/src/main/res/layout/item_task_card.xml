@@ -1,115 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@drawable/task_card_bg"
-    android:padding="14dp"
-    android:layout_marginBottom="8dp"
-    android:gravity="center_vertical">
+    android:background="@drawable/task_card_premium_bg"
+    android:padding="@dimen/card_padding"
+    android:layout_marginBottom="@dimen/card_margin_bottom"
+    android:gravity="center_vertical"
+    android:elevation="@dimen/card_elevation"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
-    <!-- Priority Strip (left colored bar) -->
+    <!-- ═══ 1. Priority Strip (left colored bar — color per priority/state) ═══ -->
     <View
         android:id="@+id/viewPriorityStrip"
-        android:layout_width="4dp"
+        android:layout_width="@dimen/priority_strip_width"
         android:layout_height="match_parent"
-        android:layout_marginEnd="12dp"
-        android:background="#3B82F6" />
+        android:layout_marginEnd="@dimen/priority_strip_margin_end"
+        android:background="@color/priority_normal" />
 
-    <!-- Checkbox -->
+    <!-- ═══ 18. Completion Checkbox ═══ -->
     <CheckBox
         android:id="@+id/cbComplete"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="12dp"
-        android:buttonTint="#667EEA"
+        android:layout_width="@dimen/checkbox_size"
+        android:layout_height="@dimen/checkbox_size"
+        android:layout_marginEnd="@dimen/checkbox_margin_end"
+        android:buttonTint="@color/accent_blue"
         android:scaleX="1.1"
-        android:scaleY="1.1" />
+        android:scaleY="1.1"
+        android:minWidth="@dimen/min_tap_target"
+        android:minHeight="@dimen/min_tap_target" />
 
-    <!-- Content Area -->
+    <!-- ═══ Content Area ═══ -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- Title Row -->
+        <!-- ═══ ROW 1: Title + Star + Menu ═══ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
+            <!-- 1. Task Title -->
             <TextView
                 android:id="@+id/tvTaskTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Task title"
-                android:textColor="#F1F5F9"
-                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_title"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="2"
                 android:ellipsize="end" />
 
-            <!-- Star toggle -->
+            <!-- 17. Star/Favorite toggle -->
             <TextView
                 android:id="@+id/btnStar"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="@dimen/icon_large"
+                android:layout_height="@dimen/icon_large"
                 android:text="☆"
                 android:textSize="18sp"
                 android:gravity="center"
-                android:layout_marginStart="4dp" />
+                android:layout_marginStart="@dimen/space_xs"
+                android:minWidth="@dimen/min_tap_target"
+                android:minHeight="@dimen/min_tap_target" />
+
+            <!-- 19. Context menu ⋯ -->
+            <ImageView
+                android:id="@+id/btnTaskMenu"
+                android:layout_width="@dimen/icon_action"
+                android:layout_height="@dimen/icon_action"
+                android:src="@android:drawable/ic_menu_more"
+                android:padding="@dimen/icon_action_padding"
+                android:layout_marginStart="@dimen/space_xxs"
+                android:contentDescription="Task menu"
+                android:minWidth="@dimen/min_tap_target"
+                android:minHeight="@dimen/min_tap_target" />
         </LinearLayout>
 
-        <!-- Description preview -->
+        <!-- ═══ ROW 2: Description (collapsible) ═══ -->
         <TextView
             android:id="@+id/tvTaskDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Description preview..."
-            android:textColor="#6B7280"
-            android:textSize="12sp"
+            android:textColor="@color/text_tertiary"
+            android:textSize="@dimen/text_caption"
             android:fontFamily="sans-serif"
             android:maxLines="1"
             android:ellipsize="end"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/space_xxs"
             android:visibility="gone" />
 
-        <!-- Meta row: Priority + Category + Due -->
+        <!-- ═══ Link Preview (visible only in focused/expanded state if URL found) ═══ -->
+        <LinearLayout
+            android:id="@+id/linkPreviewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#1A60A5FA"
+            android:padding="8dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvLinkIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔗"
+                android:textSize="14sp"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/tvLinkUrl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#60A5FA"
+                android:textSize="11sp"
+                android:ellipsize="end"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <!-- ═══ ROW 3: Meta — Priority + Category + Due + Indicators ═══ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="6dp">
+            android:layout_marginTop="@dimen/space_sm">
 
-            <!-- Priority badge -->
+            <!-- 3. Priority badge -->
             <TextView
                 android:id="@+id/tvPriorityBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Normal"
                 android:textColor="#FFFFFF"
-                android:textSize="10sp"
+                android:textSize="@dimen/text_badge"
                 android:textStyle="bold"
                 android:textAllCaps="true"
                 android:fontFamily="sans-serif-medium"
                 android:background="@drawable/task_priority_pill_bg"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
-                android:layout_marginEnd="8dp" />
+                android:paddingHorizontal="@dimen/pill_padding_h"
+                android:paddingVertical="@dimen/pill_padding_v"
+                android:layout_marginEnd="@dimen/space_md" />
 
-            <!-- Category chip -->
+            <!-- 4. Category chip -->
             <LinearLayout
                 android:id="@+id/chipCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="@dimen/space_md"
                 android:visibility="gone">
 
                 <TextView
@@ -117,7 +169,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📁"
-                    android:textSize="11sp"
+                    android:textSize="@dimen/text_icon_inline"
                     android:layout_marginEnd="3dp" />
 
                 <TextView
@@ -125,18 +177,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Personal"
-                    android:textColor="#94A3B8"
-                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_icon_inline"
                     android:fontFamily="sans-serif" />
             </LinearLayout>
 
-            <!-- Due date/time -->
+            <!-- 6. Due date/time -->
             <LinearLayout
                 android:id="@+id/chipDue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:layout_marginEnd="@dimen/space_md"
                 android:visibility="gone">
 
                 <TextView
@@ -144,7 +197,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📅"
-                    android:textSize="11sp"
+                    android:textSize="@dimen/text_icon_inline"
                     android:layout_marginEnd="3dp" />
 
                 <TextView
@@ -152,27 +205,233 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Today, 3:00 PM"
-                    android:textColor="#94A3B8"
-                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_icon_inline"
                     android:fontFamily="sans-serif" />
             </LinearLayout>
+
+            <!-- 7. Reminder indicator (bell + count) -->
+            <LinearLayout
+                android:id="@+id/chipReminder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="@dimen/space_sm"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔔"
+                    android:textSize="@dimen/text_badge" />
+
+                <TextView
+                    android:id="@+id/tvReminderCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textColor="@color/state_warning"
+                    android:textSize="@dimen/text_micro"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="2dp" />
+            </LinearLayout>
+
+            <!-- 8. Recurrence indicator -->
+            <TextView
+                android:id="@+id/tvRecurrence"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔁"
+                android:textSize="@dimen/text_badge"
+                android:layout_marginEnd="@dimen/space_sm"
+                android:visibility="gone" />
+
+            <!-- 13. Attachments count -->
+            <LinearLayout
+                android:id="@+id/chipAttachments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="@dimen/space_sm"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📎"
+                    android:textSize="@dimen/text_badge" />
+
+                <TextView
+                    android:id="@+id/tvAttachmentCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_micro"
+                    android:fontFamily="sans-serif"
+                    android:layout_marginStart="2dp" />
+            </LinearLayout>
+
+            <!-- 14. Location/Geofence indicator -->
+            <TextView
+                android:id="@+id/tvLocationPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍"
+                android:textSize="@dimen/text_badge"
+                android:layout_marginEnd="@dimen/space_sm"
+                android:visibility="gone" />
         </LinearLayout>
 
-        <!-- Subtask progress bar -->
+        <!-- ═══ ROW 4: Tags (horizontal scrollable chips) ═══ -->
+        <HorizontalScrollView
+            android:id="@+id/tagsScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:scrollbars="none"
+            android:fadingEdge="horizontal"
+            android:fadingEdgeLength="16dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/tagsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Tag chips are added programmatically -->
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- ═══ ROW 5: Time & Energy — Duration + Tracked + Energy Level ═══ -->
+        <LinearLayout
+            android:id="@+id/timeEnergyRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/space_sm"
+            android:visibility="gone">
+
+            <!-- 9. Estimated Duration -->
+            <LinearLayout
+                android:id="@+id/chipEstDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="@dimen/space_lg"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🕐"
+                    android:textSize="@dimen/text_badge" />
+
+                <TextView
+                    android:id="@+id/tvEstDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="~45 min"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_badge"
+                    android:fontFamily="sans-serif"
+                    android:layout_marginStart="3dp" />
+            </LinearLayout>
+
+            <!-- 10. Actual Time Tracked -->
+            <LinearLayout
+                android:id="@+id/chipTimeTracked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="@dimen/space_lg"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏱"
+                    android:textSize="@dimen/text_badge" />
+
+                <TextView
+                    android:id="@+id/tvTimeTracked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1h 23m"
+                    android:textColor="@color/accent_amber"
+                    android:textSize="@dimen/text_badge"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="3dp" />
+            </LinearLayout>
+
+            <!-- 15. Energy Level tag -->
+            <TextView
+                android:id="@+id/tvEnergyLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚡ Deep Work"
+                android:textColor="@color/energy_deep_work"
+                android:textSize="@dimen/text_badge"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/task_energy_chip_bg"
+                android:paddingHorizontal="@dimen/pill_padding_h"
+                android:paddingVertical="@dimen/pill_padding_v"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- ═══ ROW 6: Dependencies indicator ═══ -->
+        <LinearLayout
+            android:id="@+id/chipDependency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/space_sm"
+            android:background="@drawable/task_dependency_chip_bg"
+            android:paddingHorizontal="@dimen/pill_padding_h"
+            android:paddingVertical="@dimen/pill_padding_v"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔗"
+                android:textSize="@dimen/text_badge" />
+
+            <TextView
+                android:id="@+id/tvDependencyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blocked by 1 task"
+                android:textColor="@color/state_error"
+                android:textSize="@dimen/text_badge"
+                android:fontFamily="sans-serif"
+                android:layout_marginStart="3dp" />
+        </LinearLayout>
+
+        <!-- ═══ ROW 7: Subtask progress bar ═══ -->
         <LinearLayout
             android:id="@+id/subtaskProgressContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="@dimen/space_sm"
             android:visibility="gone">
 
             <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="4dp"
+                android:layout_height="@dimen/progress_height"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="@dimen/space_md">
 
                 <View
                     android:layout_width="match_parent"
@@ -191,19 +450,107 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0/0"
-                android:textColor="#94A3B8"
-                android:textSize="10sp"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_badge"
                 android:fontFamily="sans-serif" />
         </LinearLayout>
+
+        <!-- ═══ ROW 8: Subtask inline preview (first 2 subtasks — expanded state) ═══ -->
+        <LinearLayout
+            android:id="@+id/subtaskPreviewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/space_xs"
+            android:visibility="gone">
+
+            <!-- Subtask preview 1 -->
+            <LinearLayout
+                android:id="@+id/subtaskPreview1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/subtask_row_height"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="4dp"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/cbSubtask1"
+                    android:layout_width="@dimen/subtask_checkbox_size"
+                    android:layout_height="@dimen/subtask_checkbox_size"
+                    android:buttonTint="@color/text_tertiary"
+                    android:layout_marginEnd="@dimen/space_md"
+                    android:scaleX="0.85"
+                    android:scaleY="0.85" />
+
+                <TextView
+                    android:id="@+id/tvSubtask1Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Subtask 1"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/subtask_text_size"
+                    android:fontFamily="sans-serif"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <!-- Subtask preview 2 -->
+            <LinearLayout
+                android:id="@+id/subtaskPreview2"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/subtask_row_height"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="4dp"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/cbSubtask2"
+                    android:layout_width="@dimen/subtask_checkbox_size"
+                    android:layout_height="@dimen/subtask_checkbox_size"
+                    android:buttonTint="@color/text_tertiary"
+                    android:layout_marginEnd="@dimen/space_md"
+                    android:scaleX="0.85"
+                    android:scaleY="0.85" />
+
+                <TextView
+                    android:id="@+id/tvSubtask2Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Subtask 2"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/subtask_text_size"
+                    android:fontFamily="sans-serif"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <!-- "N more subtasks" link -->
+            <TextView
+                android:id="@+id/tvMoreSubtasks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+3 more subtasks"
+                android:textColor="@color/accent_blue_light"
+                android:textSize="@dimen/text_badge"
+                android:fontFamily="sans-serif"
+                android:paddingStart="4dp"
+                android:paddingVertical="2dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- ═══ Next Recurrence Footer ═══ -->
+        <TextView
+            android:id="@+id/tvNextRecurrence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#64748B"
+            android:textSize="11sp"
+            android:layout_marginTop="6dp"
+            android:drawablePadding="4dp"
+            android:visibility="gone" />
+
     </LinearLayout>
 
-    <!-- Three-dot menu -->
-    <ImageView
-        android:id="@+id/btnTaskMenu"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:src="@android:drawable/ic_menu_more"
-        android:padding="4dp"
-        android:layout_marginStart="4dp"
-        android:contentDescription="Task menu" />
 </LinearLayout>

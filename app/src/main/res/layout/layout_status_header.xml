@@ -5,27 +5,100 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingHorizontal="16dp"
-    android:paddingVertical="10dp"
+    android:paddingVertical="12dp"
     android:background="#0D1117"
     android:gravity="center_vertical">
 
+    <!-- App Name -->
     <TextView
-        android:id="@+id/tvStatus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="● Not Connected"
-        android:textColor="#6B7B8D"
-        android:textSize="13sp"
-        android:fontFamily="sans-serif-medium" />
+        android:text="Controller"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.02" />
 
-    <TextView
-        android:id="@+id/tvBattery"
+    <!-- Connection Status Pill -->
+    <LinearLayout
+        android:id="@+id/connectionStatusPill"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🔋 --%"
-        android:textColor="#4FC3F7"
-        android:textSize="13sp"
-        android:fontFamily="sans-serif-medium" />
+        android:layout_height="32dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="10dp"
+        android:background="@drawable/connection_status_pill_bg"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:id="@+id/tvConnectionDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@android:drawable/presence_offline"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Connected"
+            android:textColor="#EF5350"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            android:maxWidth="120dp"
+            android:ellipsize="end"
+            android:maxLines="1" />
+
+    </LinearLayout>
+
+    <!-- Battery Pill -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp"
+        android:background="@drawable/battery_pill_bg"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:id="@+id/tvBattery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔋--%"
+            android:textColor="#4FC3F7"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium" />
+
+    </LinearLayout>
+
+    <!-- Settings Gear Icon -->
+    <TextView
+        android:id="@+id/btnHeaderSettings"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:text="⚙"
+        android:textSize="20sp"
+        android:textColor="#8899AA"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginEnd="4dp" />
+
+    <!-- Connection Icon -->
+    <TextView
+        android:id="@+id/btnHeaderConnect"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:text="🔌"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless" />
 
 </LinearLayout>

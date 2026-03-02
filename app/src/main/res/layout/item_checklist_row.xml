@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="6dp">
+
+    <CheckBox
+        android:id="@+id/cbChecklistItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="#F59E0B"
+        android:layout_marginEnd="8dp" />
+
+    <EditText
+        android:id="@+id/etChecklistItemText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Add item..."
+        android:textColorHint="#475569"
+        android:textColor="#E2E8F0"
+        android:textSize="15sp"
+        android:background="@null"
+        android:inputType="textCapSentences"
+        android:imeOptions="actionNext"
+        android:maxLines="3" />
+
+</LinearLayout>

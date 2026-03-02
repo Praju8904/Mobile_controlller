@@ -564,6 +564,40 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+            <!-- Cross-feature Actions -->
+            <LinearLayout
+                android:id="@+id/crossFeatureRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp">
+                <TextView
+                    android:id="@+id/btnAddToCalendar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📅 Add to Calendar"
+                    android:textColor="#FFFFFF"
+                    android:background="#2A2A4A"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:textSize="13sp"
+                    android:layout_marginEnd="8dp" />
+                <TextView
+                    android:id="@+id/btnConvertToMeeting"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📋 Convert to Meeting"
+                    android:textColor="#FFFFFF"
+                    android:background="#2A2A4A"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.prajwal.myfirstapp">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <!-- Android 13+ media permissions for vault import -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -39,7 +44,7 @@
 
         <!-- Main Activity -->
         <activity
-            android:name=".MainActivity"
+            android:name=".core.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -63,196 +68,571 @@
 
         <!-- Task Manager Activity -->
         <activity
-            android:name=".TaskManagerActivity"
+            android:name=".tasks.TaskManagerActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Task Categories Activity -->
         <activity
-            android:name=".TaskCategoriesActivity"
+            android:name=".tasks.TaskCategoriesActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Task Trash Activity -->
         <activity
-            android:name=".TaskTrashActivity"
+            android:name=".tasks.TaskTrashActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Task Detail Activity -->
         <activity
-            android:name=".TaskDetailActivity"
+            android:name=".tasks.TaskDetailActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Task Stats / Productivity Activity -->
         <activity
-            android:name=".TaskStatsActivity"
+            android:name=".tasks.TaskStatsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Task Search Activity -->
         <activity
-            android:name=".TaskSearchActivity"
+            android:name=".tasks.TaskSearchActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Meetings List Activity -->
+        <activity
+            android:name=".meetings.MeetingsListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Create / Edit Meeting Activity -->
+        <activity
+            android:name=".meetings.CreateMeetingActivity"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Meeting Detail Activity -->
+        <activity
+            android:name=".meetings.MeetingDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Task Templates Activity -->
+        <activity android:name=".tasks.TaskTemplatesActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Task Import Activity -->
+        <activity android:name=".tasks.TaskImportActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Kanban Board Activity -->
+        <activity android:name=".tasks.KanbanBoardActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Time Block Activity -->
+        <activity android:name=".tasks.TimeBlockActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Focus Mode Activity -->
+        <activity android:name=".tasks.FocusModeActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Meeting Analytics Activity -->
+        <activity android:name=".meetings.MeetingAnalyticsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Meeting Search Activity -->
+        <activity android:name=".meetings.MeetingSearchActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Task Manager Settings Activity -->
+        <activity android:name=".tasks.TaskManagerSettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Notes Activity -->
         <activity
-            android:name=".NotesActivity"
+            android:name=".notes.NotesActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Note Folders Home Activity -->
+        <activity
+            android:name=".notes.NoteFoldersHomeActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <!-- Note Folder Activity -->
+        <activity
+            android:name=".notes.NoteFolderActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:screenOrientation="portrait"
+            android:exported="false" />
 
         <!-- Notes Archive Activity -->
         <activity
-            android:name=".NotesArchiveActivity"
+            android:name=".notes.NotesArchiveActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Notes Trash Activity -->
         <activity
-            android:name=".NotesTrashActivity"
+            android:name=".notes.NotesTrashActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Tags Manager Activity -->
         <activity
-            android:name=".TagsManagerActivity"
+            android:name=".notes.TagsManagerActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Note Editor Activity -->
         <activity
-            android:name=".NoteEditorActivity"
+            android:name=".notes.NoteEditorActivity"
+            android:exported="true"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar">
+            <!-- Share text directly to a new note -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <!-- Share images directly to a new note -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
+        <!-- Drawing Note Activity -->
+        <activity
+            android:name=".notes.DrawingNoteActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Chat Activity -->
         <activity
-            android:name=".ChatActivity"
+            android:name=".chat.ChatActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Calendar Activity -->
         <activity
-            android:name=".CalendarActivity"
+            android:name=".calendar.CalendarActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Calendar Event Detail Activity -->
         <activity
-            android:name=".CalendarEventDetailActivity"
+            android:name=".calendar.CalendarEventDetailActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Calendar Categories Activity -->
         <activity
-            android:name=".CalendarCategoriesActivity"
+            android:name=".calendar.CalendarCategoriesActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Calendar Settings Activity -->
         <activity
-            android:name=".CalendarSettingsActivity"
+            android:name=".calendar.CalendarSettingsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Calendar Search Activity -->
         <activity
-            android:name=".CalendarSearchActivity"
+            android:name=".calendar.CalendarSearchActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Calendar Dashboard Activity -->
         <activity
-            android:name=".CalendarDashboardActivity"
+            android:name=".calendar.CalendarDashboardActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Calendar Analytics Activity -->
         <activity
-            android:name=".CalendarAnalyticsActivity"
+            android:name=".calendar.CalendarAnalyticsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- File Manager Activity -->
         <activity
-            android:name=".FileManagerActivity"
+            android:name=".hub.FileManagerActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Settings Activity -->
         <activity
-            android:name=".SettingsActivity"
+            android:name=".core.SettingsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Expense Tracker Activity -->
         <activity
-            android:name=".ExpenseTrackerActivity"
+            android:name=".expenses.ExpenseTrackerActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Income Tracker Activity -->
+        <activity
+            android:name=".expenses.IncomeTrackerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Net Worth Dashboard Activity -->
+        <activity
+            android:name=".expenses.NetWorthDashboardActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Subscriptions / Recurring Expenses Activity -->
         <activity
-            android:name=".SubscriptionsActivity"
+            android:name=".expenses.SubscriptionsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Borrow / Lend Activity -->
+        <activity
+            android:name=".expenses.BorrowLendActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Budget Goals per Category Activity -->
         <activity
-            android:name=".BudgetGoalsActivity"
+            android:name=".expenses.BudgetGoalsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Wallets Activity -->
         <activity
-            android:name=".WalletsActivity"
+            android:name=".expenses.WalletsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Wallet Detail Activity -->
         <activity
-            android:name=".WalletDetailActivity"
+            android:name=".expenses.WalletDetailActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Split Groups Activity -->
         <activity
-            android:name=".SplitGroupsActivity"
+            android:name=".expenses.SplitGroupsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Group Detail Activity -->
         <activity
-            android:name=".GroupDetailActivity"
+            android:name=".expenses.GroupDetailActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <!-- Password Manager Activity -->
         <activity
-            android:name=".PasswordManagerActivity"
+            android:name=".passwords.PasswordManagerActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
-        <!-- Borrow & Lend Activity -->
-        <activity
-            android:name=".BorrowLendActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <!-- ─── Personal Media Vault Activities ─── -->
 
-        <!-- Person Detail Activity -->
+        <!-- Vault Unlock Screen -->
         <activity
-            android:name=".PersonDetailActivity"
+            android:name=".vault.VaultUnlockActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:windowSoftInputMode="adjustPan" />
 
-        <!-- Money Record Detail Activity -->
+        <!-- Vault Home Screen -->
         <activity
-            android:name=".MoneyRecordDetailActivity"
+            android:name=".vault.VaultHomeActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault File Browser -->
+        <activity
+            android:name=".vault.VaultFileBrowserActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Album Detail -->
+        <activity
+            android:name=".vault.VaultAlbumDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Activity Log -->
+        <activity
+            android:name=".vault.VaultActivityLogActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Image Viewer -->
+        <activity
+            android:name=".vault.VaultImageViewerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Video Player -->
+        <activity
+            android:name=".vault.VaultVideoPlayerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Audio Player -->
+        <activity
+            android:name=".vault.VaultAudioPlayerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Document Viewer -->
+        <activity
+            android:name=".vault.VaultDocumentViewerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Import -->
+        <activity
+            android:name=".vault.VaultImportActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Vault Search -->
+        <activity
+            android:name=".vault.VaultSearchActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Vault Settings -->
+        <activity
+            android:name=".vault.VaultSettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- Vault Image Editor -->
+        <activity
+            android:name=".vault.VaultImageEditorActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+
+        <!-- Vault Collections -->
+        <activity
+            android:name=".vault.VaultCollectionActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:screenOrientation="portrait" />
+
+        <!-- Vault Privacy Scanner -->
+        <activity
+            android:name=".vault.VaultPrivacyScannerActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:screenOrientation="portrait" />
+
+        <!-- Vault Smart Organize -->
+        <activity
+            android:name=".vault.VaultSmartOrganizeActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:screenOrientation="portrait" />
+
+        <!-- Todo List Detail Activity -->
+        <activity
+            android:name=".todo.TodoListDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Todo Item Detail Activity -->
+        <activity
+            android:name=".todo.TodoItemDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Notes Settings -->
+        <activity
+            android:name=".notes.NotesSettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Smart File Hub Activities -->
+        <activity
+            android:name=".hub.SmartFileHubActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <activity
+            android:name=".hub.StorageFileBrowserActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <activity
+            android:name=".hub.HubInboxActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <activity
+            android:name=".hub.HubFileBrowserActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubSearchActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubDuplicateManagerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubProjectsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubProjectDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubFileViewerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <activity
+            android:name=".hub.HubStorageIntelligenceActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubQuickShareActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubSettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Advanced File Hub Activities (Prompt 2) -->
+        <activity
+            android:name=".hub.HubAnalyticsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubSmartFolderBuilderActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubBatchOperationsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubWatchlistActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubFileTimelineActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubCollectionsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubCommandPaletteActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubVersionHistoryActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Prompt 2 Activities -->
+        <activity
+            android:name=".hub.HubShareProfilesActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubShareHistoryActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubPackageAndSendActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubPrivacyAnalyzerActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubAuditLogActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubStealthModeActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubStoryModeActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubExpiryCalendarActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubFocusModeActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity
+            android:name=".hub.HubTimeCapsuleActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- File Hub Notification Receivers -->
+        <receiver
+            android:name=".hub.HubFileExpiryManager$ExpiryReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".hub.HubWeeklyReportReceiver"
+            android:exported="false" />
 
         <!-- Foreground Service -->
         <service
@@ -263,14 +643,14 @@
 
         <!-- Dynamic Bar Overlay Service -->
         <service
-            android:name=".DynamicBarService"
+            android:name=".connectivity.DynamicBarService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
         <!-- Notification Mirror Service -->
         <service
-            android:name=".NotifMirrorService"
+            android:name=".connectivity.NotifMirrorService"
             android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -279,7 +659,7 @@
         </service>
         <!-- Device Admin Receiver (for Lock Screen) -->
         <receiver
-            android:name=".MyDeviceAdminReceiver"
+            android:name=".core.MyDeviceAdminReceiver"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
@@ -292,7 +672,7 @@
 
         <!-- Task Reminder Alarm Receiver -->
         <receiver
-            android:name=".TaskReminderReceiver"
+            android:name=".tasks.TaskReminderReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.prajwal.myfirstapp.ACTION_MARK_COMPLETE" />
@@ -303,7 +683,7 @@
 
         <!-- Note Reminder Alarm Receiver -->
         <receiver
-            android:name=".NoteReminderReceiver"
+            android:name=".notes.NoteReminderReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.prajwal.myfirstapp.NOTE_REMINDER" />
@@ -314,7 +694,7 @@
 
         <!-- Expense Notification Receiver (subscriptions, budget alerts, auto-logging) -->
         <receiver
-            android:name=".ExpenseNotificationHelper"
+            android:name=".expenses.ExpenseNotificationHelper"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.prajwal.myfirstapp.ACTION_SUBSCRIPTION_REMINDER" />
@@ -327,7 +707,7 @@
 
         <!-- Calendar Reminder Receiver -->
         <receiver
-            android:name=".CalendarReminderReceiver"
+            android:name=".calendar.CalendarReminderReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.prajwal.myfirstapp.CALENDAR_EVENT_REMINDER" />
@@ -337,9 +717,21 @@
             </intent-filter>
         </receiver>
 
+        <!-- Meeting Reminder Receiver -->
+        <receiver
+            android:name=".meetings.MeetingReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.prajwal.myfirstapp.ACTION_MEETING_REMINDER" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_MEETING_STARTING_NOW" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_MEETING_MISSED" />
+                <action android:name="com.prajwal.myfirstapp.ACTION_JOIN_MEETING" />
+            </intent-filter>
+        </receiver>
+
         <!-- IOU Notification Receiver -->
         <receiver
-            android:name=".IouNotificationHelper"
+            android:name=".expenses.IouNotificationHelper"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.prajwal.myfirstapp.ACTION_IOU_OVERDUE" />
@@ -351,7 +743,7 @@
 
         <!-- Boot Receiver — reschedules task alarms after reboot -->
         <receiver
-            android:name=".BootReceiver"
+            android:name=".core.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -368,6 +760,58 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <activity android:name=".hub.LaptopHubActivity" />
+
+        <!-- ═══ Smart Intelligence — Prompt 3 Activities ═══ -->
+        <activity android:name=".notes.FlashcardReviewActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.FlashcardListActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.StudySessionActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.QuizActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.QuizResultsActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.StudyProgressActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.StudyDashboardActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.ConceptMapActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".timecapsule.TimeCapsuleActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.NoteInsightsActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".notes.NoteShareViewerActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!-- Time Capsule Notification Receiver -->
+        <receiver android:name=".timecapsule.TimeCapsuleNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.prajwal.myfirstapp.ACTION_CHECK_CAPSULES" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Idea Capture Home Screen Widget -->
+        <receiver android:name=".widgets.IdeaCaptureWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_idea_capture_info" />
+        </receiver>
 
     </application>
 

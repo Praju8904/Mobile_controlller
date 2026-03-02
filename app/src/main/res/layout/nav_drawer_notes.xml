@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21"
+    android:layout_gravity="start">
+
+    <!-- Avatar header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="20dp"
+        android:background="#0F172A">
+
+        <FrameLayout
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/notes_fab_bg">
+            <TextView
+                android:id="@+id/tvDrawerInitial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="N"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Notes"
+            android:textColor="#F1F5F9"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <TextView
+            android:id="@+id/tvDrawerNoteCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 notes · 0 folders"
+            android:textColor="#64748B"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- ScrollView for nav items -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="12dp">
+
+            <!-- Views section header -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="VIEWS"
+                android:textColor="#475569"
+                android:textSize="11sp"
+                android:letterSpacing="0.1"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="8dp" />
+
+            <!-- All Notes -->
+            <LinearLayout
+                android:id="@+id/drawerNavAllNotes"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="📋" android:textSize="16sp" android:layout_marginEnd="12dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="All Notes"
+                    android:textColor="#E2E8F0" android:textSize="15sp" />
+                <TextView android:id="@+id/tvDrawerAllCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textColor="#94A3B8" android:textSize="12sp"
+                    android:background="@drawable/notes_count_pill_bg"
+                    android:paddingHorizontal="8dp" android:paddingVertical="2dp" />
+            </LinearLayout>
+
+            <!-- Pinned -->
+            <LinearLayout
+                android:id="@+id/drawerNavPinned"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="📌" android:textSize="16sp" android:layout_marginEnd="12dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Pinned"
+                    android:textColor="#E2E8F0" android:textSize="15sp" />
+                <TextView android:id="@+id/tvDrawerPinnedCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textColor="#94A3B8" android:textSize="12sp"
+                    android:background="@drawable/notes_count_pill_bg"
+                    android:paddingHorizontal="8dp" android:paddingVertical="2dp" />
+            </LinearLayout>
+
+            <!-- Favourites -->
+            <LinearLayout
+                android:id="@+id/drawerNavFavourites"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="⭐" android:textSize="16sp" android:layout_marginEnd="12dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Favourites"
+                    android:textColor="#E2E8F0" android:textSize="15sp" />
+                <TextView android:id="@+id/tvDrawerFavouritesCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textColor="#94A3B8" android:textSize="12sp"
+                    android:background="@drawable/notes_count_pill_bg"
+                    android:paddingHorizontal="8dp" android:paddingVertical="2dp" />
+            </LinearLayout>
+
+            <!-- Reminders -->
+            <LinearLayout
+                android:id="@+id/drawerNavReminders"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🔔" android:textSize="16sp" android:layout_marginEnd="12dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Reminders"
+                    android:textColor="#E2E8F0" android:textSize="15sp" />
+                <TextView android:id="@+id/tvDrawerRemindersCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textColor="#94A3B8" android:textSize="12sp"
+                    android:background="@drawable/notes_count_pill_bg"
+                    android:paddingHorizontal="8dp" android:paddingVertical="2dp" />
+            </LinearLayout>
+
+            <!-- Archive -->
+            <LinearLayout
+                android:id="@+id/drawerNavArchive"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="📦" android:textSize="16sp" android:layout_marginEnd="12dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Archive"
+                    android:textColor="#E2E8F0" android:textSize="15sp" />
+                <TextView android:id="@+id/tvDrawerArchiveCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textColor="#94A3B8" android:textSize="12sp"
+                    android:background="@drawable/notes_count_pill_bg"
+                    android:paddingHorizontal="8dp" android:paddingVertical="2dp" />
+            </LinearLayout>
+
+            <!-- Trash / Recently Deleted -->
+            <LinearLayout
+                android:id="@+id/drawerNavTrash"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🗑️" android:textSize="16sp" android:layout_marginEnd="12dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Recently Deleted"
+                    android:textColor="#E2E8F0" android:textSize="15sp" />
+                <TextView android:id="@+id/tvDrawerTrashCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textColor="#94A3B8" android:textSize="12sp"
+                    android:background="@drawable/notes_count_pill_bg"
+                    android:paddingHorizontal="8dp" android:paddingVertical="2dp" />
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#1E293B" android:layout_marginVertical="8dp"
+                android:layout_marginHorizontal="20dp" />
+
+            <!-- To-Do section header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="✅" android:textSize="12sp" android:layout_marginEnd="6dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="TO-DO LISTS"
+                    android:textColor="#475569"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.1" />
+                <TextView android:id="@+id/tvDrawerTodoCount"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="" android:textColor="#64748B" android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Todo lists container -->
+            <LinearLayout
+                android:id="@+id/drawerTodoList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#1E293B" android:layout_marginVertical="8dp"
+                android:layout_marginHorizontal="20dp" />
+
+            <!-- Folders section header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="📂" android:textSize="12sp" android:layout_marginEnd="6dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="FOLDERS"
+                    android:textColor="#475569"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.1" />
+                <TextView
+                    android:id="@+id/drawerAddFolder"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="+ Add"
+                    android:textColor="#F59E0B" android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- Folder list in drawer (expand/collapse tree) -->
+            <LinearLayout
+                android:id="@+id/drawerFoldersList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#1E293B" android:layout_marginVertical="8dp"
+                android:layout_marginHorizontal="20dp" />
+
+            <!-- Tags section header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🏷️" android:textSize="12sp" android:layout_marginEnd="6dp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="TAGS"
+                    android:textColor="#475569"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.1" />
+            </LinearLayout>
+
+            <!-- Tags container (flow layout) -->
+            <LinearLayout
+                android:id="@+id/drawerTagsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

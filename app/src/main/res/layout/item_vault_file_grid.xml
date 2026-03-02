@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1E293B">
+
+    <!-- Thumbnail -->
+    <ImageView
+        android:id="@+id/ivFileThumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="#0F172A" />
+
+    <!-- File type icon placeholder (shown when no thumbnail) -->
+    <TextView
+        android:id="@+id/tvFileTypeIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="📄"
+        android:textSize="32sp"
+        android:visibility="gone" />
+
+    <!-- Duration badge (video/audio) -->
+    <TextView
+        android:id="@+id/tvDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="4dp"
+        android:text="0:00"
+        android:textColor="#F1F5F9"
+        android:textSize="10sp"
+        android:background="#80000000"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:visibility="gone" />
+
+    <!-- Play icon overlay (video) -->
+    <TextView
+        android:id="@+id/tvPlayIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="▶"
+        android:textSize="24sp"
+        android:textColor="#CCFFFFFF"
+        android:visibility="gone" />
+
+    <!-- Favourite star -->
+    <TextView
+        android:id="@+id/tvFavourite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="3dp"
+        android:text="⭐"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <!-- Selection checkbox overlay -->
+    <FrameLayout
+        android:id="@+id/selectionOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66000080"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvCheckmark"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="4dp"
+            android:text="✓"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:background="#F59E0B" />
+
+    </FrameLayout>
+
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:id="@+id/thumbLoadingProgress"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="#F59E0B"
+        android:visibility="gone" />
+
+</FrameLayout>

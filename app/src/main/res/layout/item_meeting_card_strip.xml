@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Horizontal strip meeting card (~160dp wide) for TaskManager meetings section -->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="10dp"
+    app:cardBackgroundColor="#1E1E3A"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Type icon -->
+        <ImageView
+            android:id="@+id/ivStripTypeIcon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_menu_camera"
+            android:contentDescription="Meeting type"
+            android:scaleType="centerInside"
+            android:padding="4dp"
+            android:background="@drawable/task_icon_circle_bg"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Title (2 lines max) -->
+        <TextView
+            android:id="@+id/tvStripTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Meeting title"
+            android:textColor="#F1F5F9"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Time + duration -->
+        <TextView
+            android:id="@+id/tvStripTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2:00 – 3:00 PM"
+            android:textColor="#94A3B8"
+            android:textSize="11sp"
+            android:layout_marginBottom="2dp" />
+
+        <TextView
+            android:id="@+id/tvStripDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#9E9E9E"
+            android:textSize="10sp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:background="@drawable/task_chip_removable_bg"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Platform badge -->
+        <TextView
+            android:id="@+id/tvStripPlatformBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:paddingHorizontal="6dp"
+            android:textColor="#60A5FA"
+            android:textSize="10sp"
+            android:background="@drawable/task_chip_removable_bg"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+
+        <!-- Attendee avatar count -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@android:drawable/ic_menu_myplaces"
+                android:contentDescription="Attendees"
+                android:scaleType="centerInside"
+                android:layout_marginEnd="4dp" />
+
+            <TextView
+                android:id="@+id/tvStripAttendeeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 people"
+                android:textColor="#9E9E9E"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Join button (shown when meeting is live/starting soon) -->
+        <TextView
+            android:id="@+id/btnStripJoin"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="Join"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="@drawable/task_save_btn_bg"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

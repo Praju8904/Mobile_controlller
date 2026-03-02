@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_gradient_bg">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/laptopHubHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/laptop_hub_header_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/btnLaptopHubBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="‹"
+            android:textSize="28sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginEnd="8dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💻 Laptop Hub"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvLaptopHubStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="● Not Connected"
+                android:textColor="#EF4444"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvLaptopHubPcName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PC Control Hub"
+                android:textColor="#8899AA"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Not Connected Banner -->
+    <LinearLayout
+        android:id="@+id/laptopHubConnectBanner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:background="@drawable/connect_banner_bg"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/laptopHubHeader">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Connect to PC first to use these features"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnLaptopHubConnect"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Connect"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:backgroundTint="#EF4444"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+
+    <!-- Scrollable Card Grid -->
+    <ScrollView
+        android:id="@+id/laptopHubScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scrollbars="none"
+        android:overScrollMode="always"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/laptopHubConnectBanner"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp">
+
+            <!-- Row 1: Touchpad + Keyboard -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardTouchpad"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_touchpad_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🖱️" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Touchpad" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mouse &amp; Scroll" android:textColor="#E8E0FF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/hubCardKeyboard"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/card_keyboard_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⌨️" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Keyboard" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Type on PC" android:textColor="#E0FFFF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 2: Presenter + File Transfer -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardPresenter"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_presenter_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎯" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Presenter" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Slides &amp; Remote" android:textColor="#FFFDE0" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/hubCardFileTransfer"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/card_files_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📁" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="File Transfer" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Send &amp; Receive" android:textColor="#E0F7FF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 3: AI Assistant + PC Control -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardAI"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_ai_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🤖" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="AI Assistant" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Voice &amp; Write AI" android:textColor="#F0F0FF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/hubCardPCControl"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/card_pc_control_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎮" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PC Control" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Volume, Display &amp; More" android:textColor="#E0FFEF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 4: Media & Apps + Dynamic Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardMedia"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_media_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎬" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Media &amp; Apps" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Notepad, Webcam &amp; More" android:textColor="#FFE0E0" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/hubCardDynamicBar"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/card_dynamic_bar_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✨" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dynamic Bar" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Floating Controls" android:textColor="#E8D8FF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 5: Chat + System Monitor -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardChat"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_chat_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💬" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chat" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PC Messaging" android:textColor="#D0ECFF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/hubCardSystemMonitor"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/card_system_monitor_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📊" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="System Monitor" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CPU, RAM, GPU" android:textColor="#CCFFE0" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 6: Power Control + Shortcuts -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardPowerControl"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_shutdown_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⏻" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Power Control" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Shutdown, Restart, Sleep" android:textColor="#FFD0D0" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/hubCardShortcuts"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/card_shortcuts_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⌨" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Shortcuts" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Custom Macros" android:textColor="#FFF0CC" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 7: Browser Remote + Game Controller -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardBrowserRemote"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_browser_remote_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌐" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Browser Remote" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Control PC Browser" android:textColor="#DDEEFF" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/hubCardGameController"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/card_game_controller_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎮" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Game Controller" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Virtual Gamepad" android:textColor="#FFE8CC" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 8: Whiteboard (last card) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/hubCardWhiteboard"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/card_whiteboard_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🖊️" android:textSize="32sp" android:layout_marginBottom="8dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Whiteboard" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Draw on phone, show on PC" android:textColor="#E8FFEC" android:textSize="11sp" android:alpha="0.85" />
+                </LinearLayout>
+
+                <!-- Empty placeholder to maintain grid -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

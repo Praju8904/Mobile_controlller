@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Folder card for the home grid (2-column) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp">
+
+    <LinearLayout
+        android:id="@+id/folderCardRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:minHeight="120dp">
+
+        <!-- Icon -->
+        <TextView
+            android:id="@+id/tvFolderCardIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📁"
+            android:textSize="36sp" />
+
+        <!-- Folder Name -->
+        <TextView
+            android:id="@+id/tvFolderCardName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Folder"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="8dp" />
+
+        <!-- Note count badge -->
+        <TextView
+            android:id="@+id/tvFolderCardCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 notes"
+            android:textColor="#CCFFFFFF"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
+
+        <!-- Preview note titles -->
+        <TextView
+            android:id="@+id/tvFolderCardPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#88FFFFFF"
+            android:textSize="11sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginTop="8dp" />
+
+        <!-- Last modified -->
+        <TextView
+            android:id="@+id/tvFolderCardDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#66FFFFFF"
+            android:textSize="10sp"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+</FrameLayout>

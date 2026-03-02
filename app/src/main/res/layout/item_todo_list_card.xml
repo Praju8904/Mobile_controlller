@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="140dp"
+    android:layout_height="160dp"
+    android:background="@drawable/task_category_card_bg">
+
+    <!-- List icon -->
+    <TextView
+        android:id="@+id/tvListIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:text="📋"
+        android:textSize="40sp" />
+
+    <!-- Overdue badge (top-right) -->
+    <TextView
+        android:id="@+id/tvOverdueBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="3 overdue"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        android:fontFamily="sans-serif-medium"
+        android:background="@drawable/task_overdue_banner_bg"
+        android:paddingHorizontal="7dp"
+        android:paddingVertical="3dp"
+        android:visibility="gone" />
+
+    <!-- Bottom text area -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvListName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="List Name"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tvTaskCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0 tasks"
+            android:textColor="#94A3B8"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
+
+    </LinearLayout>
+
+    <!-- Completion ring (top-right, overlapping overdue badge area) -->
+    <!-- Custom view placeholder: sized 40×40dp at top-end -->
+    <View
+        android:id="@+id/completionRing"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp" />
+
+</FrameLayout>

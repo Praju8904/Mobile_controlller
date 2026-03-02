@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/notes_bottom_sheet_bg"
+    android:paddingHorizontal="20dp"
+    android:paddingBottom="32dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:background="#334155" />
+
+    <!-- Sheet title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New To-Do List"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp" />
+
+    <!-- ═══ LIVE PREVIEW CARD ═══ -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvPreview"
+        android:layout_width="140dp"
+        android:layout_height="160dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        app:cardBackgroundColor="#1E293B"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp">
+
+            <!-- Icon preview -->
+            <TextView
+                android:id="@+id/tvPreviewIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="📋"
+                android:textSize="40sp" />
+
+            <!-- Name preview -->
+            <TextView
+                android:id="@+id/tvPreviewName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="24dp"
+                android:text="List name"
+                android:textColor="#E2E8F0"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:gravity="center" />
+
+            <!-- Task count placeholder -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="8dp"
+                android:text="0 tasks"
+                android:textColor="#64748B"
+                android:textSize="11sp"
+                android:gravity="center" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- ═══ LIST NAME ═══ -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List Name"
+        android:textColor="#94A3B8"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/etListName"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:hint="List name"
+        android:textColorHint="#475569"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:background="@drawable/task_input_bg"
+        android:paddingHorizontal="16dp"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:autofillHints="name"
+        android:focusableInTouchMode="true"
+        android:layout_marginBottom="20dp" />
+
+    <!-- ═══ COLOR PICKER ═══ -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Color"
+        android:textColor="#94A3B8"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="10dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:id="@+id/colorPickerContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Placeholder color swatches; populated dynamically -->
+            <View
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/task_icon_circle_bg"
+                android:layout_marginEnd="10dp" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!-- ═══ ICON PICKER ═══ -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Icon"
+        android:textColor="#94A3B8"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="10dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:id="@+id/iconPickerContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Placeholder icon cells; populated dynamically -->
+            <TextView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:text="📋"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:background="@drawable/task_filter_chip_active_bg"
+                android:layout_marginEnd="8dp" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!-- ═══ FOLDER PICKER ═══ -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Folder"
+        android:textColor="#94A3B8"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnFolderPicker"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="📁  None"
+        android:textColor="#94A3B8"
+        android:textSize="15sp"
+        android:gravity="start|center_vertical"
+        android:paddingHorizontal="16dp"
+        android:background="@drawable/task_input_bg"
+        android:layout_marginBottom="24dp" />
+
+    <!-- ═══ SAVE BUTTON ═══ -->
+    <Button
+        android:id="@+id/btnSaveList"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="Create List"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="@drawable/task_save_btn_bg" />
+
+</LinearLayout>

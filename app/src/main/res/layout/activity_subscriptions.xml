@@ -268,7 +268,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="8dp" />
 
-                <com.prajwal.myfirstapp.ExpenseDonutView
+                <com.prajwal.myfirstapp.expenses.ExpenseDonutView
                     android:id="@+id/subscriptionDonut"
                     android:layout_width="match_parent"
                     android:layout_height="220dp" />
@@ -293,7 +293,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="8dp" />
 
-                <com.prajwal.myfirstapp.SubscriptionTrendChartView
+                <com.prajwal.myfirstapp.expenses.SubscriptionTrendChartView
                     android:id="@+id/trendChart"
                     android:layout_width="match_parent"
                     android:layout_height="200dp" />

@@ -1,0 +1,982 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0E21"
+    android:orientation="vertical">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#0F172A"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:id="@+id/btnBackNotesSettings"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="←"
+            android:textColor="#F1F5F9"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:text="Notes Settings"
+            android:textColor="#F1F5F9"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="40dp">
+
+            <!-- ══════ APPEARANCE ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="APPEARANCE"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemDefaultNoteColor"
+                style="@style/NoteSettingsItem"
+                android:text="🎨  Default Note Color: #2D2D2D" />
+
+            <TextView
+                android:id="@+id/itemBackgroundTexture"
+                style="@style/NoteSettingsItem"
+                android:text="🖼️  Background Texture: Plain" />
+
+            <TextView
+                android:id="@+id/itemDefaultView"
+                style="@style/NoteSettingsItem"
+                android:text="📐  Default View: Grid" />
+
+            <TextView
+                android:id="@+id/itemGridColumns"
+                style="@style/NoteSettingsItem"
+                android:text="⊞  Grid Columns: 2" />
+
+            <TextView
+                android:id="@+id/itemPreviewLines"
+                style="@style/NoteSettingsItem"
+                android:text="📄  Preview Lines: 2 lines" />
+
+            <!-- Show Tags on Cards -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🏷️  Show Tags on Cards"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchShowTags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Show Folder Badge -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📁  Show Folder Badge on Cards"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchShowFolderBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Show Timestamps -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🕐  Show Timestamps on Cards"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchShowTimestamps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Show Word Count on Cards -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔢  Show Word Count on Cards"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchShowWordCountCards"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemAccentColor"
+                style="@style/NoteSettingsItem"
+                android:text="🎨  App Theme Accent: Orange" />
+
+            <!-- ══════ EDITOR ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="EDITOR"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemDefaultBlockType"
+                style="@style/NoteSettingsItem"
+                android:text="📝  Default Block: Text" />
+
+            <TextView
+                android:id="@+id/itemAutosaveInterval"
+                style="@style/NoteSettingsItem"
+                android:text="💾  Auto-save: 30 seconds" />
+
+            <TextView
+                android:id="@+id/itemFontSize"
+                style="@style/NoteSettingsItem"
+                android:text="🔤  Font Size: Medium" />
+
+            <TextView
+                android:id="@+id/itemFontFamily"
+                style="@style/NoteSettingsItem"
+                android:text="🔡  Font Family: Default" />
+
+            <!-- Auto Capitalize -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⬆️  Auto Capitalize"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchAutoCapitalize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Spell Check -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="✏️  Spell Check"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchSpellCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemToolbarVisibility"
+                style="@style/NoteSettingsItem"
+                android:text="🛠️  Show Toolbar: Only When Keyboard Visible" />
+
+            <!-- Show Block Handles -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⠿  Show Block Handles"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchBlockHandles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Typewriter Mode -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⌨️  Typewriter Mode Default"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchTypewriterMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemAmbientSounds"
+                style="@style/NoteSettingsItem"
+                android:text="🎵  Ambient Sounds: Off" />
+
+            <!-- Word Count Bar -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔢  Show Word Count Bar"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchWordCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Reading Time -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📖  Show Reading Time"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchReadingTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemChecklistBehavior"
+                style="@style/NoteSettingsItem"
+                android:text="☑️  Completed Items: Show completed" />
+
+            <!-- ══════ STUDY MODE ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="STUDY MODE"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemSpacedRep"
+                style="@style/NoteSettingsItem"
+                android:text="🧠  Spaced Repetition: Standard" />
+
+            <TextView
+                android:id="@+id/itemReviewReminderTime"
+                style="@style/NoteSettingsItem"
+                android:text="⏰  Daily Review Reminder: 09:00" />
+
+            <TextView
+                android:id="@+id/itemQuizDifficulty"
+                style="@style/NoteSettingsItem"
+                android:text="❓  Quiz Difficulty: Medium" />
+
+            <TextView
+                android:id="@+id/itemFlashcardAnimation"
+                style="@style/NoteSettingsItem"
+                android:text="🃏  Flashcard Animation: Flip" />
+
+            <TextView
+                android:id="@+id/itemStudySession"
+                style="@style/NoteSettingsItem"
+                android:text="⏱  Study Session: 25 min" />
+
+            <TextView
+                android:id="@+id/itemBreakDuration"
+                style="@style/NoteSettingsItem"
+                android:text="☕  Break Duration: 5 min" />
+
+            <!-- ══════ ORGANIZATION ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="ORGANIZATION"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemDefaultSort"
+                style="@style/NoteSettingsItem"
+                android:text="⇅  Default Sort: Date Modified" />
+
+            <TextView
+                android:id="@+id/itemDefaultCategory"
+                style="@style/NoteSettingsItem"
+                android:text="🗂️  Default Category: Personal" />
+
+            <!-- Auto-categorization -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🤖  Auto-categorization Suggestions"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchAutoCateg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Smart Tag Suggestions -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="💡  Smart Tag Suggestions"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchSmartTags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Duplicate Detection -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔍  Duplicate Detection"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchDuplicateDetect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Smart Reminders -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔔  Smart Reminders"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchSmartReminders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Auto-relationship Detection -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔗  Auto-relationship Detection"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchAutoRelationship"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Mood Context Recording -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="😊  Mood Context Recording"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchMoodContext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Weather Context Recording -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🌤️  Weather Context Recording"
+                    android:textColor="#94A3B8"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchWeatherContext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- ══════ SECURITY ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="SECURITY"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <!-- App-level Lock -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔒  App-level Lock"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchAppLock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemBiometricPref"
+                style="@style/NoteSettingsItem"
+                android:text="🔐  App Lock Method: Biometric" />
+
+            <TextView
+                android:id="@+id/itemNoteLockPref"
+                style="@style/NoteSettingsItem"
+                android:text="🔒  Note Lock Method: Biometric" />
+
+            <TextView
+                android:id="@+id/itemAutoLockAfter"
+                style="@style/NoteSettingsItem"
+                android:text="⏱  Auto-lock After: 5 minutes" />
+
+            <!-- Screenshot Protection -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📸  Screenshot Protection"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchScreenshotProtection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- ══════ TO-DO ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="TO-DO"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemDefaultPriority"
+                style="@style/NoteSettingsItem"
+                android:text="⚡  Default Priority: None" />
+
+            <TextView
+                android:id="@+id/itemDefaultDueTime"
+                style="@style/NoteSettingsItem"
+                android:text="🕒  Default Due Time: 09:00" />
+
+            <TextView
+                android:id="@+id/itemOverdueNotifTime"
+                style="@style/NoteSettingsItem"
+                android:text="⏰  Overdue Alert Time: 08:00" />
+
+            <!-- Daily To-Do Digest -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📋  Daily To-Do Digest"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchDailyDigest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemDigestTime"
+                style="@style/NoteSettingsItem"
+                android:text="📋  Digest Time: 07:00" />
+
+            <!-- Recurring Auto-create -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔁  Recurring Task Auto-create"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchRecurringAutoCreate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Completed Auto-archive -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📦  Completed Task Auto-archive"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchCompletedAutoArchive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- ══════ NOTIFICATIONS ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="NOTIFICATIONS"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <!-- Note Reminders -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔔  Note Reminders"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchNoteReminders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- To-Do Reminders -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="✅  To-Do Reminders"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchTodoReminders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Quick Capture Notification -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⚡  Quick Capture Notification"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchQuickCapture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Study Review Reminder -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📚  Study Review Reminder"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchStudyReviewReminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemStudyReviewReminderTime"
+                style="@style/NoteSettingsItem"
+                android:text="📚  Review Reminder Time: 08:00" />
+
+            <!-- Weekly Note Digest -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📰  Weekly Note Digest (Sundays)"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchWeeklyNoteDigest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- Time Capsule Notifications -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⏳  Time Capsule Open Notifications"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchTimeCapsuleNotif"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemNotifSound"
+                style="@style/NoteSettingsItem"
+                android:text="🔔  Sound: Default" />
+
+            <!-- Vibration -->
+            <LinearLayout
+                style="@style/NoteSettingsSwitchRow">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📳  Notification Vibration"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+                <Switch
+                    android:id="@+id/switchNotifVibration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#FF6600"
+                    android:trackTint="#FF660055" />
+            </LinearLayout>
+
+            <!-- ══════ IMPORT &amp; EXPORT ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="IMPORT &amp; EXPORT"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemTrashAutoDelete"
+                style="@style/NoteSettingsItem"
+                android:text="🗑️  Trash Auto-delete: After 30 days" />
+
+            <TextView
+                android:id="@+id/itemArchiveNotes"
+                style="@style/NoteSettingsItem"
+                android:text="📦  Archive Notes →" />
+
+            <TextView
+                android:id="@+id/itemExportJson"
+                style="@style/NoteSettingsItem"
+                android:text="📤  Export as JSON Backup" />
+
+            <TextView
+                android:id="@+id/itemExportZip"
+                style="@style/NoteSettingsItem"
+                android:text="📤  Export as ZIP with HTML Files" />
+
+            <TextView
+                android:id="@+id/itemExportPdf"
+                style="@style/NoteSettingsItem"
+                android:text="📤  Export as PDF (per note)" />
+
+            <TextView
+                android:id="@+id/itemImportJson"
+                style="@style/NoteSettingsItem"
+                android:text="📥  Import from JSON Backup" />
+
+            <TextView
+                android:id="@+id/itemImportEnex"
+                style="@style/NoteSettingsItem"
+                android:text="📥  Import from Evernote (.enex)" />
+
+            <TextView
+                android:id="@+id/itemImportNotion"
+                style="@style/NoteSettingsItem"
+                android:text="📥  Import from Notion Export ZIP" />
+
+            <TextView
+                android:id="@+id/itemClearAllNotes"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="⚠️  Clear All Notes (Danger Zone)"
+                android:textColor="#EF4444"
+                android:textSize="15sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/itemClearCompletedTodos"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="🗑️  Clear All Completed To-Do Items"
+                android:textColor="#EF4444"
+                android:textSize="15sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/itemResetSettings"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="↺  Reset Notes Settings to Default"
+                android:textColor="#EF4444"
+                android:textSize="15sp" />
+
+            <!-- ══════ ABOUT ══════ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="6dp"
+                android:text="ABOUT"
+                android:textColor="#FF6600"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/tvAboutStats"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="📊  Notes: —"
+                android:textColor="#94A3B8"
+                android:textSize="14sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/tvAboutVersion"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="Notes v4.0  ·  Built for Android"
+                android:textColor="#94A3B8"
+                android:textSize="14sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/tvAboutStorage"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="💾  Storage: calculating…"
+                android:textColor="#94A3B8"
+                android:textSize="14sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/itemRateApp"
+                style="@style/NoteSettingsItem"
+                android:text="⭐  Rate the App →" />
+
+            <TextView
+                android:id="@+id/itemSendFeedback"
+                style="@style/NoteSettingsItem"
+                android:text="💬  Send Feedback →" />
+
+            <TextView
+                android:id="@+id/itemKeyboardShortcuts"
+                style="@style/NoteSettingsItem"
+                android:text="⌨️  Tips &amp; Keyboard Shortcuts →" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

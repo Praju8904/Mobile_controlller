@@ -91,8 +91,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🗑️"
-                android:textSize="48sp"
+                android:text="✨"
+                android:textSize="52sp"
                 android:layout_marginBottom="16dp" />
 
             <TextView
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:text="Trash is empty"
                 android:textColor="#F1F5F9"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="8dp" />
@@ -108,7 +108,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Deleted tasks will appear here for 30 days"
+                android:text="Deleted tasks appear here for 30 days\nbefore being permanently removed"
                 android:textColor="#6B7280"
                 android:textSize="13sp"
                 android:gravity="center" />

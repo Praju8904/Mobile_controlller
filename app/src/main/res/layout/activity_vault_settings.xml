@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0E21"
+    android:orientation="vertical">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#0F172A"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="←"
+            android:textColor="#F1F5F9"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Vault Settings"
+            android:textColor="#F1F5F9"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="32dp">
+
+            <!-- SECTION: Security -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="6dp"
+                android:text="SECURITY"
+                android:textColor="#6C63FF"
+                android:textSize="11sp"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemChangePin"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="🔑  Change PIN"
+                android:textColor="#F1F5F9"
+                android:textSize="15sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/itemAutoLock"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="⏱  Auto-lock Timer"
+                android:textColor="#F1F5F9"
+                android:textSize="15sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/itemFailedLimit"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="🚫  Failed Attempt Limit"
+                android:textColor="#F1F5F9"
+                android:textSize="15sp" />
+
+            <!-- SECTION: Storage -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="6dp"
+                android:text="STORAGE"
+                android:textColor="#6C63FF"
+                android:textSize="11sp"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/tvStorageBreakdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#1E293B"
+                android:padding="16dp"
+                android:text="Loading..."
+                android:textColor="#94A3B8"
+                android:textSize="13sp"
+                android:layout_marginBottom="1dp" />
+
+            <TextView
+                android:id="@+id/itemClearThumbs"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="🗑  Clear Thumbnail Cache"
+                android:textColor="#F1F5F9"
+                android:textSize="15sp" />
+
+            <!-- SECTION: Import -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="6dp"
+                android:text="IMPORT"
+                android:textColor="#6C63FF"
+                android:textSize="11sp"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemImportDefault"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="📥  Default: Ask every time"
+                android:textColor="#F1F5F9"
+                android:textSize="15sp" />
+
+            <!-- SECTION: Display -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="6dp"
+                android:text="DISPLAY"
+                android:textColor="#6C63FF"
+                android:textSize="11sp"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemGridColumns"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="⊞  Grid Columns: 3"
+                android:textColor="#F1F5F9"
+                android:textSize="15sp"
+                android:layout_marginBottom="1dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginBottom="1dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Show File Names"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+
+                <android.widget.Switch
+                    android:id="@+id/switchShowNames"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Show File Sizes"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp" />
+
+                <android.widget.Switch
+                    android:id="@+id/switchShowSizes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true" />
+            </LinearLayout>
+
+            <!-- SECTION: Danger Zone -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="6dp"
+                android:text="DANGER ZONE"
+                android:textColor="#EF4444"
+                android:textSize="11sp"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/itemWipeVault"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="💣  Wipe Entire Vault"
+                android:textColor="#EF4444"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

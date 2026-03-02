@@ -62,6 +62,18 @@
     </style>
 
     <!-- ═══════════════════════════════════════════════════════════════════════════
+         VAULT PIN PAD BUTTON STYLE
+         ═══════════════════════════════════════════════════════════════════════════ -->
+    <style name="PinButton" parent="Widget.AppCompat.Button">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">#F1F5F9</item>
+        <item name="android:background">@drawable/vault_pin_btn_bg</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
          EDIT TEXT STYLE FOR DARK DIALOGS
          ═══════════════════════════════════════════════════════════════════════════ -->
     <style name="DarkEditText" parent="Widget.AppCompat.EditText">
@@ -69,6 +81,32 @@
         <item name="android:textColorHint">#64748B</item>
         <item name="android:backgroundTint">#F59E0B</item>
         <item name="colorControlActivated">#F59E0B</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         NOTES SETTINGS ITEM STYLE
+         ═══════════════════════════════════════════════════════════════════════════ -->
+    <style name="NoteSettingsItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:background">#1E293B</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textColor">#F1F5F9</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+    </style>
+
+    <style name="NoteSettingsSwitchRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:background">#1E293B</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginBottom">1dp</item>
     </style>
 
 </resources>

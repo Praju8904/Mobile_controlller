@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/task_card_bg"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    android:gravity="center_vertical"
+    android:minHeight="64dp">
+
+    <!-- Left priority border -->
+    <View
+        android:id="@+id/priorityBorder"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:background="#3B82F6" />
+
+    <!-- Checkbox area -->
+    <FrameLayout
+        android:id="@+id/checkboxArea"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless">
+
+        <!-- Circle background -->
+        <View
+            android:id="@+id/checkboxBg"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:background="@drawable/task_icon_circle_bg" />
+
+        <!-- Checkmark (shown when complete) -->
+        <TextView
+            android:id="@+id/tvCheckmark"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:text="✓"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <!-- Content area -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingVertical="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="4dp">
+
+        <!-- Task title -->
+        <TextView
+            android:id="@+id/tvTaskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Task title"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Description preview (hidden if empty) -->
+        <TextView
+            android:id="@+id/tvTaskDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#94A3B8"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <!-- Chips row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+
+            <!-- Due date chip -->
+            <TextView
+                android:id="@+id/tvDueChip"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:text="📅 Today"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:gravity="center_vertical"
+                android:background="@drawable/task_filter_chip_bg"
+                android:paddingHorizontal="8dp"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- Subtasks chip -->
+            <TextView
+                android:id="@+id/tvSubtasksChip"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:text="0/0 subtasks"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:gravity="center_vertical"
+                android:background="@drawable/task_filter_chip_bg"
+                android:paddingHorizontal="8dp"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- Recurring icon -->
+            <TextView
+                android:id="@+id/tvRecurring"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:text="🔁"
+                android:textSize="12sp"
+                android:gravity="center_vertical"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 3-dot menu button -->
+    <ImageButton
+        android:id="@+id/btnTaskMenu"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_more"
+        android:tint="#64748B"
+        android:scaleType="centerInside"
+        android:contentDescription="Task options" />
+
+</LinearLayout>

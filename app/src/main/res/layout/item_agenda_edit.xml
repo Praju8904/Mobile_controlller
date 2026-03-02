@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Agenda item row in create/edit meeting (editable mode) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="6dp">
+
+    <!-- Drag handle -->
+    <ImageView
+        android:id="@+id/ivAgendaDragHandle"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@android:drawable/ic_menu_sort_by_size"
+        android:contentDescription="Drag to reorder"
+        android:scaleType="centerInside"
+        android:padding="4dp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Title field -->
+    <EditText
+        android:id="@+id/etAgendaTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:hint="Agenda item..."
+        android:textColorHint="#4A4A6A"
+        android:textColor="#F1F5F9"
+        android:textSize="14sp"
+        android:background="@drawable/task_detail_section_bg"
+        android:padding="8dp"
+        android:inputType="textCapSentences"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:layout_marginEnd="6dp" />
+
+    <!-- Duration field -->
+    <EditText
+        android:id="@+id/etAgendaDuration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Min"
+        android:textColorHint="#4A4A6A"
+        android:textColor="#F1F5F9"
+        android:textSize="13sp"
+        android:background="@drawable/task_detail_section_bg"
+        android:padding="8dp"
+        android:inputType="number"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:layout_marginEnd="6dp" />
+
+    <!-- Presenter field -->
+    <EditText
+        android:id="@+id/etAgendaPresenter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:hint="Presenter"
+        android:textColorHint="#4A4A6A"
+        android:textColor="#F1F5F9"
+        android:textSize="13sp"
+        android:background="@drawable/task_detail_section_bg"
+        android:padding="8dp"
+        android:inputType="textPersonName"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:layout_marginEnd="6dp" />
+
+    <!-- Delete button -->
+    <TextView
+        android:id="@+id/btnDeleteAgendaItem"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:gravity="center"
+        android:text="✕"
+        android:textColor="#EF5350"
+        android:textSize="16sp"
+        android:background="@drawable/task_icon_circle_bg" />
+
+</LinearLayout>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Action item row in meeting detail -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp">
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/cbActionItem"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:buttonTint="#6C63FF"
+        android:scaleX="1.1"
+        android:scaleY="1.1"
+        android:layout_marginEnd="10dp" />
+
+    <!-- Title + assignee + due date column -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:id="@+id/tvActionItemTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Action item title"
+            android:textColor="#F1F5F9"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginBottom="3dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvActionItemAssignee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Unassigned"
+                android:textColor="#9E9E9E"
+                android:textSize="12sp"
+                android:layout_marginEnd="10dp" />
+
+            <TextView
+                android:id="@+id/tvActionItemDueDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#94A3B8"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Link to task icon (if linked to a task) -->
+    <ImageView
+        android:id="@+id/ivActionItemTaskLink"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@android:drawable/ic_menu_share"
+        android:contentDescription="Linked task"
+        android:scaleType="centerInside"
+        android:padding="2dp"
+        android:visibility="gone" />
+
+</LinearLayout>

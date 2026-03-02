@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/vault_header_bg">
+
+        <Button
+            android:id="@+id/btnBrowserBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="20sp"
+            android:textColor="#F1F5F9"
+            android:background="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/tvBrowserTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Photos"
+            android:textColor="#F1F5F9"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingStart="8dp" />
+
+        <TextView
+            android:id="@+id/tvBrowserCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 items"
+            android:textColor="#64748B"
+            android:textSize="13sp"
+            android:paddingEnd="8dp" />
+
+        <!-- Sort -->
+        <Button
+            android:id="@+id/btnSort"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="⇅"
+            android:textSize="18sp"
+            android:textColor="#94A3B8"
+            android:background="@android:color/transparent" />
+
+        <!-- View Toggle -->
+        <Button
+            android:id="@+id/btnViewToggle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="⊞"
+            android:textSize="18sp"
+            android:textColor="#94A3B8"
+            android:background="@android:color/transparent" />
+
+        <!-- Select -->
+        <Button
+            android:id="@+id/btnSelect"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="☑"
+            android:textSize="18sp"
+            android:textColor="#94A3B8"
+            android:background="@android:color/transparent" />
+
+    </LinearLayout>
+
+    <!-- Multi-select Top Bar (hidden by default) -->
+    <LinearLayout
+        android:id="@+id/multiSelectTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center_vertical"
+        android:background="#1E3A5F"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvSelectedCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="0 selected"
+            android:textColor="#F1F5F9"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Select All"
+            android:textColor="#F59E0B"
+            android:textSize="13sp"
+            android:background="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/btnExitSelect"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="✕"
+            android:textColor="#94A3B8"
+            android:background="@android:color/transparent" />
+
+    </LinearLayout>
+
+    <!-- File List/Grid -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Grid View (3-column) -->
+        <android.widget.GridView
+            android:id="@+id/fileGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="3"
+            android:stretchMode="columnWidth"
+            android:horizontalSpacing="2dp"
+            android:verticalSpacing="2dp"
+            android:padding="2dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:visibility="visible" />
+
+        <!-- List View -->
+        <ListView
+            android:id="@+id/fileListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#1E293B"
+            android:dividerHeight="1dp"
+            android:visibility="gone" />
+
+        <!-- Empty State -->
+        <LinearLayout
+            android:id="@+id/browserEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📂"
+                android:textSize="48sp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/tvBrowserEmptyTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No files here yet"
+                android:textColor="#F1F5F9"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Multi-select Bottom Action Bar -->
+    <LinearLayout
+        android:id="@+id/multiSelectBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="@drawable/vault_header_bg"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btnActionAlbum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📁"
+            android:textSize="20sp"
+            android:background="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/btnActionFavourite"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="⭐"
+            android:textSize="20sp"
+            android:background="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/btnActionExport"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📤"
+            android:textSize="20sp"
+            android:background="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/btnActionShare"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="↗️"
+            android:textSize="20sp"
+            android:background="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/btnActionDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🗑️"
+            android:textSize="20sp"
+            android:background="@android:color/transparent" />
+
+    </LinearLayout>
+
+</LinearLayout>

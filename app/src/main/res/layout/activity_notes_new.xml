@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/home_gradient_bg">
@@ -25,11 +32,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="20dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="4dp">
+                android:paddingHorizontal="16dp"
+                android:paddingTop="28dp"
+                android:paddingBottom="4dp"
+                android:fitsSystemWindows="true">
 
-                <!-- Top Row: Back + Title + Count + Sync + ViewToggle -->
+                <!-- Top Row: Hamburger + Title + Compose -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -37,12 +45,12 @@
                     android:gravity="center_vertical">
 
                     <ImageButton
-                        android:id="@+id/btnBackNotes"
+                        android:id="@+id/btnDrawerToggle"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@android:drawable/ic_menu_revert"
-                        android:contentDescription="Back"
+                        android:src="@android:drawable/ic_menu_view"
+                        android:contentDescription="Menu"
                         android:tint="#FFFFFF"
                         android:scaleType="centerInside" />
 
@@ -58,29 +66,7 @@
                         android:fontFamily="sans-serif-medium"
                         android:layout_marginStart="8dp" />
 
-                    <TextView
-                        android:id="@+id/tvNoteCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0 notes"
-                        android:textColor="#94A3B8"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:background="@drawable/notes_count_pill_bg"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="5dp" />
-
-                    <ImageButton
-                        android:id="@+id/btnSyncNotes"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@android:drawable/stat_notify_sync"
-                        android:contentDescription="Sync"
-                        android:tint="#94A3B8"
-                        android:scaleType="centerInside"
-                        android:layout_marginStart="4dp" />
-
+                    <!-- View toggle (grid/list) — kept in header right side -->
                     <ImageButton
                         android:id="@+id/btnViewToggle"
                         android:layout_width="40dp"
@@ -91,6 +77,7 @@
                         android:tint="#94A3B8"
                         android:scaleType="centerInside" />
 
+                    <!-- More/overflow menu -->
                     <ImageButton
                         android:id="@+id/btnMoreMenu"
                         android:layout_width="40dp"
@@ -102,17 +89,37 @@
                         android:scaleType="centerInside" />
                 </LinearLayout>
 
-                <!-- Date line -->
-                <TextView
-                    android:id="@+id/tvDateLine"
-                    android:layout_width="wrap_content"
+                <!-- Date + Count pill row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Wednesday, Feb 25"
-                    android:textColor="#475569"
-                    android:textSize="13sp"
-                    android:fontFamily="sans-serif"
-                    android:layout_marginStart="48dp"
-                    android:layout_marginTop="2dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="2dp">
+
+                    <TextView
+                        android:id="@+id/tvDateLine"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Wednesday, Feb 25"
+                        android:textColor="#F59E0B"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                        android:id="@+id/tvNoteCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 notes"
+                        android:textColor="#64748B"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:background="@drawable/notes_count_pill_bg"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="3dp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ═══ SEARCH BAR ═══ -->
@@ -202,6 +209,163 @@
                     android:gravity="center_vertical" />
             </HorizontalScrollView>
 
+            <!-- ═══ RECENTLY VIEWED STRIP ═══ -->
+            <LinearLayout
+                android:id="@+id/recentlyViewedSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🕐 Recently Viewed"
+                        android:textColor="#94A3B8"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:clipToPadding="false">
+
+                    <LinearLayout
+                        android:id="@+id/recentlyViewedContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp" />
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <!-- ═══ TO-DO LISTS SECTION ═══ -->
+            <LinearLayout
+                android:id="@+id/todoListsSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="visible">
+
+                <!-- Header row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:paddingBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/tvTodoHeader"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="To-Do Lists"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvTodoSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 active"
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/btnViewAllTodos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View All"
+                        android:textColor="#60A5FA"
+                        android:textSize="13sp"
+                        android:paddingVertical="4dp"
+                        android:paddingHorizontal="8dp" />
+                </LinearLayout>
+
+                <!-- Horizontal scrollable list cards -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/todoListsRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="16dp" />
+
+            </LinearLayout>
+
+            <!-- ═══ FOLDER STRIP ═══ -->            <LinearLayout
+                android:id="@+id/folderStripSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:visibility="gone">
+
+                <!-- Header row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Folders"
+                        android:textColor="#F1F5F9"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/btnViewAllFolders"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View All"
+                        android:textColor="#F59E0B"
+                        android:textSize="13sp"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp" />
+                </LinearLayout>
+
+                <!-- Horizontal folder cards scroll -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:clipToPadding="false">
+
+                    <LinearLayout
+                        android:id="@+id/folderCardsContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:paddingBottom="4dp" />
+                </HorizontalScrollView>
+            </LinearLayout>
+
             <!-- ═══ PINNED SECTION ═══ -->
             <LinearLayout
                 android:id="@+id/pinnedSection"
@@ -269,7 +433,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingTop="80dp"
+                android:paddingTop="60dp"
                 android:paddingHorizontal="40dp"
                 android:visibility="gone">
 
@@ -278,14 +442,14 @@
                     android:layout_height="wrap_content"
                     android:text="📓"
                     android:textSize="72sp"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="20dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your notebook is empty"
+                    android:text="No notes yet"
                     android:textColor="#E2E8F0"
-                    android:textSize="20sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center" />
@@ -293,12 +457,24 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tap the + button to create your first note.\nCapture thoughts, ideas, and everything in between."
+                    android:text="Tap + to write your first thought.\nCapture ideas, tasks, and everything between."
                     android:textColor="#64748B"
                     android:textSize="14sp"
                     android:gravity="center"
                     android:lineSpacingExtra="4dp"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="24dp" />
+
+                <TextView
+                    android:id="@+id/btnEmptyCreateNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create your first note"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:background="@drawable/notes_fab_bg"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="12dp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -421,7 +597,7 @@
         <FrameLayout
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:background="@drawable/notes_speed_dial_bg">
+            android:background="@drawable/notes_speed_dial_teal_bg">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="center" android:text="🖼️" android:textSize="20sp" />
         </FrameLayout>
@@ -450,7 +626,7 @@
         <FrameLayout
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:background="@drawable/notes_speed_dial_bg">
+            android:background="@drawable/notes_speed_dial_purple_bg">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="center" android:text="🎤" android:textSize="20sp" />
         </FrameLayout>
@@ -479,7 +655,7 @@
         <FrameLayout
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:background="@drawable/notes_speed_dial_bg">
+            android:background="@drawable/notes_speed_dial_blue_bg">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="center" android:text="☑️" android:textSize="20sp" />
         </FrameLayout>
@@ -529,3 +705,8 @@
         app:elevation="6dp" />
 
 </FrameLayout>
+
+<!-- ═══ NAV DRAWER ═══ -->
+<include layout="@layout/nav_drawer_notes" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

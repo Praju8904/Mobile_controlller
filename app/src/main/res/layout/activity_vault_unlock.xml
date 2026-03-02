@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vaultUnlockRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0E1F">
+
+    <!-- Main Unlock Screen -->
+    <LinearLayout
+        android:id="@+id/unlockMainContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp">
+
+        <!-- Shield/Lock Icon -->
+        <TextView
+            android:id="@+id/ivVaultIcon"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:gravity="center"
+            android:textSize="72sp"
+            android:text="🔐"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvVaultTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Personal Vault"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.02"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Subtitle -->
+        <TextView
+            android:id="@+id/tvVaultSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your encrypted personal space"
+            android:textColor="#64748B"
+            android:textSize="15sp"
+            android:layout_marginBottom="48dp" />
+
+        <!-- PIN Entry Section (hidden by default — shown when PIN mode chosen) -->
+        <LinearLayout
+            android:id="@+id/pinEntrySection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- PIN Dots -->
+            <LinearLayout
+                android:id="@+id/pinDotsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:layout_marginBottom="32dp" />
+
+            <!-- Failed attempts / lockout message -->
+            <TextView
+                android:id="@+id/tvPinStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#EF4444"
+                android:textSize="13sp"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Lockout countdown -->
+            <TextView
+                android:id="@+id/tvLockoutTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#EF4444"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Number Pad -->
+            <GridLayout
+                android:id="@+id/pinPad"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:columnCount="3"
+                android:rowCount="4"
+                android:useDefaultMargins="false">
+
+                <!-- Row 1: 1 2 3 -->
+                <Button android:id="@+id/pin1" android:text="1" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <Button android:id="@+id/pin2" android:text="2" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <Button android:id="@+id/pin3" android:text="3" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <!-- Row 2: 4 5 6 -->
+                <Button android:id="@+id/pin4" android:text="4" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <Button android:id="@+id/pin5" android:text="5" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <Button android:id="@+id/pin6" android:text="6" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <!-- Row 3: 7 8 9 -->
+                <Button android:id="@+id/pin7" android:text="7" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <Button android:id="@+id/pin8" android:text="8" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <Button android:id="@+id/pin9" android:text="9" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <!-- Row 4: Clear 0 Backspace -->
+                <Button android:id="@+id/pinClear" android:text="CLR"
+                    android:textSize="12sp"
+                    android:textColor="#94A3B8"
+                    android:background="@android:color/transparent"
+                    android:stateListAnimator="@null"
+                    android:layout_columnWeight="1"
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_margin="6dp"/>
+                <Button android:id="@+id/pin0" android:text="0" style="@style/PinButton"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"/>
+                <Button android:id="@+id/pinBackspace" android:text="⌫"
+                    android:textSize="22sp"
+                    android:textColor="#94A3B8"
+                    android:background="@android:color/transparent"
+                    android:stateListAnimator="@null"
+                    android:layout_columnWeight="1"
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_margin="6dp"/>
+
+            </GridLayout>
+
+            <!-- Forgot PIN -->
+            <TextView
+                android:id="@+id/tvForgotPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Forgot PIN?"
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp" />
+
+        </LinearLayout>
+
+        <!-- Biometric Button (primary) -->
+        <Button
+            android:id="@+id/btnBiometricUnlock"
+            android:layout_width="220dp"
+            android:layout_height="52dp"
+            android:text="🔑  Use Biometric"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:backgroundTint="#7C3AED"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Use PIN Instead -->
+        <TextView
+            android:id="@+id/tvUsePinInstead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use PIN instead"
+            android:textColor="#94A3B8"
+            android:textSize="14sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
+
+    </LinearLayout>
+
+    <!-- Setup PIN Screen (first launch) -->
+    <LinearLayout
+        android:id="@+id/setupPinContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔐"
+            android:textSize="72sp"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Up Vault PIN"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create a PIN to protect your vault.\nThis is separate from your app password."
+            android:textColor="#94A3B8"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <TextView
+            android:id="@+id/tvSetupStep"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter your new vault PIN"
+            android:textColor="#F59E0B"
+            android:textSize="15sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- PIN Dots -->
+        <LinearLayout
+            android:id="@+id/setupPinDotsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Number Pad -->
+        <GridLayout
+            android:id="@+id/setupPinPad"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:columnCount="3"
+            android:rowCount="4"
+            android:useDefaultMargins="false">
+
+            <Button android:id="@+id/setup1" android:text="1" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup2" android:text="2" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup3" android:text="3" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup4" android:text="4" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup5" android:text="5" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup6" android:text="6" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup7" android:text="7" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup8" android:text="8" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup9" android:text="9" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setupClear" android:text="CLR"
+                android:textSize="12sp"
+                android:textColor="#94A3B8"
+                android:background="@android:color/transparent"
+                android:stateListAnimator="@null"
+                android:layout_columnWeight="1"
+                android:layout_width="0dp" android:layout_height="80dp"
+                android:layout_margin="6dp"/>
+            <Button android:id="@+id/setup0" android:text="0" style="@style/PinButton"
+                android:layout_columnWeight="1" android:layout_margin="6dp"/>
+            <Button android:id="@+id/setupBackspace" android:text="⌫"
+                android:textSize="22sp"
+                android:textColor="#94A3B8"
+                android:background="@android:color/transparent"
+                android:stateListAnimator="@null"
+                android:layout_columnWeight="1"
+                android:layout_width="0dp" android:layout_height="80dp"
+                android:layout_margin="6dp"/>
+        </GridLayout>
+
+        <TextView
+            android:id="@+id/tvSetupStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="#EF4444"
+            android:textSize="13sp"
+            android:visibility="gone"
+            android:paddingTop="12dp" />
+
+    </LinearLayout>
+
+</FrameLayout>
