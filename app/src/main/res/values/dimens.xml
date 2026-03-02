@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         DESIGN TOKENS — Spacing, Sizing & Radii
+         ═══════════════════════════════════════════════════════════════════════════ -->
+
+    <!-- ── SPACING SCALE (4dp base unit) ────────────────────── -->
+    <dimen name="space_xxs">2dp</dimen>
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">6dp</dimen>
+    <dimen name="space_md">8dp</dimen>
+    <dimen name="space_lg">12dp</dimen>
+    <dimen name="space_xl">16dp</dimen>
+    <dimen name="space_2xl">20dp</dimen>
+    <dimen name="space_3xl">24dp</dimen>
+    <dimen name="space_4xl">32dp</dimen>
+
+    <!-- ── CARD DIMENSIONS ──────────────────────────────────── -->
+    <dimen name="card_padding">14dp</dimen>
+    <dimen name="card_margin_bottom">10dp</dimen>
+    <dimen name="card_radius">16dp</dimen>
+    <dimen name="card_elevation">3dp</dimen>
+    <dimen name="card_border_width">1dp</dimen>
+
+    <!-- ── PRIORITY STRIP ───────────────────────────────────── -->
+    <dimen name="priority_strip_width">5dp</dimen>
+    <dimen name="priority_strip_margin_end">12dp</dimen>
+
+    <!-- ── CHECKBOX ─────────────────────────────────────────── -->
+    <dimen name="checkbox_size">24dp</dimen>
+    <dimen name="checkbox_margin_end">12dp</dimen>
+    <dimen name="checkbox_scale">1.1</dimen>
+
+    <!-- ── TEXT SIZES ───────────────────────────────────────── -->
+    <dimen name="text_title">15sp</dimen>
+    <dimen name="text_body">13sp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+    <dimen name="text_badge">10sp</dimen>
+    <dimen name="text_micro">9sp</dimen>
+    <dimen name="text_icon_inline">11sp</dimen>
+
+    <!-- ── PILL / BADGE DIMENSIONS ──────────────────────────── -->
+    <dimen name="pill_padding_h">8dp</dimen>
+    <dimen name="pill_padding_v">2dp</dimen>
+    <dimen name="pill_radius">10dp</dimen>
+    <dimen name="pill_min_height">18dp</dimen>
+
+    <!-- ── TAG CHIP DIMENSIONS ──────────────────────────────── -->
+    <dimen name="tag_chip_padding_h">10dp</dimen>
+    <dimen name="tag_chip_padding_v">3dp</dimen>
+    <dimen name="tag_chip_radius">12dp</dimen>
+    <dimen name="tag_chip_margin_end">6dp</dimen>
+    <dimen name="tag_chip_text_size">10sp</dimen>
+
+    <!-- ── ICON SIZES ───────────────────────────────────────── -->
+    <dimen name="icon_inline">14dp</dimen>
+    <dimen name="icon_small">18dp</dimen>
+    <dimen name="icon_medium">24dp</dimen>
+    <dimen name="icon_large">28dp</dimen>
+    <dimen name="icon_action">28dp</dimen>
+    <dimen name="icon_action_padding">4dp</dimen>
+
+    <!-- ── SUBTASK PREVIEW ──────────────────────────────────── -->
+    <dimen name="subtask_checkbox_size">16dp</dimen>
+    <dimen name="subtask_text_size">12sp</dimen>
+    <dimen name="subtask_row_height">24dp</dimen>
+
+    <!-- ── PROGRESS BAR ─────────────────────────────────────── -->
+    <dimen name="progress_height">4dp</dimen>
+    <dimen name="progress_radius">2dp</dimen>
+
+    <!-- ── CONTEXT MENU BUTTON ──────────────────────────────── -->
+    <dimen name="menu_btn_size">28dp</dimen>
+    <dimen name="menu_btn_padding">4dp</dimen>
+
+    <!-- ── ANIMATION CONSTANTS ──────────────────────────────── -->
+    <integer name="anim_duration_fast">150</integer>
+    <integer name="anim_duration_normal">300</integer>
+    <integer name="anim_duration_slow">500</integer>
+    <integer name="anim_stagger_delay">50</integer>
+
+    <!-- ── TAP TARGET MINIMUMS (Accessibility) ──────────────── -->
+    <dimen name="min_tap_target">44dp</dimen>
+
+    <!-- ── SWIPE THRESHOLD ──────────────────────────────────── -->
+    <dimen name="swipe_icon_margin">24dp</dimen>
+    <dimen name="swipe_icon_size">28dp</dimen>
+
+</resources>

@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_gradient_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ═══ TOP BAR ═══ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:background="#0A0E21">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                android:tint="#FFFFFF"
+                android:scaleType="centerInside"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Study Session"
+                android:textColor="#F1F5F9"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingStart="12dp" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="24dp">
+
+                <!-- ═══ SESSION STATE LABEL ═══ -->
+                <TextView
+                    android:id="@+id/tvSessionState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FOCUS"
+                    android:textColor="#F59E0B"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.2"
+                    android:layout_marginTop="20dp" />
+
+                <!-- ═══ TIMER CIRCLE ═══ -->
+                <FrameLayout
+                    android:layout_width="260dp"
+                    android:layout_height="260dp"
+                    android:layout_marginTop="32dp">
+
+                    <!-- Circular progress (we'll draw over this) -->
+                    <ProgressBar
+                        android:id="@+id/progressTimer"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="260dp"
+                        android:layout_height="260dp"
+                        android:max="100"
+                        android:progress="100"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/budget_progress_fill_bg"
+                        android:layout_gravity="center" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvTimer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25:00"
+                            android:textColor="#F1F5F9"
+                            android:textSize="52sp"
+                            android:fontFamily="monospace" />
+
+                        <TextView
+                            android:id="@+id/tvTimerLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="minutes"
+                            android:textColor="#64748B"
+                            android:textSize="13sp"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </FrameLayout>
+
+                <!-- ═══ POMODORO DOTS ═══ -->
+                <LinearLayout
+                    android:id="@+id/layoutPomodoroDots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center" />
+
+                <!-- ═══ CONTROL BUTTONS ═══ -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="32dp">
+
+                    <!-- Reset -->
+                    <ImageButton
+                        android:id="@+id/btnReset"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/card_background"
+                        android:src="@android:drawable/ic_menu_rotate"
+                        android:tint="#94A3B8"
+                        android:scaleType="centerInside"
+                        android:contentDescription="Reset"
+                        android:layout_marginEnd="20dp" />
+
+                    <!-- Start / Pause -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnStartPause"
+                        android:layout_width="140dp"
+                        android:layout_height="56dp"
+                        android:text="Start"
+                        android:textColor="#0A0E21"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="#F59E0B"
+                        app:cornerRadius="28dp" />
+
+                    <!-- Skip -->
+                    <ImageButton
+                        android:id="@+id/btnSkip"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/card_background"
+                        android:src="@android:drawable/ic_media_next"
+                        android:tint="#94A3B8"
+                        android:scaleType="centerInside"
+                        android:contentDescription="Skip"
+                        android:layout_marginStart="20dp" />
+                </LinearLayout>
+
+                <!-- ═══ AMBIENT SOUND ═══ -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#0F172A"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ambient Sound"
+                            android:textColor="#94A3B8"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.1" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="12dp">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipSoundNone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="None"
+                                android:textColor="#F1F5F9"
+                                app:chipBackgroundColor="#1E293B"
+                                app:chipCornerRadius="20dp"
+                                app:checkedIconVisible="false"
+                                android:checkable="true" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipSoundWhiteNoise"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🌊 White"
+                                android:textColor="#F1F5F9"
+                                app:chipBackgroundColor="#1E293B"
+                                app:chipCornerRadius="20dp"
+                                app:checkedIconVisible="false"
+                                android:checkable="true"
+                                android:layout_marginStart="8dp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipSoundRain"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🌧 Rain"
+                                android:textColor="#F1F5F9"
+                                app:chipBackgroundColor="#1E293B"
+                                app:chipCornerRadius="20dp"
+                                app:checkedIconVisible="false"
+                                android:checkable="true"
+                                android:layout_marginStart="8dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipSoundTyping"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⌨ Typing"
+                                android:textColor="#F1F5F9"
+                                app:chipBackgroundColor="#1E293B"
+                                app:chipCornerRadius="20dp"
+                                app:checkedIconVisible="false"
+                                android:checkable="true" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipSoundCafe"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="☕ Café"
+                                android:textColor="#F1F5F9"
+                                app:chipBackgroundColor="#1E293B"
+                                app:chipCornerRadius="20dp"
+                                app:checkedIconVisible="false"
+                                android:checkable="true"
+                                android:layout_marginStart="8dp" />
+                        </LinearLayout>
+
+                        <!-- Volume slider -->
+                        <SeekBar
+                            android:id="@+id/seekVolume"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:max="100"
+                            android:progress="70"
+                            android:progressTint="#F59E0B"
+                            android:thumbTint="#F59E0B" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- ═══ SESSION STATS ═══ -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#0F172A"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvPomodorosCompleted"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#F59E0B"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pomodoros"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvTotalFocusTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0m"
+                                android:textColor="#10B981"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Focus Time"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvStreak"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#3B82F6"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Day Streak"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</FrameLayout>

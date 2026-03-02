@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_gradient_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ═══ TOP BAR ═══ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:background="#0A0E21">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                android:tint="#FFFFFF"
+                android:scaleType="centerInside"
+                android:contentDescription="Back" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingStart="12dp">
+
+                <TextView
+                    android:id="@+id/tvQuizTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quiz"
+                    android:textColor="#F1F5F9"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvQuizProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Question 1 of 10"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"
+                android:textColor="#F59E0B"
+                android:textSize="16sp"
+                android:fontFamily="monospace" />
+        </LinearLayout>
+
+        <!-- ═══ PROGRESS BAR ═══ -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/budget_progress_fill_bg" />
+
+        <!-- ═══ QUESTION AREA ═══ -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Question type badge -->
+                <TextView
+                    android:id="@+id/tvQuestionType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Multiple Choice"
+                    android:textColor="#F59E0B"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:background="@drawable/card_background"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp" />
+
+                <!-- Question text -->
+                <TextView
+                    android:id="@+id/tvQuestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="What is the question?"
+                    android:textColor="#F1F5F9"
+                    android:textSize="20sp"
+                    android:lineSpacingMultiplier="1.4"
+                    android:layout_marginTop="16dp" />
+
+                <!-- MCQ Options (shown for MCQ type) -->
+                <LinearLayout
+                    android:id="@+id/layoutOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="24dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOption0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="52dp"
+                        android:text="Option A"
+                        android:textColor="#F1F5F9"
+                        android:textSize="15sp"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        android:paddingHorizontal="16dp"
+                        app:backgroundTint="#1E293B"
+                        app:cornerRadius="12dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOption1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="52dp"
+                        android:text="Option B"
+                        android:textColor="#F1F5F9"
+                        android:textSize="15sp"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        android:paddingHorizontal="16dp"
+                        app:backgroundTint="#1E293B"
+                        app:cornerRadius="12dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOption2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="52dp"
+                        android:text="Option C"
+                        android:textColor="#F1F5F9"
+                        android:textSize="15sp"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        android:paddingHorizontal="16dp"
+                        app:backgroundTint="#1E293B"
+                        app:cornerRadius="12dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOption3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="52dp"
+                        android:text="Option D"
+                        android:textColor="#F1F5F9"
+                        android:textSize="15sp"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        android:paddingHorizontal="16dp"
+                        app:backgroundTint="#1E293B"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
+
+                <!-- Fill-in-Blank input (shown for fill-blank type) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutFillBlank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:visibility="gone"
+                    app:boxBackgroundColor="#0F172A"
+                    app:boxStrokeColor="#F59E0B"
+                    app:hintTextColor="#94A3B8">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFillBlank"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Type your answer..."
+                        android:textColor="#F1F5F9"
+                        android:textSize="16sp"
+                        android:imeOptions="actionDone"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- True/False buttons (shown for T/F type) -->
+                <LinearLayout
+                    android:id="@+id/layoutTrueFalse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="24dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTrue"
+                        android:layout_width="0dp"
+                        android:layout_height="64dp"
+                        android:layout_weight="1"
+                        android:text="✓  True"
+                        android:textColor="#F1F5F9"
+                        android:textSize="16sp"
+                        app:backgroundTint="#1E293B"
+                        app:cornerRadius="12dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFalse"
+                        android:layout_width="0dp"
+                        android:layout_height="64dp"
+                        android:layout_weight="1"
+                        android:text="✗  False"
+                        android:textColor="#F1F5F9"
+                        android:textSize="16sp"
+                        app:backgroundTint="#1E293B"
+                        app:cornerRadius="12dp"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
+
+                <!-- Feedback card (shown after answer) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardFeedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="12dp"
+                    app:cardBackgroundColor="#0F172A"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvFeedbackResult"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="✓ Correct!"
+                            android:textColor="#10B981"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvExplanation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="#94A3B8"
+                            android:textSize="13sp"
+                            android:layout_marginTop="4dp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ═══ BOTTOM BUTTONS ═══ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="16dp"
+            android:background="#0A0E21">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitFillBlank"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="Submit Answer"
+                android:textColor="#0A0E21"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="#F59E0B"
+                app:cornerRadius="12dp"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="Next Question"
+                android:textColor="#0A0E21"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="#F59E0B"
+                app:cornerRadius="12dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/notes_bottom_sheet_bg"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="24dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="#33FFFFFF"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvSheetTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Subfolder"
+        android:textColor="#F1F5F9"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Folder name input -->
+    <EditText
+        android:id="@+id/etSubfolderName"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:hint="Folder name"
+        android:textColor="#E2E8F0"
+        android:textColorHint="#475569"
+        android:textSize="16sp"
+        android:background="@drawable/notes_search_bg"
+        android:paddingHorizontal="16dp"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:inputType="textCapWords"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Color picker label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Color"
+        android:textColor="#94A3B8"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Color picker grid (4 rows x 3 cols = 12 colors) -->
+    <LinearLayout
+        android:id="@+id/colorPickerGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Icon picker label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Icon"
+        android:textColor="#94A3B8"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Icon picker scrollable grid -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="24dp">
+
+        <LinearLayout
+            android:id="@+id/iconPickerGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </HorizontalScrollView>
+
+    <!-- Preview + Save button row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Preview -->
+        <LinearLayout
+            android:id="@+id/folderPreview"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:layout_marginEnd="16dp">
+            <TextView
+                android:id="@+id/tvPreviewIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📁"
+                android:textSize="32sp" />
+        </LinearLayout>
+
+        <!-- Spacer -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Cancel -->
+        <TextView
+            android:id="@+id/btnCancelSubfolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="#94A3B8"
+            android:textSize="15sp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Save button -->
+        <TextView
+            android:id="@+id/btnSaveSubfolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@drawable/notes_fab_bg"
+            android:paddingHorizontal="28dp"
+            android:paddingVertical="12dp" />
+    </LinearLayout>
+</LinearLayout>

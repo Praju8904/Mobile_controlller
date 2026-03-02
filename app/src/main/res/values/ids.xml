@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tab screens (not yet in layout) -->
+    <item name="devicesScreen" type="id"/>
+    <item name="historyScreen" type="id"/>
+    <item name="bottomNavigation" type="id"/>
+
+    <!-- Devices tab views -->
+    <item name="devicesQrPairCard" type="id"/>
+    <item name="devicesManualIpCard" type="id"/>
+    <item name="devicesAutoDiscoverCard" type="id"/>
+    <item name="devicesStartServerBtn" type="id"/>
+    <item name="devicesServerListView" type="id"/>
+    <item name="btnDisconnect" type="id"/>
+
+    <!-- Redesigned home cards -->
+    <item name="cardLaptop" type="id"/>
+    <item name="cardTasksHome" type="id"/>
+    <item name="cardNotesHome" type="id"/>
+    <item name="cardCalendarHome" type="id"/>
+    <item name="cardSettingsHome" type="id"/>
+    <item name="cardPasswordHome" type="id"/>
+    <item name="cardPersonalVaultHome" type="id"/>
+    <item name="cardSmartFileHubHome" type="id"/>
+
+    <!-- Card subtitles -->
+    <item name="tvTasksCardSubtitle" type="id"/>
+    <item name="tvNotesCardSubtitle" type="id"/>
+    <item name="tvCalendarCardSubtitle" type="id"/>
+    <item name="tvPasswordCardSubtitle" type="id"/>
+    <item name="tvPersonalVaultSubtitle" type="id"/>
+    <item name="tvFileHubSubtitle" type="id"/>
+    <item name="laptopConnectionDot" type="id"/>
+
+    <!-- History tab -->
+    <item name="tvHistoryTasksCount" type="id"/>
+    <item name="tvHistoryNotesCount" type="id"/>
+    <item name="tvHistoryFilesCount" type="id"/>
+    <item name="historyActivityFeed" type="id"/>
+    <item name="historyEmptyState" type="id"/>
+    <item name="btnHistoryMore" type="id"/>
+</resources>

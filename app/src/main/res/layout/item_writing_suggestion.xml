@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/card_background"
+    android:layout_marginBottom="6dp">
+
+    <!-- Warning icon -->
+    <TextView
+        android:id="@+id/tvSuggestionIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚠"
+        android:textSize="16sp"
+        android:layout_marginEnd="10dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvSuggestionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Consider replacing..."
+            android:textColor="#F1F5F9"
+            android:textSize="13sp"
+            android:lineSpacingMultiplier="1.3" />
+
+        <TextView
+            android:id="@+id/tvSuggestionType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Style"
+            android:textColor="#64748B"
+            android:textSize="10sp"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+</LinearLayout>

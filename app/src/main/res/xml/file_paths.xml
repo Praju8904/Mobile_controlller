@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- External files directory for exports (CSV, PDF) -->
+    <external-files-path
+        name="exports"
+        path="exports/" />
+
+    <!-- External files directory for screenshots -->
+    <external-files-path
+        name="screenshots"
+        path="screenshots/" />
+
+    <!-- Cache directory for temporary files -->
+    <cache-path
+        name="cache"
+        path="/" />
+
+    <!-- Received files -->
+    <external-files-path
+        name="received"
+        path="Received_Files/" />
+
+    <!-- Entire external storage (Downloads, DCIM, Documents, etc.) -->
+    <external-path
+        name="external_storage"
+        path="/" />
+</paths>

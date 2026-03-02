@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Error shake: gentle horizontal shake for validation errors -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/decelerate_interpolator">
+
+    <translate
+        android:fromXDelta="0"
+        android:toXDelta="8dp"
+        android:duration="60"
+        android:repeatMode="reverse"
+        android:repeatCount="5" />
+
+</set>
