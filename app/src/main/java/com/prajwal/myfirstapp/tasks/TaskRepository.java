@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -41,11 +42,15 @@ public class TaskRepository {
     private static final long TRASH_RETENTION_MS = 30L * 24 * 60 * 60 * 1000;
 
     // Sort modes
-    public static final String SORT_PRIORITY   = "priority";
-    public static final String SORT_DUE_DATE   = "due_date";
-    public static final String SORT_CREATED     = "created";
-    public static final String SORT_TITLE       = "title";
-    public static final String SORT_STATUS      = "status";
+    public static final String SORT_PRIORITY      = "priority";
+    public static final String SORT_DUE_DATE      = "due_date";
+    public static final String SORT_CREATED       = "created";
+    public static final String SORT_TITLE         = "title";
+    public static final String SORT_STATUS        = "status";
+    public static final String SORT_TITLE_AZ      = "TITLE_AZ";
+    public static final String SORT_TITLE_ZA      = "TITLE_ZA";
+    public static final String SORT_DURATION_ASC  = "DURATION_ASC";
+    public static final String SORT_DURATION_DESC = "DURATION_DESC";
 
     // Group modes
     public static final String GROUP_NONE     = "none";
@@ -186,6 +191,7 @@ public class TaskRepository {
         if (task != null) {
             task.markCompleted();
             saveTasks();
+            cancelPersistentReminder(id);
         }
     }
 
@@ -229,6 +235,7 @@ public class TaskRepository {
         if (task != null) {
             task.moveToTrash();
             saveTasks();
+            cancelPersistentReminder(id);
         }
     }
 
@@ -372,17 +379,30 @@ public class TaskRepository {
         for (Task task : active) {
             switch (filter) {
                 case "Today":
-                    if (task.isDueToday() && !task.isCompleted()) filtered.add(task);
+                    if (task.isDueToday() && !task.isCompleted() && !task.isDeferred()) filtered.add(task);
                     break;
                 case "Upcoming":
-                    if (task.hasDueDate() && !task.isOverdue() && !task.isDueToday() && !task.isCompleted())
+                    if (task.hasDueDate() && !task.isOverdue() && !task.isDueToday() && !task.isCompleted() && !task.isDeferred())
                         filtered.add(task);
                     break;
                 case "Overdue":
                     if (task.isOverdue()) filtered.add(task);
                     break;
                 case "Starred":
-                    if (task.isStarred && !task.isCompleted()) filtered.add(task);
+                    if (!task.isTrashed && !task.isCompleted()
+                            && (task.isStarred
+                                || Task.PRIORITY_HIGH.equals(task.priority)
+                                || Task.PRIORITY_URGENT.equals(task.priority))) {
+                        filtered.add(task);
+                    }
+                    break;
+                case "Inbox":
+                    if (!task.isTrashed && !task.isCompleted()
+                            && (task.category == null
+                                || task.category.isEmpty()
+                                || "Personal".equalsIgnoreCase(task.category))) {
+                        filtered.add(task);
+                    }
                     break;
                 case "Completed":
                     if (task.isCompleted()) filtered.add(task);
@@ -393,12 +413,38 @@ public class TaskRepository {
                 case "By Category":
                     if (!task.isCompleted()) filtered.add(task);
                     break;
+                case "Next Actions":
+                    if (!task.isCompleted() && !task.isTrashed && task.isNextAction && !task.isDeferred())
+                        filtered.add(task);
+                    break;
+                case "MIT":
+                    if (!task.isCompleted() && !task.isTrashed && task.isMIT && !task.isDeferred())
+                        filtered.add(task);
+                    break;
+                case "Someday":
+                    if (task.isSomeday() && !task.isTrashed) filtered.add(task);
+                    break;
+                case "Waiting":
+                    if (task.isWaiting() && !task.isTrashed) filtered.add(task);
+                    break;
+                case "Context":
+                    if (!task.isCompleted() && !task.isTrashed && task.hasContextTag() && !task.isDeferred())
+                        filtered.add(task);
+                    break;
+                case "Private":
+                    if (task.isPrivate && !task.isTrashed) filtered.add(task);
+                    break;
                 default:
                     // Category name filter
                     if (task.category != null && task.category.equals(filter) && !task.isCompleted())
                         filtered.add(task);
                     break;
             }
+        }
+        if ("Starred".equals(filter)) {
+            Collections.sort(filtered, Comparator.comparingInt(Task::getPriorityWeight));
+        } else if ("Inbox".equals(filter)) {
+            Collections.sort(filtered, (a, b) -> Long.compare(b.createdAt, a.createdAt));
         }
         return filtered;
     }
@@ -464,6 +510,30 @@ public class TaskRepository {
                     if (sa != sb) return Integer.compare(sa, sb);
                     return Integer.compare(a.getPriorityWeight(), b.getPriorityWeight());
                 });
+                break;
+
+            case SORT_TITLE_AZ:
+                Collections.sort(taskList, (a, b) -> {
+                    String ta = a.title != null ? a.title.toLowerCase(Locale.ROOT) : "";
+                    String tb = b.title != null ? b.title.toLowerCase(Locale.ROOT) : "";
+                    return ta.compareTo(tb);
+                });
+                break;
+
+            case SORT_TITLE_ZA:
+                Collections.sort(taskList, (a, b) -> {
+                    String ta = a.title != null ? a.title.toLowerCase(Locale.ROOT) : "";
+                    String tb = b.title != null ? b.title.toLowerCase(Locale.ROOT) : "";
+                    return tb.compareTo(ta);
+                });
+                break;
+
+            case SORT_DURATION_ASC:
+                Collections.sort(taskList, (a, b) -> Integer.compare(a.estimatedDuration, b.estimatedDuration));
+                break;
+
+            case SORT_DURATION_DESC:
+                Collections.sort(taskList, (a, b) -> Integer.compare(b.estimatedDuration, a.estimatedDuration));
                 break;
         }
     }
@@ -608,7 +678,19 @@ public class TaskRepository {
     public int getStarredCount() {
         int count = 0;
         for (Task t : tasks) {
-            if (!t.isTrashed && t.isStarred && !t.isCompleted()) count++;
+            if (!t.isTrashed && !t.isCompleted()
+                    && (t.isStarred || Task.PRIORITY_HIGH.equals(t.priority) || Task.PRIORITY_URGENT.equals(t.priority)))
+                count++;
+        }
+        return count;
+    }
+
+    public int getInboxCount() {
+        int count = 0;
+        for (Task t : tasks) {
+            if (!t.isTrashed && !t.isCompleted()
+                    && (t.category == null || t.category.isEmpty() || "Personal".equalsIgnoreCase(t.category)))
+                count++;
         }
         return count;
     }
@@ -1091,5 +1173,242 @@ public class TaskRepository {
         // Schedule notifications for the new occurrence
         TaskNotificationHelper.scheduleTaskReminders(context, next);
         return next;
+    }
+
+    // ─── Dependency Cycle Detection ──────────────────────────────
+
+    /**
+     * Checks whether setting {@code taskId}'s dependency to
+     * {@code proposedDepId} would create a circular chain.
+     *
+     * @return {@code true} if a cycle would be introduced.
+     */
+    public boolean wouldCreateCycle(String taskId, String proposedDepId) {
+        if (taskId == null || proposedDepId == null) return false;
+        if (taskId.equals(proposedDepId)) return true;  // self-loop
+
+        // Build a dependency map: taskId → set of dependsOnTaskId
+        Map<String, String> depMap = new HashMap<>();
+        for (Task t : tasks) {
+            if (t.dependsOnTaskId != null && !t.dependsOnTaskId.isEmpty()) {
+                depMap.put(t.id, t.dependsOnTaskId);
+            }
+        }
+        // Temporarily add the proposed edge
+        depMap.put(taskId, proposedDepId);
+
+        // Walk the chain from proposedDepId — if we reach taskId there's a cycle
+        java.util.Set<String> visited = new java.util.HashSet<>();
+        String current = proposedDepId;
+        while (current != null) {
+            if (visited.contains(current)) return true;   // generic cycle
+            if (current.equals(taskId)) return true;      // cycle through us
+            visited.add(current);
+            current = depMap.get(current);
+        }
+        return false;
+    }
+
+    /**
+     * Validates and sets a dependency. Returns an error message if invalid,
+     * or {@code null} on success.
+     */
+    public String validateAndSetDependency(String taskId, String newDependsOnId) {
+        if (newDependsOnId != null && !newDependsOnId.isEmpty()) {
+            // Check the dependency target exists
+            Task depTask = getTaskById(newDependsOnId);
+            if (depTask == null) return "Dependency target not found";
+
+            // Check for cycles
+            if (wouldCreateCycle(taskId, newDependsOnId)) {
+                return "Cannot add dependency: would create a circular chain";
+            }
+        }
+
+        Task task = getTaskById(taskId);
+        if (task == null) return "Task not found";
+
+        task.dependsOnTaskId = (newDependsOnId != null && !newDependsOnId.isEmpty())
+                ? newDependsOnId : null;
+        task.updatedAt = System.currentTimeMillis();
+        saveTasks();
+        return null; // success
+    }
+
+    // ─── Archive Operations ──────────────────────────────────────
+
+    public void archiveTask(String id) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.is_archived = true;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    public void unarchiveTask(String id) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.is_archived = false;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    // ─── Batch 4 Query Helpers ──────────────────────────────────
+
+    public int getNextActionCount() {
+        int count = 0;
+        for (Task t : tasks) {
+            if (!t.isTrashed && !t.isCompleted() && t.isNextAction) count++;
+        }
+        return count;
+    }
+
+    public int getMITCount() {
+        int count = 0;
+        for (Task t : tasks) {
+            if (!t.isTrashed && !t.isCompleted() && t.isMIT) count++;
+        }
+        return count;
+    }
+
+    public int getSomedayCount() {
+        int count = 0;
+        for (Task t : tasks) {
+            if (!t.isTrashed && t.isSomeday()) count++;
+        }
+        return count;
+    }
+
+    public int getWaitingCount() {
+        int count = 0;
+        for (Task t : tasks) {
+            if (!t.isTrashed && t.isWaiting()) count++;
+        }
+        return count;
+    }
+
+    public void setNextAction(String id, boolean value) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.isNextAction = value;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    public void setMIT(String id, boolean value) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.isMIT = value;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    public void setStatus(String id, String status) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.status = status;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    public void setWaitingFor(String id, String waitingFor) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.waitingFor = waitingFor;
+            task.status = (waitingFor != null && !waitingFor.isEmpty()) ? Task.STATUS_WAITING : Task.STATUS_TODO;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    public void setContextTag(String id, String contextTag) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.contextTag = contextTag;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    public void setPrivate(String id, boolean isPrivate) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.isPrivate = isPrivate;
+            task.updatedAt = System.currentTimeMillis();
+            saveTasks();
+        }
+    }
+
+    public int getPrivateCount() {
+        int count = 0;
+        for (Task t : tasks) {
+            if (t.isPrivate && !t.isTrashed && !t.isCompleted()) count++;
+        }
+        return count;
+    }
+
+    // ─── Gamification Helpers ──────────────────────────────────
+
+    private static final String PREF_XP = "task_xp";
+    private static final String PREF_LEVEL = "task_level";
+    private static final String PREF_KARMA = "task_karma";
+
+    public int getXp() { return getPrefs().getInt(PREF_XP, 0); }
+    public int getLevel() { return getPrefs().getInt(PREF_LEVEL, 1); }
+    public int getKarma() { return getPrefs().getInt(PREF_KARMA, 0); }
+
+    public void addXp(int points) {
+        int xp = getXp() + points;
+        int level = getLevel();
+        int threshold = level * 100; // XP needed for next level
+        while (xp >= threshold) {
+            xp -= threshold;
+            level++;
+            threshold = level * 100;
+        }
+        getPrefs().edit()
+                .putInt(PREF_XP, xp)
+                .putInt(PREF_LEVEL, level)
+                .apply();
+    }
+
+    public void addKarma(int points) {
+        int karma = getKarma() + points;
+        getPrefs().edit().putInt(PREF_KARMA, karma).apply();
+    }
+
+    public int xpForNextLevel() {
+        return getLevel() * 100;
+    }
+
+    // ─── Feature 11: Cancel Persistent Reminder ──────────────────
+
+    /**
+     * Cancels any persistent re-fire alarm for a task (called on complete/trash).
+     */
+    private void cancelPersistentReminder(String id) {
+        if (id == null || context == null) return;
+        try {
+            android.content.Intent cancelIntent = new android.content.Intent(context, TaskReminderReceiver.class);
+            int requestCode = (id.hashCode() + 9000) & 0x7FFFFFFF;
+            int flags = android.app.PendingIntent.FLAG_NO_CREATE;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                flags |= android.app.PendingIntent.FLAG_IMMUTABLE;
+            }
+            android.app.PendingIntent cancelPi = android.app.PendingIntent.getBroadcast(
+                    context, requestCode, cancelIntent, flags);
+            if (cancelPi != null) {
+                android.app.AlarmManager am = (android.app.AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                if (am != null) am.cancel(cancelPi);
+                cancelPi.cancel();
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error cancelling persistent reminder: " + e.getMessage());
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.prajwal.myfirstapp.tasks;
 
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -48,8 +50,36 @@ public class TaskNotificationHelper {
     public static final String TYPE_OVERDUE   = "overdue";
     public static final String TYPE_RECURRING = "recurring";
 
+    // ─── Smart Notification Bundling ─────────────────────────────
+
+    public static final String TASK_REMINDER_GROUP_KEY = "com.prajwal.myfirstapp.TASK_REMINDERS";
+    public static final String CHANNEL_ID_REMINDERS = "task_reminders";
+    public static final int SUMMARY_NOTIFICATION_ID = 9999;
+
     // Overdue check interval: 15 minutes
     private static final long OVERDUE_CHECK_INTERVAL = 15 * 60 * 1000;
+
+    // ─── Notification Channel Creation ───────────────────────────
+
+    /**
+     * Creates the task reminders notification channel (API 26+).
+     */
+    public static void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID_REMINDERS,
+                "Task Reminders",
+                NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Reminders for your tasks");
+            channel.enableLights(true);
+            channel.setLightColor(0xFF3B82F6);
+            channel.enableVibration(true);
+            channel.setShowBadge(true);
+            NotificationManager nm = context.getSystemService(NotificationManager.class);
+            if (nm != null) nm.createNotificationChannel(channel);
+        }
+    }
 
     // ─── Schedule All Reminders for a Task ───────────────────────
 

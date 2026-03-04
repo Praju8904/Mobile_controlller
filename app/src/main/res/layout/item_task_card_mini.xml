@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/task_card_bg"
+    android:layout_marginVertical="2dp"
+    android:layout_marginHorizontal="4dp"
+    android:paddingHorizontal="8dp">
+
+    <!-- Priority color dot -->
+    <View
+        android:id="@+id/viewPriorityDot"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvMiniTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:paddingEnd="8dp" />
+</LinearLayout>

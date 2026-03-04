@@ -26,6 +26,7 @@ public class TaskContextMenu {
         void onDelete(Task task);
         void onAddToFocus(Task task);
         void onToggleTimer(Task task);
+        default void onCopyLink(Task task) {}
     }
 
     /**
@@ -51,7 +52,8 @@ public class TaskContextMenu {
         String timerLabel = timerActive ? "⏹  Stop Timer" : "▶️  Start Timer";
         popup.getMenu().add(0, 6, 5, timerLabel);
 
-        popup.getMenu().add(0, 7, 6, "🗑️  Delete");
+        popup.getMenu().add(0, 8, 6, "🔗  Copy Link");
+        popup.getMenu().add(0, 7, 7, "🗑️  Delete");
 
         popup.setOnMenuItemClickListener(item -> {
             if (listener == null) return false;
@@ -63,6 +65,7 @@ public class TaskContextMenu {
                 case 5: listener.onAddToFocus(task);    return true;
                 case 6: listener.onToggleTimer(task);   return true;
                 case 7: listener.onDelete(task);        return true;
+                case 8: listener.onCopyLink(task);      return true;
                 default: return false;
             }
         });

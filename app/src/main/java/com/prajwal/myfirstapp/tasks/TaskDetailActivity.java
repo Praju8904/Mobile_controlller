@@ -9,20 +9,24 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ImageView;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -63,16 +67,22 @@ public class TaskDetailActivity extends AppCompatActivity
     private LinearLayout detailTagsRow, detailTagsContainer;
     private LinearLayout detailDurationRow;
     private TextView tvDuration;
-    private LinearLayout detailSubtasksSection, detailSubtasksContainer;
+    private LinearLayout detailSubtasksSection;
+    private RecyclerView detailSubtasksContainer;
+    private SubtaskAdapter subtaskAdapter;
     private TextView tvSubtaskProgress;
     private View viewSubtaskProgressFill;
     private TextView tvTimerDisplay, tvTotalTimeLogged;
-    private TextView btnStartTimer, btnStopTimer;
+    private TextView btnStartTimer, btnStopTimer, btnLogTimeManually;
     private LinearLayout timerSessionsContainer;
     private LinearLayout detailAttachmentsSection, detailAttachmentsContainer;
     private LinearLayout detailNotesSection;
     private TextView tvNotes;
     private LinearLayout detailRemindersSection, detailRemindersContainer;
+    private LinearLayout detailLinksSection, detailLinksContainer;
+    private LinearLayout detailCommentsSection, detailCommentsContainer;
+    private EditText etCommentInput;
+    private TextView btnSendComment, btnAddLink;
     private TextView tvCreatedAt, tvUpdatedAt, tvCompletedAt;
     private TextView btnComplete, btnSkipRecurrence;
     private TextView btnAddToCalendar;
@@ -89,6 +99,17 @@ public class TaskDetailActivity extends AppCompatActivity
 
         repo = new TaskRepository(this);
         taskId = getIntent().getStringExtra(EXTRA_TASK_ID);
+
+        // Handle deep link: myfirstapp://task/{id}
+        if (taskId == null && getIntent().getData() != null) {
+            Uri uri = getIntent().getData();
+            if ("myfirstapp".equals(uri.getScheme()) && "task".equals(uri.getHost())) {
+                List<String> segments = uri.getPathSegments();
+                if (!segments.isEmpty()) {
+                    taskId = segments.get(0);
+                }
+            }
+        }
 
         if (taskId == null) {
             Toast.makeText(this, "Task not found", Toast.LENGTH_SHORT).show();
@@ -150,6 +171,8 @@ public class TaskDetailActivity extends AppCompatActivity
         // Subtasks
         detailSubtasksSection = findViewById(R.id.detailSubtasksSection);
         detailSubtasksContainer = findViewById(R.id.detailSubtasksContainer);
+        detailSubtasksContainer.setLayoutManager(new LinearLayoutManager(this));
+        detailSubtasksContainer.setNestedScrollingEnabled(false);
         tvSubtaskProgress = findViewById(R.id.tvDetailSubtaskProgress);
         viewSubtaskProgressFill = findViewById(R.id.viewDetailSubtaskProgressFill);
 
@@ -158,10 +181,14 @@ public class TaskDetailActivity extends AppCompatActivity
         tvTotalTimeLogged = findViewById(R.id.tvTotalTimeLogged);
         btnStartTimer = findViewById(R.id.btnStartTimer);
         btnStopTimer = findViewById(R.id.btnStopTimer);
+        btnLogTimeManually = findViewById(R.id.btnLogTimeManually);
         timerSessionsContainer = findViewById(R.id.timerSessionsContainer);
 
         btnStartTimer.setOnClickListener(v -> startTimer());
         btnStopTimer.setOnClickListener(v -> stopTimer());
+        if (btnLogTimeManually != null) {
+            btnLogTimeManually.setOnClickListener(v -> openManualTimeEntry());
+        }
 
         // Attachments
         detailAttachmentsSection = findViewById(R.id.detailAttachmentsSection);
@@ -174,6 +201,32 @@ public class TaskDetailActivity extends AppCompatActivity
         // Reminders
         detailRemindersSection = findViewById(R.id.detailRemindersSection);
         detailRemindersContainer = findViewById(R.id.detailRemindersContainer);
+
+        // Links
+        detailLinksSection = findViewById(R.id.detailLinksSection);
+        detailLinksContainer = findViewById(R.id.detailLinksContainer);
+        btnAddLink = findViewById(R.id.btnAddLink);
+        if (btnAddLink != null) {
+            btnAddLink.setOnClickListener(v -> showAddLinkDialog());
+        }
+
+        // Comments
+        detailCommentsSection = findViewById(R.id.detailCommentsSection);
+        detailCommentsContainer = findViewById(R.id.detailCommentsContainer);
+        etCommentInput = findViewById(R.id.etCommentInput);
+        btnSendComment = findViewById(R.id.btnSendComment);
+        if (btnSendComment != null) {
+            btnSendComment.setOnClickListener(v -> sendComment());
+        }
+        if (etCommentInput != null) {
+            etCommentInput.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    sendComment();
+                    return true;
+                }
+                return false;
+            });
+        }
 
         // Activity log
         tvCreatedAt = findViewById(R.id.tvDetailCreatedAt);
@@ -206,6 +259,7 @@ public class TaskDetailActivity extends AppCompatActivity
             finish();
             return;
         }
+        subtaskAdapter = null; // reset so displaySubtasks() re-creates the adapter
         displayTask();
     }
 
@@ -250,7 +304,7 @@ public class TaskDetailActivity extends AppCompatActivity
 
         // Description
         if (task.description != null && !task.description.isEmpty()) {
-            tvDescription.setText(task.description);
+            MarkwonProvider.render(this, tvDescription, task.description);
             tvDescription.setVisibility(View.VISIBLE);
         } else {
             tvDescription.setVisibility(View.GONE);
@@ -353,7 +407,7 @@ public class TaskDetailActivity extends AppCompatActivity
         // Notes
         if (task.notes != null && !task.notes.isEmpty()) {
             detailNotesSection.setVisibility(View.VISIBLE);
-            tvNotes.setText(task.notes);
+            MarkwonProvider.render(this, tvNotes, task.notes);
         } else {
             detailNotesSection.setVisibility(View.GONE);
         }
@@ -375,6 +429,12 @@ public class TaskDetailActivity extends AppCompatActivity
         } else {
             detailRemindersSection.setVisibility(View.GONE);
         }
+
+        // Links
+        displayLinksSection();
+
+        // Comments
+        displayCommentsSection();
 
         // Activity log
         SimpleDateFormat actSdf = new SimpleDateFormat("MMM dd, yyyy  h:mm a", Locale.US);
@@ -428,41 +488,28 @@ public class TaskDetailActivity extends AppCompatActivity
             viewSubtaskProgressFill.setLayoutParams(lp);
         });
 
-        // Subtask items
-        detailSubtasksContainer.removeAllViews();
-        for (SubTask sub : task.subtasks) {
-            View row = LayoutInflater.from(this).inflate(R.layout.item_subtask_edit, detailSubtasksContainer, false);
-            CheckBox cb = row.findViewById(R.id.cbSubtask);
-            TextView tvSubTitle = row.findViewById(R.id.etSubtaskTitle);
-            ImageView btnDelete = row.findViewById(R.id.btnDeleteSubtask);
-
-            // Use as read-only interactive checkbox
-            tvSubTitle.setFocusable(false);
-            tvSubTitle.setClickable(false);
-            tvSubTitle.setText(sub.title);
-            btnDelete.setVisibility(View.GONE);
-
-            cb.setChecked(sub.isCompleted);
-            if (sub.isCompleted) {
-                tvSubTitle.setPaintFlags(tvSubTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                tvSubTitle.setTextColor(Color.parseColor("#4B5563"));
-            } else {
-                tvSubTitle.setPaintFlags(tvSubTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                tvSubTitle.setTextColor(Color.parseColor("#F1F5F9"));
-            }
-
-            cb.setOnCheckedChangeListener((btn, checked) -> {
-                sub.isCompleted = checked;
+        // Set up RecyclerView adapter with drag-and-drop
+        if (subtaskAdapter == null) {
+            subtaskAdapter = new SubtaskAdapter(task.subtasks);
+            subtaskAdapter.setOnSubtaskCheckedListener((sub, checked) -> {
                 repo.updateTask(task);
                 displaySubtasks(); // refresh progress
-
-                // Check if all done
                 if (task.getSubtaskCompletedCount() == task.getSubtaskTotalCount()) {
                     promptAllSubtasksDone();
                 }
             });
-
-            detailSubtasksContainer.addView(row);
+            subtaskAdapter.setOnOrderChangedListener(newOrder -> {
+                task.subtasks = newOrder;
+                task.updatedAt = System.currentTimeMillis();
+                repo.updateTask(task);
+            });
+            SubtaskDragCallback dragCallback = new SubtaskDragCallback();
+            ItemTouchHelper ith = new ItemTouchHelper(dragCallback);
+            ith.attachToRecyclerView(detailSubtasksContainer);
+            subtaskAdapter.setItemTouchHelper(ith);
+            detailSubtasksContainer.setAdapter(subtaskAdapter);
+        } else {
+            subtaskAdapter.updateList(task.subtasks);
         }
     }
 
@@ -580,35 +627,398 @@ public class TaskDetailActivity extends AppCompatActivity
         }
     }
 
+    private void openManualTimeEntry() {
+        if (task == null) return;
+        ManualTimeEntrySheet sheet = ManualTimeEntrySheet.newInstance(task);
+        sheet.setListener((updatedTask, startMs, endMs) -> {
+            // Persist the logged session
+            task.timerSessions = updatedTask.timerSessions;
+            task.actualDuration = updatedTask.actualDuration;
+            task.updatedAt = updatedTask.updatedAt;
+            repo.updateTask(task);
+            displayTimerSection();
+        });
+        sheet.show(getSupportFragmentManager(), "manual_time");
+    }
+
+    // ─── Links Section ───────────────────────────────────────────
+
+    private void displayLinksSection() {
+        if (detailLinksSection == null) return;
+        if (task.links != null && !task.links.isEmpty()) {
+            detailLinksSection.setVisibility(View.VISIBLE);
+            detailLinksContainer.removeAllViews();
+            for (int i = 0; i < task.links.size(); i++) {
+                final int index = i;
+                TaskLink linkObj = task.links.get(i);
+                String title = linkObj.title != null ? linkObj.title : "";
+                String url = linkObj.url != null ? linkObj.url : "";
+                final String finalUrl = url;
+                final String finalTitle = title;
+                String domain = "";
+                try {
+                    domain = Uri.parse(url).getHost();
+                    if (domain != null && domain.startsWith("www.")) domain = domain.substring(4);
+                } catch (Exception ignored) {}
+
+                LinearLayout row = new LinearLayout(this);
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                row.setPadding(dp(8), dp(6), dp(8), dp(6));
+
+                // Link icon
+                TextView icon = new TextView(this);
+                icon.setText("🔗");
+                icon.setTextSize(14);
+                icon.setPadding(0, 0, dp(8), 0);
+                row.addView(icon);
+
+                // Title + URL column
+                LinearLayout col = new LinearLayout(this);
+                col.setOrientation(LinearLayout.VERTICAL);
+                col.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+                if (!title.isEmpty()) {
+                    TextView tvTitle = new TextView(this);
+                    tvTitle.setText(title);
+                    tvTitle.setTextColor(Color.parseColor("#60A5FA"));
+                    tvTitle.setTextSize(13);
+                    tvTitle.setMaxLines(1);
+                    tvTitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    col.addView(tvTitle);
+                }
+
+                TextView tvUrl = new TextView(this);
+                tvUrl.setText(domain != null && !domain.isEmpty() ? domain : url);
+                tvUrl.setTextColor(Color.parseColor("#6B7280"));
+                tvUrl.setTextSize(11);
+                tvUrl.setMaxLines(1);
+                tvUrl.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                col.addView(tvUrl);
+
+                row.addView(col);
+
+                // Copy button
+                TextView btnCopy = new TextView(this);
+                btnCopy.setText("📋");
+                btnCopy.setTextSize(16);
+                btnCopy.setPadding(dp(8), 0, 0, 0);
+                btnCopy.setOnClickListener(v -> {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                            getSystemService(CLIPBOARD_SERVICE);
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Link", finalUrl));
+                    Toast.makeText(this, "Link copied", Toast.LENGTH_SHORT).show();
+                });
+                row.addView(btnCopy);
+
+                // Tap to open
+                row.setOnClickListener(v -> {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(finalUrl));
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Cannot open link", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                // Long press: edit/delete
+                row.setOnLongClickListener(v -> {
+                    String[] opts = {"Edit", "Delete", "Copy URL"};
+                    new AlertDialog.Builder(this)
+                            .setItems(opts, (d, w) -> {
+                                switch (w) {
+                                    case 0: showEditLinkDialog(index, finalTitle, finalUrl); break;
+                                    case 1: deleteLink(index); break;
+                                    case 2:
+                                        android.content.ClipboardManager cb = (android.content.ClipboardManager)
+                                                getSystemService(CLIPBOARD_SERVICE);
+                                        cb.setPrimaryClip(android.content.ClipData.newPlainText("Link", finalUrl));
+                                        Toast.makeText(this, "Copied", Toast.LENGTH_SHORT).show();
+                                        break;
+                                }
+                            }).show();
+                    return true;
+                });
+
+                detailLinksContainer.addView(row);
+            }
+        } else {
+            detailLinksSection.setVisibility(View.VISIBLE); // always show so user can add
+            detailLinksContainer.removeAllViews();
+        }
+    }
+
+    private void showAddLinkDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(android.R.layout.simple_list_item_2, null);
+        // Build custom dialog with two EditTexts
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(dp(20), dp(16), dp(20), dp(8));
+
+        EditText etTitle = new EditText(this);
+        etTitle.setHint("Title (optional)");
+        etTitle.setTextColor(Color.WHITE);
+        etTitle.setHintTextColor(Color.parseColor("#6B7280"));
+        layout.addView(etTitle);
+
+        EditText etUrl = new EditText(this);
+        etUrl.setHint("URL");
+        etUrl.setTextColor(Color.WHITE);
+        etUrl.setHintTextColor(Color.parseColor("#6B7280"));
+        etUrl.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        layout.addView(etUrl);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Add Link")
+                .setView(layout)
+                .setPositiveButton("Add", (d, w) -> {
+                    String url = etUrl.getText().toString().trim();
+                    if (url.isEmpty()) return;
+                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                        url = "https://" + url;
+                    }
+                    String title = etTitle.getText().toString().trim();
+                    try {
+                        org.json.JSONObject lj = new org.json.JSONObject();
+                        lj.put("title", title);
+                        lj.put("url", url);
+                        if (task.links == null) task.links = new java.util.ArrayList<>();
+                        task.links.add(new TaskLink(title, url));
+                        task.updatedAt = System.currentTimeMillis();
+                        repo.updateTask(task);
+                        displayLinksSection();
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Failed to add link", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void showEditLinkDialog(int index, String currentTitle, String currentUrl) {
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(dp(20), dp(16), dp(20), dp(8));
+
+        EditText etTitle = new EditText(this);
+        etTitle.setHint("Title");
+        etTitle.setText(currentTitle);
+        etTitle.setTextColor(Color.WHITE);
+        etTitle.setHintTextColor(Color.parseColor("#6B7280"));
+        layout.addView(etTitle);
+
+        EditText etUrl = new EditText(this);
+        etUrl.setHint("URL");
+        etUrl.setText(currentUrl);
+        etUrl.setTextColor(Color.WHITE);
+        etUrl.setHintTextColor(Color.parseColor("#6B7280"));
+        layout.addView(etUrl);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Edit Link")
+                .setView(layout)
+                .setPositiveButton("Save", (d, w) -> {
+                    String url = etUrl.getText().toString().trim();
+                    if (url.isEmpty()) return;
+                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                        url = "https://" + url;
+                    }
+                    try {
+                        org.json.JSONObject lj = new org.json.JSONObject();
+                        lj.put("title", etTitle.getText().toString().trim());
+                        lj.put("url", url);
+                        task.links.set(index, new TaskLink(etTitle.getText().toString().trim(), url));
+                        task.updatedAt = System.currentTimeMillis();
+                        repo.updateTask(task);
+                        displayLinksSection();
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Failed to update link", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void deleteLink(int index) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Link")
+                .setMessage("Remove this link?")
+                .setPositiveButton("Delete", (d, w) -> {
+                    task.links.remove(index);
+                    task.updatedAt = System.currentTimeMillis();
+                    repo.updateTask(task);
+                    displayLinksSection();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    // ─── Comments Section ────────────────────────────────────────
+
+    private void displayCommentsSection() {
+        if (detailCommentsSection == null) return;
+        detailCommentsContainer.removeAllViews();
+        if (task.comments != null && !task.comments.isEmpty()) {
+            for (TaskComment comment : task.comments) {
+                LinearLayout row = new LinearLayout(this);
+                row.setOrientation(LinearLayout.VERTICAL);
+                row.setPadding(dp(10), dp(8), dp(10), dp(8));
+
+                // Author + timestamp row
+                LinearLayout header = new LinearLayout(this);
+                header.setOrientation(LinearLayout.HORIZONTAL);
+                header.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                // Author chip
+                TextView tvAuthor = new TextView(this);
+                tvAuthor.setText(comment.author);
+                tvAuthor.setTextSize(11);
+                tvAuthor.setTextColor("Mobile".equals(comment.author) ?
+                        Color.parseColor("#6366F1") : Color.parseColor("#06B6D4"));
+                GradientDrawable authorBg = new GradientDrawable();
+                authorBg.setCornerRadius(dp(8));
+                authorBg.setColor("Mobile".equals(comment.author) ?
+                        Color.parseColor("#1A1040") : Color.parseColor("#0A2030"));
+                tvAuthor.setBackground(authorBg);
+                tvAuthor.setPadding(dp(6), dp(2), dp(6), dp(2));
+                header.addView(tvAuthor);
+
+                // Timestamp
+                TextView tvTime = new TextView(this);
+                tvTime.setText("  · " + getRelativeTime(comment.timestamp));
+                tvTime.setTextSize(11);
+                tvTime.setTextColor(Color.parseColor("#4B5563"));
+                header.addView(tvTime);
+
+                row.addView(header);
+
+                // Comment text
+                TextView tvText = new TextView(this);
+                tvText.setText(comment.text);
+                tvText.setTextColor(Color.parseColor("#CBD5E1"));
+                tvText.setTextSize(13);
+                tvText.setPadding(0, dp(4), 0, 0);
+                tvText.setLineSpacing(0, 1.3f);
+                row.addView(tvText);
+
+                // Long press to delete
+                row.setOnLongClickListener(v -> {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Delete Comment")
+                            .setMessage("Remove this comment?")
+                            .setPositiveButton("Delete", (d, w) -> {
+                                task.comments.remove(comment);
+                                task.updatedAt = System.currentTimeMillis();
+                                repo.updateTask(task);
+                                displayCommentsSection();
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                    return true;
+                });
+
+                detailCommentsContainer.addView(row);
+            }
+        }
+    }
+
+    private void sendComment() {
+        if (etCommentInput == null || task == null) return;
+        String text = etCommentInput.getText().toString().trim();
+        if (text.isEmpty()) return;
+
+        TaskComment comment = new TaskComment("Mobile", text);
+        if (task.comments == null) task.comments = new java.util.ArrayList<>();
+        task.comments.add(comment);
+        task.updatedAt = System.currentTimeMillis();
+        repo.updateTask(task);
+
+        etCommentInput.setText("");
+        displayCommentsSection();
+
+        // Sync to server
+        try {
+            ConnectionManager cm = new ConnectionManager(getIntent().getStringExtra("server_ip"));
+            cm.sendCommand("TASK_COMMENT:" + task.id + ":" + text);
+        } catch (Exception ignored) {}
+    }
+
+    private String getRelativeTime(long timestamp) {
+        long diff = System.currentTimeMillis() - timestamp;
+        long secs = diff / 1000;
+        if (secs < 60) return "just now";
+        long mins = secs / 60;
+        if (mins < 60) return mins + "m ago";
+        long hrs = mins / 60;
+        if (hrs < 24) return hrs + "h ago";
+        long days = hrs / 24;
+        if (days < 7) return days + "d ago";
+        return new SimpleDateFormat("MMM dd", Locale.US).format(new Date(timestamp));
+    }
+
     // ─── Actions ─────────────────────────────────────────────────
 
     private void toggleComplete() {
         if (task.isCompleted()) {
+            // Uncompleting — no gate needed
             repo.uncompleteTask(task.id);
-        } else {
-            repo.completeTask(task.id);
-            // Handle recurring: create next occurrence
-            if (task.isRecurring()) {
-                Task next = repo.createNextRecurrence(task.id);
-                if (next != null) {
-                    Toast.makeText(this, "Next occurrence created", Toast.LENGTH_SHORT).show();
+            syncCompletionState(false);
+            loadTask();
+            return;
+        }
+
+        // ── Subtask completion gate ───────────────────────────
+        TaskManagerSettings settings = TaskManagerSettings.getInstance(this);
+        if (settings.subtaskCompletionGate && task.hasSubtasks()) {
+            int incomplete = task.getSubtaskTotalCount() - task.getSubtaskCompletedCount();
+            if (incomplete > 0) {
+                if (settings.subtaskGateIsHardBlock) {
+                    // Hard block: cannot complete until all subtasks done
+                    new AlertDialog.Builder(this)
+                            .setTitle("Incomplete Subtasks")
+                            .setMessage(incomplete + " subtask" + (incomplete > 1 ? "s" : "")
+                                    + " still incomplete. Complete all subtasks first.")
+                            .setPositiveButton("OK", null)
+                            .show();
+                    return;
+                } else {
+                    // Soft warning: ask for confirmation
+                    new AlertDialog.Builder(this)
+                            .setTitle("Incomplete Subtasks")
+                            .setMessage(incomplete + " subtask" + (incomplete > 1 ? "s" : "")
+                                    + " still incomplete. Complete the task anyway?")
+                            .setPositiveButton("Complete Anyway", (d, w) -> performComplete())
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                    return;
                 }
             }
         }
-        // Sync to PC
-        TaskManagerActivity mgr = TaskManagerActivity.getInstance();
-        if (mgr != null) {
-            try {
-                ConnectionManager cm = new ConnectionManager(getIntent().getStringExtra("server_ip"));
-                if (task.isCompleted()) {
-                    // Was completed, now uncompleted
-                    cm.sendCommand("TASK_UNCOMPLETE:" + task.id);
-                } else {
-                    cm.sendCommand("TASK_COMPLETE:" + task.id);
-                }
-            } catch (Exception ignored) {}
+
+        performComplete();
+    }
+
+    /** Actually completes the task — called after any gate checks pass. */
+    private void performComplete() {
+        repo.completeTask(task.id);
+        // Handle recurring: create next occurrence
+        if (task.isRecurring()) {
+            Task next = repo.createNextRecurrence(task.id);
+            if (next != null) {
+                Toast.makeText(this, "Next occurrence created", Toast.LENGTH_SHORT).show();
+            }
         }
+        syncCompletionState(true);
         loadTask();
+    }
+
+    /** Sends TASK_COMPLETE or TASK_UNCOMPLETE to the PC server. */
+    private void syncCompletionState(boolean completed) {
+        try {
+            ConnectionManager cm = new ConnectionManager(getIntent().getStringExtra("server_ip"));
+            cm.sendCommand(completed ? "TASK_COMPLETE:" + task.id
+                                     : "TASK_UNCOMPLETE:" + task.id);
+        } catch (Exception ignored) {}
     }
 
     private void toggleStar() {

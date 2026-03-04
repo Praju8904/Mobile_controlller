@@ -28,6 +28,7 @@ import com.prajwal.myfirstapp.vault.MediaVaultRepository;
 import com.prajwal.myfirstapp.vault.VaultUnlockActivity;
 import com.prajwal.myfirstapp.expenses.ExpenseTrackerActivity;
 import com.prajwal.myfirstapp.expenses.ExpenseRepository;
+import com.prajwal.myfirstapp.mathstudio.MathStudioHubActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -139,12 +140,12 @@ public class MainActivity extends AppCompatActivity {
         reverseCommandListener = new ReverseCommandListener(this, initialIp);
 
         reverseCommandListener.setCallback(command -> {
-            // Existing Logs
+    // Existing Logs
             Log.d("ReverseCmd", "Received: " + command);
 
             if (command.startsWith("CHAT_MSG:")) {
                 String msg = command.substring(9);
-
+                
                 // 1. Notify ChatActivity if open
                 Intent intent = new Intent("com.prajwal.myfirstapp.CHAT_EVENT");
                 intent.putExtra("type", "text");
@@ -153,16 +154,16 @@ public class MainActivity extends AppCompatActivity {
 
                 // 2. Ideally, if ChatActivity is NOT open, save to Repository here too
                 // (Optional for advanced polish)
-
+                
             } else if (command.startsWith("CHAT_FILE_INFO:")) {
                 // Handle file notifications from PC
                 String filename = command.substring(15);
-
+                
                 // Build the full local path where the file was saved on the phone
                 File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
                 File receivedFile = new File(new File(docFolder, "Received_Files"), filename);
                 String fullPath = receivedFile.getAbsolutePath();
-
+                
                 Intent intent = new Intent("com.prajwal.myfirstapp.CHAT_EVENT");
                 intent.putExtra("type", "file");
                 intent.putExtra("content", fullPath);
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!clipText.isEmpty()) {
                     runOnUiThread(() -> {
                         android.content.ClipboardManager clipboard =
-                                (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                         android.content.ClipData clip = android.content.ClipData.newPlainText("PC Clipboard", clipText);
                         clipboard.setPrimaryClip(clip);
                     });
@@ -304,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
         // air mouse
         /*
          * View laserTrigger = findViewById(R.id.touchPad);
-         *
+         * 
          * laserTrigger.setOnTouchListener((v, event) -> {
          * switch (event.getAction()) {
          * case MotionEvent.ACTION_DOWN:
@@ -313,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
          * v.setBackgroundColor(Color.parseColor("#33FF0000")); // Tint red for "Laser"
          * feel
          * break;
-         *
+         * 
          * case MotionEvent.ACTION_UP:
          * // Stop the laser when finger lifts
          * sensorHandler.stop();
@@ -322,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
          * }
          * return true;
          * });
-         *
+         * 
          */
 
         // Scroll Strip
@@ -620,7 +621,7 @@ public class MainActivity extends AppCompatActivity {
         // Check runtime permission for Android 12+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
-                != PackageManager.PERMISSION_GRANTED) {
+                   != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, 700);
             Toast.makeText(this, "Please grant Bluetooth permission, then try again", Toast.LENGTH_SHORT).show();
             return;
@@ -1129,6 +1130,14 @@ public class MainActivity extends AppCompatActivity {
         // Update card summaries on resume
         updateExpenseCardSummary();
         updateVaultCardSummary();
+
+        View cardMathStudioHome = findViewById(R.id.cardMathStudioHome);
+        if (cardMathStudioHome != null) {
+            cardMathStudioHome.setOnClickListener(v -> {
+                Intent mathIntent = new Intent(MainActivity.this, MathStudioHubActivity.class);
+                startActivity(mathIntent);
+            });
+        }
     }
 
     // ═══ TAB NAVIGATION ═══
@@ -1174,7 +1183,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (serverItems.isEmpty()) serverItems.add("No saved servers");
         android.widget.ArrayAdapter<String> bsAdapter = new android.widget.ArrayAdapter<>(
-                this, android.R.layout.simple_list_item_1, serverItems);
+            this, android.R.layout.simple_list_item_1, serverItems);
         bsServerList.setAdapter(bsAdapter);
 
         // Buttons
@@ -1196,7 +1205,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         com.google.android.material.bottomsheet.BottomSheetDialog dialog =
-                new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+            new com.google.android.material.bottomsheet.BottomSheetDialog(this);
         dialog.setContentView(sheetView);
         dialog.show();
     }
@@ -1271,7 +1280,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (serverItems.isEmpty()) serverItems.add("No saved servers\nAdd one below");
         android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
-                this, android.R.layout.simple_list_item_1, serverItems);
+            this, android.R.layout.simple_list_item_1, serverItems);
         devServerList.setAdapter(adapter);
         devServerList.setOnItemClickListener((parent, view, pos, id) -> {
             // Try to connect to this server
@@ -1293,85 +1302,120 @@ public class MainActivity extends AppCompatActivity {
     private void showSystemMonitorMenu() {
         String[] options = {"📊  CPU Usage", "💾  RAM Usage", "🖥️  GPU Info", "💿  Disk Usage", "📶  Network Speed"};
         new AlertDialog.Builder(this)
-                .setTitle("📊 System Monitor")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: connectionManager.sendCommand("SYS_CPU"); break;
-                        case 1: connectionManager.sendCommand("SYS_RAM"); break;
-                        case 2: connectionManager.sendCommand("SYS_GPU"); break;
-                        case 3: connectionManager.sendCommand("SYS_DISK"); break;
-                        case 4: connectionManager.sendCommand("SYS_NET"); break;
-                    }
-                })
-                .show();
+            .setTitle("📊 System Monitor")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: connectionManager.sendCommand("SYS_CPU"); break;
+                    case 1: connectionManager.sendCommand("SYS_RAM"); break;
+                    case 2: connectionManager.sendCommand("SYS_GPU"); break;
+                    case 3: connectionManager.sendCommand("SYS_DISK"); break;
+                    case 4: connectionManager.sendCommand("SYS_NET"); break;
+                }
+            })
+            .show();
     }
 
     private void showPowerControlMenu() {
         String[] options = {"⏻  Shutdown PC", "🔄  Restart PC", "💤  Sleep PC", "🔒  Lock PC", "🚪  Log Off"};
         new AlertDialog.Builder(this)
-                .setTitle("⏻ Power Control")
-                .setItems(options, (dialog, which) -> {
-                    String[] commands = {"SHUTDOWN_LAPTOP", "RESTART_PC", "SLEEP_PC", "LOCK_PC", "LOGOFF_PC"};
-                    String[] labels = {"Shutting down", "Restarting", "Sleeping", "Locking", "Logging off"};
-                    new AlertDialog.Builder(this)
-                            .setTitle("Confirm: " + options[which])
-                            .setMessage(labels[which] + " your PC. Are you sure?")
-                            .setPositiveButton("Confirm", (d, w) -> {
-                                connectionManager.sendCommand(commands[which]);
-                                Toast.makeText(this, labels[which] + " PC...", Toast.LENGTH_SHORT).show();
-                            })
-                            .setNegativeButton("Cancel", null)
-                            .show();
-                })
-                .show();
+            .setTitle("⏻ Power Control")
+            .setItems(options, (dialog, which) -> {
+                String[] commands = {"SHUTDOWN_LAPTOP", "RESTART_PC", "SLEEP_PC", "LOCK_PC", "LOGOFF_PC"};
+                String[] labels = {"Shutting down", "Restarting", "Sleeping", "Locking", "Logging off"};
+                new AlertDialog.Builder(this)
+                    .setTitle("Confirm: " + options[which])
+                    .setMessage(labels[which] + " your PC. Are you sure?")
+                    .setPositiveButton("Confirm", (d, w) -> {
+                        connectionManager.sendCommand(commands[which]);
+                        Toast.makeText(this, labels[which] + " PC...", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            })
+            .show();
     }
 
     private void showCustomShortcutsMenu() {
         String[] shortcuts = {
-                "Alt+Tab - Switch Apps",
-                "Win+D - Show Desktop",
-                "Ctrl+Alt+Del - Security Screen",
-                "PrtScr - Screenshot",
-                "Win+L - Lock Screen",
-                "Ctrl+C - Copy",
-                "Ctrl+V - Paste",
-                "Ctrl+Z - Undo",
-                "Ctrl+Shift+Esc - Task Manager"
+            "Alt+Tab - Switch Apps",
+            "Win+D - Show Desktop",
+            "Ctrl+Alt+Del - Security Screen",
+            "PrtScr - Screenshot",
+            "Win+L - Lock Screen",
+            "Ctrl+C - Copy",
+            "Ctrl+V - Paste",
+            "Ctrl+Z - Undo",
+            "Ctrl+Shift+Esc - Task Manager"
         };
         String[] commands = {
-                "KEY_COMBO:ALT+TAB", "KEY_COMBO:WIN+D", "KEY_COMBO:CTRL+ALT+DEL",
-                "KEY:PRINTSCREEN", "KEY_COMBO:WIN+L",
-                "KEY_COMBO:CTRL+C", "KEY_COMBO:CTRL+V", "KEY_COMBO:CTRL+Z",
-                "KEY_COMBO:CTRL+SHIFT+ESC"
+            "KEY_COMBO:ALT+TAB", "KEY_COMBO:WIN+D", "KEY_COMBO:CTRL+ALT+DEL",
+            "KEY:PRINTSCREEN", "KEY_COMBO:WIN+L",
+            "KEY_COMBO:CTRL+C", "KEY_COMBO:CTRL+V", "KEY_COMBO:CTRL+Z",
+            "KEY_COMBO:CTRL+SHIFT+ESC"
         };
         new AlertDialog.Builder(this)
-                .setTitle("⌨ Custom Shortcuts")
-                .setItems(shortcuts, (dialog, which) -> {
-                    connectionManager.sendCommand(commands[which]);
-                    Toast.makeText(this, "Sent: " + shortcuts[which].split(" - ")[0].trim(), Toast.LENGTH_SHORT).show();
-                })
-                .show();
+            .setTitle("⌨ Custom Shortcuts")
+            .setItems(shortcuts, (dialog, which) -> {
+                connectionManager.sendCommand(commands[which]);
+                Toast.makeText(this, "Sent: " + shortcuts[which].split(" - ")[0].trim(), Toast.LENGTH_SHORT).show();
+            })
+            .show();
     }
 
     private void showBrowserRemoteMenu() {
         String[] options = {
-                "◀  Back", "▶  Forward", "↻  Refresh",
-                "⊕  New Tab", "✕  Close Tab",
-                "⬆  Scroll Up", "⬇  Scroll Down",
-                "🔍  Focus Address Bar"
+            "◀  Back", "▶  Forward", "↻  Refresh",
+            "⊕  New Tab", "✕  Close Tab",
+            "⬆  Scroll Up", "⬇  Scroll Down",
+            "🔍  Focus Address Bar"
         };
         String[] commands = {
-                "BROWSER:BACK", "BROWSER:FORWARD", "BROWSER:REFRESH",
-                "BROWSER:NEW_TAB", "BROWSER:CLOSE_TAB",
-                "BROWSER:SCROLL_UP", "BROWSER:SCROLL_DOWN",
-                "BROWSER:FOCUS_BAR"
+            "BROWSER:BACK", "BROWSER:FORWARD", "BROWSER:REFRESH",
+            "BROWSER:NEW_TAB", "BROWSER:CLOSE_TAB",
+            "BROWSER:SCROLL_UP", "BROWSER:SCROLL_DOWN",
+            "BROWSER:FOCUS_BAR"
         };
         new AlertDialog.Builder(this)
-                .setTitle("🌐 Browser Remote")
-                .setItems(options, (dialog, which) -> {
-                    connectionManager.sendCommand(commands[which]);
-                })
-                .show();
+            .setTitle("🌐 Browser Remote")
+            .setItems(options, (dialog, which) -> {
+                connectionManager.sendCommand(commands[which]);
+            })
+            .show();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String openScreen = intent.getStringExtra("open_screen");
+        if (openScreen != null) {
+            handleOpenScreen(openScreen);
+        }
+    }
+
+    private void handleOpenScreen(String screen) {
+        switch (screen) {
+            case "touchpad":
+                navigateToTouchpad();
+                break;
+            case "keyboard":
+                navigateToTouchpad();
+                new android.os.Handler().postDelayed(() -> {
+                    EditText input = findViewById(R.id.hiddenInput);
+                    if (input != null) {
+                        input.requestFocus();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm != null) imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                }, 300);
+                break;
+            case "presenter":
+                togglePresenterMode(true);
+                break;
+            case "file_transfer":
+                showFilesMenu();
+                break;
+        }
     }
 
     @Override
@@ -1475,7 +1519,7 @@ public class MainActivity extends AppCompatActivity {
         touchpadScreen.startAnimation(slideOut);
         if (connectionBar != null) connectionBar.setVisibility(View.GONE);
         btnBackHome.animate().alpha(0f).setDuration(200).withEndAction(() ->
-                btnBackHome.setVisibility(View.GONE)
+            btnBackHome.setVisibility(View.GONE)
         ).start();
         bottomNavigation.setVisibility(View.VISIBLE);
         bottomNavigation.setSelectedItemId(R.id.nav_home);
@@ -1486,97 +1530,97 @@ public class MainActivity extends AppCompatActivity {
     private void showFilesMenu() {
         String[] options = {"📄  Send File", "🎬  Send Video", "🎵  Send Audio", "📂  Browse Received Files"};
         new AlertDialog.Builder(this)
-                .setTitle("📁 File Transfer")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: openMediaPicker("*/*", 200); break;
-                        case 1: openMediaPicker("video/*", 201); break;
-                        case 2: openMediaPicker("audio/*", 202); break;
-                        case 3:
-                            File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
-                            File receivedFolder = new File(docFolder, "Received_Files");
-                            if (receivedFolder.exists()) {
-                                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                                intent.setDataAndType(Uri.parse(receivedFolder.getPath()), "*/*");
-                                try { startActivity(Intent.createChooser(intent, "Open Received Files")); }
-                                catch (android.content.ActivityNotFoundException ex) {
-                                    Toast.makeText(this, "Install a File Manager", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(this, "No files received yet!", Toast.LENGTH_SHORT).show();
+            .setTitle("📁 File Transfer")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: openMediaPicker("*/*", 200); break;
+                    case 1: openMediaPicker("video/*", 201); break;
+                    case 2: openMediaPicker("audio/*", 202); break;
+                    case 3:
+                        File docFolder = getExternalFilesDir(android.os.Environment.DIRECTORY_DOCUMENTS);
+                        File receivedFolder = new File(docFolder, "Received_Files");
+                        if (receivedFolder.exists()) {
+                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                            intent.setDataAndType(Uri.parse(receivedFolder.getPath()), "*/*");
+                            try { startActivity(Intent.createChooser(intent, "Open Received Files")); }
+                            catch (android.content.ActivityNotFoundException ex) {
+                                Toast.makeText(this, "Install a File Manager", Toast.LENGTH_SHORT).show();
                             }
-                            break;
-                    }
-                })
-                .show();
+                        } else {
+                            Toast.makeText(this, "No files received yet!", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+            })
+            .show();
     }
 
     private void showAIMenu() {
         String[] options = {"🎙️  Voice Command", "✍️  Write AI Prompt", "🗣️  Voice Dictation"};
         new AlertDialog.Builder(this)
-                .setTitle("🤖 AI Assistant")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: startVoiceRecognition(300); break;
-                        case 1: showWriteAIDialog(); break;
-                        case 2: startVoiceRecognition(400); break;
-                    }
-                })
-                .show();
+            .setTitle("🤖 AI Assistant")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: startVoiceRecognition(300); break;
+                    case 1: showWriteAIDialog(); break;
+                    case 2: startVoiceRecognition(400); break;
+                }
+            })
+            .show();
     }
 
     private void showPCControlMenu() {
         String[] options = {
-                "🔊  Volume Up", "🔉  Volume Down", "🔇  Mute Toggle",
-                "🔆  Brightness Up", "🔅  Brightness Down",
-                "🖥️  Show Desktop", "🔄  App Switcher",
-                "📸  Screenshot (Save)", "📸  Screenshot (Send)",
-                "📋  Clipboard Sync", "⏱️  Schedule Shutdown",
-                "🔍  Zoom In", "🔎  Zoom Out", "💯  Reset Zoom",
-                "🖥️  Screen Black / Wake", "⎋  Escape Key"
+            "🔊  Volume Up", "🔉  Volume Down", "🔇  Mute Toggle",
+            "🔆  Brightness Up", "🔅  Brightness Down",
+            "🖥️  Show Desktop", "🔄  App Switcher",
+            "📸  Screenshot (Save)", "📸  Screenshot (Send)",
+            "📋  Clipboard Sync", "⏱️  Schedule Shutdown",
+            "🔍  Zoom In", "🔎  Zoom Out", "💯  Reset Zoom",
+            "🖥️  Screen Black / Wake", "⎋  Escape Key"
         };
         new AlertDialog.Builder(this)
-                .setTitle("🎮 PC Control")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: connectionManager.sendCommand("VOL_UP"); break;
-                        case 1: connectionManager.sendCommand("VOL_DOWN"); break;
-                        case 2: connectionManager.sendCommand("MUTE_TOGGLE"); break;
-                        case 3: connectionManager.sendCommand("BRIGHT_UP"); break;
-                        case 4: connectionManager.sendCommand("BRIGHT_DOWN"); break;
-                        case 5: connectionManager.sendCommand("SHOW_DESKTOP"); break;
-                        case 6: connectionManager.sendCommand("APP_SWITCHER"); break;
-                        case 7:
-                            connectionManager.sendCommand("SCREENSHOT_LOCAL");
-                            Toast.makeText(this, "Screenshot saved on PC", Toast.LENGTH_SHORT).show();
-                            break;
-                        case 8:
-                            connectionManager.sendCommand("SCREENSHOT_SEND");
-                            Toast.makeText(this, "Capturing & transferring...", Toast.LENGTH_LONG).show();
-                            break;
-                        case 9: showClipboardDialog(); break;
-                        case 10: showSchedulerDialog(); break;
-                        case 11: connectionManager.sendCommand("ZOOM_IN"); break;
-                        case 12: connectionManager.sendCommand("ZOOM_OUT"); break;
-                        case 13: connectionManager.sendCommand("ZOOM_RESET"); break;
-                        case 14: connectionManager.sendCommand("SCREEN_BLACK"); break;
-                        case 15: connectionManager.sendCommand("KEY:ESC"); break;
-                    }
-                })
-                .show();
+            .setTitle("🎮 PC Control")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: connectionManager.sendCommand("VOL_UP"); break;
+                    case 1: connectionManager.sendCommand("VOL_DOWN"); break;
+                    case 2: connectionManager.sendCommand("MUTE_TOGGLE"); break;
+                    case 3: connectionManager.sendCommand("BRIGHT_UP"); break;
+                    case 4: connectionManager.sendCommand("BRIGHT_DOWN"); break;
+                    case 5: connectionManager.sendCommand("SHOW_DESKTOP"); break;
+                    case 6: connectionManager.sendCommand("APP_SWITCHER"); break;
+                    case 7:
+                        connectionManager.sendCommand("SCREENSHOT_LOCAL");
+                        Toast.makeText(this, "Screenshot saved on PC", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 8:
+                        connectionManager.sendCommand("SCREENSHOT_SEND");
+                        Toast.makeText(this, "Capturing & transferring...", Toast.LENGTH_LONG).show();
+                        break;
+                    case 9: showClipboardDialog(); break;
+                    case 10: showSchedulerDialog(); break;
+                    case 11: connectionManager.sendCommand("ZOOM_IN"); break;
+                    case 12: connectionManager.sendCommand("ZOOM_OUT"); break;
+                    case 13: connectionManager.sendCommand("ZOOM_RESET"); break;
+                    case 14: connectionManager.sendCommand("SCREEN_BLACK"); break;
+                    case 15: connectionManager.sendCommand("KEY:ESC"); break;
+                }
+            })
+            .show();
     }
 
     private void showMediaMenu() {
         String[] options = {"📝  Open Notepad", "📷  Webcam Stream"};
         new AlertDialog.Builder(this)
-                .setTitle("🎬 Media & Apps")
-                .setItems(options, (dialog, which) -> {
-                    switch (which) {
-                        case 0: connectionManager.sendCommand("OPEN_NOTEPAD"); break;
-                        case 1: connectionManager.sendCommand("CAMERA_STREAM"); break;
-                    }
-                })
-                .show();
+            .setTitle("🎬 Media & Apps")
+            .setItems(options, (dialog, which) -> {
+                switch (which) {
+                    case 0: connectionManager.sendCommand("OPEN_NOTEPAD"); break;
+                    case 1: connectionManager.sendCommand("CAMERA_STREAM"); break;
+                }
+            })
+            .show();
     }
 
     private void setupKeyboard(EditText hiddenInput) {
@@ -1805,7 +1849,7 @@ public class MainActivity extends AppCompatActivity {
         View dot = findViewById(R.id.laptopConnectionDot);
         if (dot != null) {
             dot.setBackgroundResource(isServerCurrentlyRunning ?
-                    R.drawable.connection_dot_green : R.drawable.connection_dot_red);
+                R.drawable.connection_dot_green : R.drawable.connection_dot_red);
         }
     }
 
@@ -1873,27 +1917,27 @@ public class MainActivity extends AppCompatActivity {
         if (btnMore != null) {
             btnMore.setOnClickListener(v -> {
                 new androidx.appcompat.app.AlertDialog.Builder(this)
-                        .setTitle("History Options")
-                        .setItems(new String[]{"Clear Today's History", "Clear All History"}, (d, which) -> {
-                            ActivityLogRepository repo = new ActivityLogRepository(this);
-                            if (which == 0) {
-                                repo.clearToday();
-                                Toast.makeText(this, "Today's history cleared", Toast.LENGTH_SHORT).show();
-                            } else {
-                                new androidx.appcompat.app.AlertDialog.Builder(this)
-                                        .setTitle("Clear All History")
-                                        .setMessage("This will clear all activity records. Your actual data (notes, tasks, etc.) won't be affected.")
-                                        .setPositiveButton("Clear All", (d2, w2) -> {
-                                            repo.clearAll();
-                                            Toast.makeText(this, "History cleared", Toast.LENGTH_SHORT).show();
-                                            updateHistoryTab();
-                                        })
-                                        .setNegativeButton("Cancel", null)
-                                        .show();
-                            }
-                            updateHistoryTab();
-                        })
-                        .show();
+                    .setTitle("History Options")
+                    .setItems(new String[]{"Clear Today's History", "Clear All History"}, (d, which) -> {
+                        ActivityLogRepository repo = new ActivityLogRepository(this);
+                        if (which == 0) {
+                            repo.clearToday();
+                            Toast.makeText(this, "Today's history cleared", Toast.LENGTH_SHORT).show();
+                        } else {
+                            new androidx.appcompat.app.AlertDialog.Builder(this)
+                                .setTitle("Clear All History")
+                                .setMessage("This will clear all activity records. Your actual data (notes, tasks, etc.) won't be affected.")
+                                .setPositiveButton("Clear All", (d2, w2) -> {
+                                    repo.clearAll();
+                                    Toast.makeText(this, "History cleared", Toast.LENGTH_SHORT).show();
+                                    updateHistoryTab();
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .show();
+                        }
+                        updateHistoryTab();
+                    })
+                    .show();
             });
         }
     }
@@ -1914,8 +1958,8 @@ public class MainActivity extends AppCompatActivity {
         header.setTextSize(13);
         header.setTypeface(null, android.graphics.Typeface.BOLD);
         android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
         );
         lp.topMargin = (int)(12 * getResources().getDisplayMetrics().density);
         lp.bottomMargin = (int)(6 * getResources().getDisplayMetrics().density);
@@ -1933,8 +1977,8 @@ public class MainActivity extends AppCompatActivity {
         item.setPadding(dp12, dp8, dp12, dp8);
 
         android.widget.LinearLayout.LayoutParams itemLp = new android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
         );
         itemLp.bottomMargin = dp8;
         item.setLayoutParams(itemLp);
@@ -1944,8 +1988,8 @@ public class MainActivity extends AppCompatActivity {
         iconView.setText(entry.icon);
         iconView.setTextSize(20);
         android.widget.LinearLayout.LayoutParams iconLp = new android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
         );
         iconLp.setMarginEnd(dp12);
         iconView.setLayoutParams(iconLp);
@@ -1955,7 +1999,7 @@ public class MainActivity extends AppCompatActivity {
         android.widget.LinearLayout textContainer = new android.widget.LinearLayout(this);
         textContainer.setOrientation(android.widget.LinearLayout.VERTICAL);
         android.widget.LinearLayout.LayoutParams tcLp = new android.widget.LinearLayout.LayoutParams(
-                0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+            0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f
         );
         textContainer.setLayoutParams(tcLp);
 

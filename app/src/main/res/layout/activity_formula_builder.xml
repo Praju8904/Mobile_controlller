@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Formula Builder"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+        <TextView
+            android:id="@+id/btnAddFormula"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="+ New"
+            android:textColor="#A5B4FC"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:background="#1A1F3A"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+    </LinearLayout>
+
+    <!-- Formula list panel -->
+    <LinearLayout android:id="@+id/panelList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1">
+            <LinearLayout android:id="@+id/formulaListContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"/>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- Formula editor panel -->
+    <ScrollView android:id="@+id/panelEditor"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Formula Name" android:textColor="#A5B4FC" android:textSize="13sp"
+                android:layout_marginBottom="4dp"/>
+            <android.widget.EditText android:id="@+id/etFormulaName"
+                android:layout_width="match_parent" android:layout_height="44dp"
+                android:hint="e.g. Kinetic Energy" android:textColor="#FFFFFF"
+                android:textColorHint="#4B5563" android:background="#1A1F3A"
+                android:padding="12dp" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Formula" android:textColor="#A5B4FC" android:textSize="13sp"
+                android:layout_marginBottom="4dp"/>
+            <android.widget.EditText android:id="@+id/etFormulaExpr"
+                android:layout_width="match_parent" android:layout_height="44dp"
+                android:hint="e.g. E = 0.5 * m * v^2" android:textColor="#FFFFFF"
+                android:textColorHint="#4B5563" android:background="#1A1F3A"
+                android:padding="12dp" android:fontFamily="monospace"
+                android:layout_marginBottom="4dp"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Variables are auto-detected from single letters"
+                android:textColor="#6B7280" android:textSize="12sp" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Category" android:textColor="#A5B4FC" android:textSize="13sp"
+                android:layout_marginBottom="4dp"/>
+            <android.widget.EditText android:id="@+id/etFormulaCategory"
+                android:layout_width="match_parent" android:layout_height="44dp"
+                android:hint="e.g. Physics, Math, Finance" android:textColor="#FFFFFF"
+                android:textColorHint="#4B5563" android:background="#1A1F3A"
+                android:padding="12dp" android:layout_marginBottom="16dp"/>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="16dp">
+                <Button android:id="@+id/btnSaveFormula"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:text="Save Formula" android:textColor="#0A0E21"
+                    android:background="#A5B4FC" android:layout_marginEnd="8dp"/>
+                <Button android:id="@+id/btnCancelEditor"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:text="Cancel" android:textColor="#FFFFFF"
+                    android:background="#1A1F3A"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Formula solver panel -->
+    <ScrollView android:id="@+id/panelSolver"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+                <TextView android:id="@+id/tvSolverTitle"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:text="Solve Formula" android:textColor="#FFFFFF"
+                    android:textSize="18sp" android:textStyle="bold"/>
+                <Button android:id="@+id/btnBackToList"
+                    android:layout_width="wrap_content" android:layout_height="36dp"
+                    android:text="← List" android:textColor="#A5B4FC"
+                    android:background="#1A1F3A" android:textSize="13sp"/>
+            </LinearLayout>
+
+            <TextView android:id="@+id/tvSolverFormula"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="formula" android:textColor="#A5B4FC"
+                android:textSize="18sp" android:fontFamily="monospace"
+                android:background="#1A1F3A" android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Solve for variable" android:textColor="#A5B4FC"
+                android:textSize="13sp" android:layout_marginBottom="4dp"/>
+            <android.widget.Spinner android:id="@+id/spinnerSolveFor"
+                android:layout_width="match_parent" android:layout_height="44dp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Variable inputs container -->
+            <LinearLayout android:id="@+id/varInputsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"/>
+
+            <Button android:id="@+id/btnSolve"
+                android:layout_width="match_parent" android:layout_height="44dp"
+                android:text="Solve" android:textColor="#0A0E21"
+                android:background="#A5B4FC" android:layout_marginBottom="16dp"/>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="#1A1F3A" android:padding="12dp">
+                <TextView android:id="@+id/tvSolverResult"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="—" android:textColor="#00FF41"
+                    android:textSize="20sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                <TextView android:id="@+id/tvSolverSubstitution"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="" android:textColor="#A5B4FC"
+                    android:textSize="13sp" android:fontFamily="monospace"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -528,12 +528,49 @@
 
                     </LinearLayout>
 
-                    <!-- Placeholder to maintain 2-column grid -->
-                    <View
+                    <!-- Math Studio Card -->
+                    <LinearLayout
+                        android:id="@+id/cardMathStudioHome"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginStart="6dp" />
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/card_math_studio_bg"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="bottom"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="∫"
+                            android:textSize="32sp"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Math Studio"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvMathStudioSubtitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calculate &amp; explore"
+                            android:textColor="#C4B5FD"
+                            android:textSize="13sp"
+                            android:alpha="0.7" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

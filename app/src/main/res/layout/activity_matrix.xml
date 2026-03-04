@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Matrix"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Tab selector -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="4dp">
+        <TextView android:id="@+id/tabMatrixA" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="Matrix A" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_deg_btn_active_bg" android:clickable="true" android:focusable="true"/>
+        <TextView android:id="@+id/tabMatrixB" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginHorizontal="2dp" android:text="Matrix B" android:textColor="#A5B4FC" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_deg_btn_inactive_bg" android:clickable="true" android:focusable="true"/>
+        <TextView android:id="@+id/tabSystem" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="4dp" android:text="System" android:textColor="#A5B4FC" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_deg_btn_inactive_bg" android:clickable="true" android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Dimension controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rows:" android:textColor="#A5B4FC" android:textSize="14sp"/>
+        <TextView android:id="@+id/btnRowMinus" android:layout_width="32dp" android:layout_height="32dp" android:text="−" android:textColor="#FFFFFF" android:textSize="18sp" android:gravity="center" android:layout_marginHorizontal="4dp" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+        <TextView android:id="@+id/tvRows" android:layout_width="32dp" android:layout_height="wrap_content" android:text="2" android:textColor="#FFFFFF" android:textSize="16sp" android:gravity="center"/>
+        <TextView android:id="@+id/btnRowPlus" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textColor="#FFFFFF" android:textSize="18sp" android:gravity="center" android:layout_marginHorizontal="4dp" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+        <View android:layout_width="16dp" android:layout_height="1dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cols:" android:textColor="#A5B4FC" android:textSize="14sp"/>
+        <TextView android:id="@+id/btnColMinus" android:layout_width="32dp" android:layout_height="32dp" android:text="−" android:textColor="#FFFFFF" android:textSize="18sp" android:gravity="center" android:layout_marginHorizontal="4dp" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+        <TextView android:id="@+id/tvCols" android:layout_width="32dp" android:layout_height="wrap_content" android:text="2" android:textColor="#FFFFFF" android:textSize="16sp" android:gravity="center"/>
+        <TextView android:id="@+id/btnColPlus" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textColor="#FFFFFF" android:textSize="18sp" android:gravity="center" android:layout_marginHorizontal="4dp" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Matrix input grid container -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:layout_margin="12dp"
+        android:background="@drawable/math_display_bg">
+        <GridLayout
+            android:id="@+id/matrixGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="12dp"/>
+    </FrameLayout>
+
+    <!-- Operations chips -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:scrollbars="none"
+        android:paddingHorizontal="8dp">
+        <LinearLayout
+            android:id="@+id/operationsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView android:id="@+id/btnDet" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="Det" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnInverse" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="Inverse" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnTranspose" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="Transpose" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnTrace" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="Trace" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnRank" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="Rank" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_function_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnAPlusB" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="A+B" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_operator_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnAMinusB" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="A−B" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_operator_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnATimesB" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="A×B" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_operator_bg" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnScalar" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_margin="4dp" android:paddingHorizontal="16dp" android:text="k×A" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_btn_operator_bg" android:clickable="true" android:focusable="true"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Result display -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:layout_margin="12dp"
+        android:background="@drawable/math_result_card_bg">
+        <TextView
+            android:id="@+id/tvMatrixResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select an operation above"
+            android:textColor="#A5B4FC"
+            android:textSize="14sp"
+            android:padding="16dp"
+            android:fontFamily="monospace"/>
+    </ScrollView>
+
+</LinearLayout>

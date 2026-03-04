@@ -53,23 +53,42 @@
             android:visibility="gone" />
     </LinearLayout>
 
-    <!-- Large title EditText -->
-    <EditText
-        android:id="@+id/etQuickTaskTitle"
+    <!-- Title row: EditText + Mic button -->
+    <LinearLayout
+        android:id="@+id/titleRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="56dp"
-        android:hint="What needs to be done?"
-        android:textColorHint="#4A4A6A"
-        android:textColor="#F1F5F9"
-        android:textSize="18sp"
-        android:background="@null"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="12dp"
-        android:inputType="textCapSentences"
-        android:focusableInTouchMode="true"
-        android:imeOptions="actionDone"
-        android:maxLines="3" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/etQuickTaskTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="56dp"
+            android:hint="What needs to be done?"
+            android:textColorHint="#4A4A6A"
+            android:textColor="#F1F5F9"
+            android:textSize="18sp"
+            android:background="@null"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp"
+            android:inputType="textCapSentences"
+            android:focusableInTouchMode="true"
+            android:imeOptions="actionDone"
+            android:maxLines="3" />
+
+        <ImageView
+            android:id="@+id/btnMic"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:layout_marginEnd="12dp"
+            android:visibility="visible"
+            android:contentDescription="Voice input" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"

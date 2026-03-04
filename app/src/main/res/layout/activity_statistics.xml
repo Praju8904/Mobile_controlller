@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Statistics"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Data input -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical">
+        <EditText
+            android:id="@+id/etDataInput"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/math_input_bg"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:paddingHorizontal="12dp"
+            android:inputType="numberDecimal|numberSigned"
+            android:hint="Enter value or CSV list"
+            android:textColorHint="#4A4A7A"/>
+        <Button
+            android:id="@+id/btnAddData"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:text="Add"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@drawable/math_btn_operator_bg"
+            android:paddingHorizontal="16dp"/>
+    </LinearLayout>
+
+    <!-- Chips container -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:scrollbars="none"
+        android:paddingHorizontal="12dp">
+        <LinearLayout
+            android:id="@+id/chipsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"/>
+    </HorizontalScrollView>
+
+    <!-- Tab bar: Stats / Chart / Regression -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="4dp">
+        <TextView android:id="@+id/tabStats" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="Stats" android:textColor="#FFFFFF" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_deg_btn_active_bg" android:clickable="true" android:focusable="true"/>
+        <TextView android:id="@+id/tabChart" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginHorizontal="2dp" android:text="Chart" android:textColor="#A5B4FC" android:textSize="14sp" android:gravity="center" android:background="@drawable/math_deg_btn_inactive_bg" android:clickable="true" android:focusable="true"/>
+        <TextView android:id="@+id/tabRegression" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="4dp" android:text="Regression" android:textColor="#A5B4FC" android:textSize="13sp" android:gravity="center" android:background="@drawable/math_deg_btn_inactive_bg" android:clickable="true" android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Stats panel -->
+    <ScrollView
+        android:id="@+id/statsPanel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Count" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sum" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvSum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mean" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvMean" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Median" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvMedian" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Std Dev" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvStdDev" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Variance" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvVariance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Min" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvMin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Max" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvMax" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Range" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvRange" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="IQR" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvIQR" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Q1" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvQ1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Q3" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvQ3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mode" android:textColor="#A5B4FC" android:textSize="12sp"/>
+                    <TextView android:id="@+id/tvMode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/math_result_card_bg" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Clear" android:textColor="#EF4444" android:textSize="12sp" android:clickable="true" android:focusable="true" android:id="@+id/btnClearData"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="All data" android:textColor="#A5B4FC" android:textSize="16sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Chart panel (hidden by default) -->
+    <FrameLayout
+        android:id="@+id/chartPanel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:layout_margin="12dp"
+        android:background="@drawable/math_display_bg">
+        <view
+            android:id="@+id/histogramView"
+            class="com.prajwal.myfirstapp.mathstudio.StatisticsActivity$HistogramView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
+
+    <!-- Regression panel (hidden by default) -->
+    <ScrollView
+        android:id="@+id/regressionPanel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Linear Regression (x, y pairs)" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/etXValues"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/math_input_bg"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:paddingHorizontal="12dp"
+                android:inputType="text"
+                android:hint="x values: 1,2,3,4"
+                android:textColorHint="#4A4A7A"/>
+
+            <EditText
+                android:id="@+id/etYValues"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/math_input_bg"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:paddingHorizontal="12dp"
+                android:inputType="text"
+                android:hint="y values: 2,4,5,4"
+                android:textColorHint="#4A4A7A"/>
+
+            <Button
+                android:id="@+id/btnRegress"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Calculate Regression"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/math_btn_operator_bg"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/tvRegressionResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#A5B4FC"
+                android:textSize="15sp"
+                android:background="@drawable/math_result_card_bg"
+                android:padding="16dp"
+                android:fontFamily="monospace"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

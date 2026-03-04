@@ -40,6 +40,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.graphics.drawable.GradientDrawable;
+import android.text.SpannableString;
+import android.text.Spanned;
+
 /**
  * RecyclerView adapter for the Task Manager home screen.
  * Supports two view types: GROUP_HEADER and TASK_CARD.
@@ -47,7 +55,7 @@ import java.util.regex.Pattern;
  */
 public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int TYPE_GROUP_HEADER = 0;
+    public static final int TYPE_GROUP_HEADER = 0;
     private static final int TYPE_TASK_CARD    = 1;
 
     private final Context context;
@@ -59,12 +67,69 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Set<String> expandedIds  = new HashSet<>();  // "focused" expanded cards
     private final Set<String> collapsedIds = new HashSet<>();  // "compact" collapsed cards
     private static final Pattern URL_PATTERN = Pattern.compile("https?://[\\w./?=&%#+-]+");
+    private boolean gridMode = false;
+    private boolean allSubtasksCollapsed = false; // Feature 10: global subtask collapse toggle
+    private final Set<String> expandedSubtaskTasks = new HashSet<>(); // Feature 10: per-task subtask expand
+    private boolean perTaskSubtaskMode = false; // true = use per-task expand set
 
     // ─── Listener Interface ──────────────────────────────────────
 
     // ─── Swipe Action Constants ─────────────────────────────────
     public static final int SWIPE_COMPLETE = 1;
     public static final int SWIPE_ARCHIVE  = 2;
+    private static final int TYPE_TASK_GRID = 2;
+
+    public void setGridMode(boolean grid) {
+        this.gridMode = grid;
+        notifyDataSetChanged();
+    }
+    public boolean isGridMode() { return gridMode; }
+
+    /** Feature 10: Toggle collapse/expand all subtask previews globally. */
+    public void toggleAllSubtasksCollapsed() {
+        allSubtasksCollapsed = !allSubtasksCollapsed;
+        perTaskSubtaskMode = false;
+        notifyDataSetChanged();
+    }
+    public boolean isAllSubtasksCollapsed() { return allSubtasksCollapsed; }
+
+    /** Feature 10: Collapse all subtask previews (per-task mode). */
+    public void collapseAllSubtasks() {
+        expandedSubtaskTasks.clear();
+        perTaskSubtaskMode = true;
+        allSubtasksCollapsed = false;
+        notifyDataSetChanged();
+    }
+
+    /** Feature 10: Expand all subtask previews (per-task mode). */
+    public void expandAllSubtasks(java.util.List<Task> tasks) {
+        expandedSubtaskTasks.clear();
+        if (tasks != null) {
+            for (Task t : tasks) {
+                if (t != null && t.id != null) expandedSubtaskTasks.add(t.id);
+            }
+        }
+        perTaskSubtaskMode = true;
+        allSubtasksCollapsed = false;
+        notifyDataSetChanged();
+    }
+
+    /** Feature 10: Toggle subtask visibility for a single task. */
+    public void toggleSubtaskExpand(String taskId) {
+        perTaskSubtaskMode = true;
+        allSubtasksCollapsed = false;
+        if (expandedSubtaskTasks.contains(taskId)) {
+            expandedSubtaskTasks.remove(taskId);
+        } else {
+            expandedSubtaskTasks.add(taskId);
+        }
+    }
+
+    public boolean isSubtaskExpanded(String taskId) {
+        if (allSubtasksCollapsed) return false;
+        if (!perTaskSubtaskMode) return true;
+        return expandedSubtaskTasks.contains(taskId);
+    }
 
     public interface TaskActionListener {
         void onTaskChecked(Task task, boolean isChecked);
@@ -76,6 +141,8 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         default void onMultiSelectChanged(boolean active, int count) {}
         /** Called when a task card is swiped (right=complete, left=archive) */
         default void onTaskSwiped(Task task, int swipeDirection) {}
+        /** Called when a task title has been edited inline. */
+        default void onTaskUpdated(Task task) {}
     }
 
     // ─── Group Header model ──────────────────────────────────────
@@ -227,7 +294,8 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return items.get(position) instanceof GroupHeader ? TYPE_GROUP_HEADER : TYPE_TASK_CARD;
+        if (items.get(position) instanceof GroupHeader) return TYPE_GROUP_HEADER;
+        return gridMode ? TYPE_TASK_GRID : TYPE_TASK_CARD;
     }
 
     @NonNull
@@ -237,6 +305,9 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_GROUP_HEADER) {
             View view = inflater.inflate(R.layout.item_task_group_header, parent, false);
             return new GroupHeaderViewHolder(view);
+        } else if (viewType == TYPE_TASK_GRID) {
+            View view = inflater.inflate(R.layout.item_task_card_grid, parent, false);
+            return new GridCardViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.item_task_card, parent, false);
             return new TaskCardViewHolder(view);
@@ -254,9 +325,33 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof GroupHeaderViewHolder) {
             bindGroupHeader((GroupHeaderViewHolder) holder, (GroupHeader) items.get(position));
+        } else if (holder instanceof GridCardViewHolder) {
+            bindGridCard((GridCardViewHolder) holder, (Task) items.get(position));
         } else if (holder instanceof TaskCardViewHolder) {
             bindTaskCard((TaskCardViewHolder) holder, (Task) items.get(position));
         }
+    }
+
+    /**
+     * Partial rebind: handles the "countdown" payload from
+     * {@link CountdownRefreshScheduler} to only update the countdown badge
+     * without doing a full card rebind (avoids flicker).
+     */
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position,
+                                 @NonNull java.util.List<Object> payloads) {
+        if (!payloads.isEmpty() && holder instanceof TaskCardViewHolder) {
+            for (Object payload : payloads) {
+                if (CountdownRefreshScheduler.PAYLOAD_COUNTDOWN.equals(payload)) {
+                    Task task = getTaskAtPosition(position);
+                    if (task != null) {
+                        bindDueChip((TaskCardViewHolder) holder, task);
+                    }
+                    return; // handled — skip full rebind
+                }
+            }
+        }
+        super.onBindViewHolder(holder, position, payloads);
     }
 
     // ─── Group Header Binding ────────────────────────────────────
@@ -297,6 +392,35 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // ─── Task Card Binding ───────────────────────────────────────
 
     private void bindTaskCard(TaskCardViewHolder h, Task task) {
+        // ── Feature 15D: Private task masking ──
+        TaskVaultManager vault = TaskVaultManager.getInstance(h.itemView.getContext());
+        if (task.isPrivate && !vault.isUnlocked()) {
+            // Show locked placeholder
+            h.tvTaskTitle.setText("[Private Task]");
+            h.tvTaskTitle.setTextColor(Color.parseColor("#6B7280"));
+            h.tvTaskTitle.setTypeface(null, android.graphics.Typeface.ITALIC);
+            h.tvTaskTitle.setPaintFlags(h.tvTaskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            if (h.tvTaskDescription != null) h.tvTaskDescription.setVisibility(View.GONE);
+            if (h.subtaskPreviewContainer != null) h.subtaskPreviewContainer.setVisibility(View.GONE);
+            if (h.timeEnergyRow != null) h.timeEnergyRow.setVisibility(View.GONE);
+            if (h.batch4BadgesRow != null) h.batch4BadgesRow.setVisibility(View.GONE);
+            h.cbComplete.setVisibility(View.GONE);
+            // Tap on locked card → prompt biometric unlock
+            h.itemView.setOnClickListener(v -> {
+                android.content.Context ctx = h.itemView.getContext();
+                if (ctx instanceof androidx.fragment.app.FragmentActivity) {
+                    vault.promptUnlock((androidx.fragment.app.FragmentActivity) ctx, () -> {
+                        notifyDataSetChanged();
+                    });
+                }
+            });
+            h.itemView.setOnLongClickListener(null);
+            return; // early return — don't bind rest of card
+        }
+        // Normal bind — reset any private-mode overrides
+        h.tvTaskTitle.setTypeface(null, android.graphics.Typeface.NORMAL);
+        h.cbComplete.setVisibility(View.VISIBLE);
+
         // ── Determine card states ──
         boolean isSelected  = multiSelectMode && selectedIds.contains(task.id);
         boolean isExpanded  = expandedIds.contains(task.id);
@@ -381,6 +505,24 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } catch (Exception ignored) {}
         } else {
             h.tvPriorityBadge.setVisibility(View.GONE);
+        }
+
+        // ── Color Label stripe (Feature 2B) ──
+        if (h.viewPriorityStrip != null && task.colorLabel != null && !task.colorLabel.isEmpty()) {
+            try {
+                GradientDrawable colorStrip = new GradientDrawable();
+                colorStrip.setShape(GradientDrawable.RECTANGLE);
+                colorStrip.setCornerRadius(4f);
+                colorStrip.setColor(Color.parseColor(task.colorLabel));
+                h.viewPriorityStrip.setBackground(colorStrip);
+            } catch (Exception ignored) {}
+        }
+
+        // ── Deferred state (Feature 2B) ──
+        if (task.isDeferred()) {
+            h.itemView.setAlpha(0.5f);
+        } else {
+            h.itemView.setAlpha(1.0f);
         }
 
         // ════════════════════════════════════════════
@@ -554,6 +696,140 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (listener != null) listener.onTaskStarToggle(task);
         });
 
+        // ── Carry-over badge (reschedule count indicator) ──
+        if (h.tvCarryOverBadge != null) {
+            if (task.rescheduleCount >= 2 && !task.isCompleted()) {
+                h.tvCarryOverBadge.setVisibility(View.VISIBLE);
+                h.tvCarryOverBadge.setText("↻" + task.rescheduleCount);
+                h.tvCarryOverBadge.setContentDescription(
+                        "Rescheduled " + task.rescheduleCount + " times");
+                if (task.rescheduleCount >= 4) {
+                    h.tvCarryOverBadge.setTextColor(Color.parseColor("#F59E0B"));
+                } else {
+                    h.tvCarryOverBadge.setTextColor(Color.parseColor("#94A3B8"));
+                }
+            } else {
+                h.tvCarryOverBadge.setVisibility(View.GONE);
+            }
+        }
+
+        // ── Batch 4 Badges Row ──
+        if (h.batch4BadgesRow != null) {
+            boolean showRow = false;
+
+            // Feature 1: Next Action
+            if (h.tvNextActionBadge != null) {
+                if (task.isNextAction && !task.isCompleted()) {
+                    h.tvNextActionBadge.setVisibility(View.VISIBLE);
+                    showRow = true;
+                } else {
+                    h.tvNextActionBadge.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 2: MIT
+            if (h.tvMITBadge != null) {
+                if (task.isMIT && !task.isCompleted()) {
+                    h.tvMITBadge.setVisibility(View.VISIBLE);
+                    showRow = true;
+                } else {
+                    h.tvMITBadge.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 3: Context Tag
+            if (h.tvContextTag != null) {
+                if (task.hasContextTag()) {
+                    h.tvContextTag.setVisibility(View.VISIBLE);
+                    h.tvContextTag.setText(task.contextTag);
+                    h.tvContextTag.setTextColor(Task.getContextTagColor(task.contextTag));
+                    showRow = true;
+                } else {
+                    h.tvContextTag.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 5: Waiting-For
+            if (h.tvWaitingBadge != null) {
+                if (task.isWaiting() && task.waitingFor != null && !task.waitingFor.isEmpty()) {
+                    h.tvWaitingBadge.setVisibility(View.VISIBLE);
+                    h.tvWaitingBadge.setText("⏳ " + task.waitingFor);
+                    showRow = true;
+                } else {
+                    h.tvWaitingBadge.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 6: 2-Minute Rule
+            if (h.tv2MinBadge != null) {
+                if (task.estimatedDuration > 0 && task.estimatedDuration <= 2 && !task.isCompleted()) {
+                    h.tv2MinBadge.setVisibility(View.VISIBLE);
+                    showRow = true;
+                } else {
+                    h.tv2MinBadge.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 9: Reading Time
+            if (h.tvReadingTime != null) {
+                int readMins = task.getReadingTimeMinutes();
+                if (readMins > 0) {
+                    h.tvReadingTime.setVisibility(View.VISIBLE);
+                    h.tvReadingTime.setText("📖 " + readMins + "min read");
+                    showRow = true;
+                } else {
+                    h.tvReadingTime.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 7: Assigned To
+            if (h.tvAssignedTo != null) {
+                if (task.assignedTo != null && !task.assignedTo.isEmpty()) {
+                    h.tvAssignedTo.setVisibility(View.VISIBLE);
+                    h.tvAssignedTo.setText("👤 " + task.assignedTo);
+                    showRow = true;
+                } else {
+                    h.tvAssignedTo.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 15: Private task lock
+            if (h.tvPrivateLock != null) {
+                if (task.isPrivate) {
+                    h.tvPrivateLock.setVisibility(View.VISIBLE);
+                    showRow = true;
+                } else {
+                    h.tvPrivateLock.setVisibility(View.GONE);
+                }
+            }
+
+            // Feature 8: Watcher count
+            if (h.tvWatcherCount != null) {
+                if (task.watchers != null && !task.watchers.isEmpty()) {
+                    h.tvWatcherCount.setVisibility(View.VISIBLE);
+                    h.tvWatcherCount.setText("👁 " + task.watchers.size());
+                    showRow = true;
+                } else {
+                    h.tvWatcherCount.setVisibility(View.GONE);
+                }
+            }
+
+            h.batch4BadgesRow.setVisibility(showRow ? View.VISIBLE : View.GONE);
+        }
+
+        // ── Accessibility content descriptions ──
+        h.cbComplete.setContentDescription("Mark " + task.title + " as complete");
+        h.btnStar.setContentDescription(task.isStarred ?
+                "Unstar task: " + task.title : "Star task: " + task.title);
+        h.btnTaskMenu.setContentDescription("More options for " + task.title);
+        if (h.tvPriorityBadge.getVisibility() == View.VISIBLE) {
+            h.tvPriorityBadge.setContentDescription(task.priority + " priority");
+        }
+        if (h.chipCategory != null && h.chipCategory.getVisibility() == View.VISIBLE
+                && task.category != null) {
+            h.chipCategory.setContentDescription("Category: " + task.category);
+        }
+
         // ── Subtask progress bar ──
         if (task.hasSubtasks()) {
             h.subtaskProgressContainer.setVisibility(View.VISIBLE);
@@ -573,7 +849,16 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         // ── Subtask inline previews ──
         if (h.subtaskPreviewContainer != null) {
-            if (task.hasSubtasks()) {
+            boolean subtasksVisible;
+            if (allSubtasksCollapsed) {
+                subtasksVisible = false;
+            } else if (perTaskSubtaskMode) {
+                subtasksVisible = expandedSubtaskTasks.contains(task.id);
+            } else {
+                subtasksVisible = true;
+            }
+
+            if (task.hasSubtasks() && subtasksVisible) {
                 List<SubTask> subs = task.subtasks;
                 h.subtaskPreviewContainer.setVisibility(View.VISIBLE);
 
@@ -629,20 +914,30 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void bindDueChip(TaskCardViewHolder h, Task task) {
         if (task.hasDueDate()) {
             h.chipDue.setVisibility(View.VISIBLE);
-            String dueText = TaskDateFormatter.formatDueDate(task.dueDate, task.dueTime);
+            // Use countdown text if available, fallback to formatted date
+            String countdownText = TaskUtils.computeCountdownText(task);
+            String dueText = countdownText != null ? countdownText
+                    : TaskDateFormatter.formatDueDate(task.dueDate, task.dueTime);
             h.tvDueText.setText(dueText);
             if (task.isOverdue()) {
                 h.tvDueIcon.setText("⏰");
                 h.tvDueText.setTextColor(Color.parseColor("#EF4444"));
             } else if (task.isDueToday()) {
                 h.tvDueIcon.setText("📅");
-                h.tvDueText.setTextColor(Color.parseColor("#60A5FA"));
+                h.tvDueText.setTextColor(Color.parseColor("#F59E0B"));
+            } else if (task.isDueTomorrow()) {
+                h.tvDueIcon.setText("📅");
+                h.tvDueText.setTextColor(Color.parseColor("#3B82F6"));
             } else if (TaskDateFormatter.isDueSoon(task.dueDate)) {
                 h.tvDueIcon.setText("📅");
                 h.tvDueText.setTextColor(Color.parseColor("#FBBF24"));
             } else {
                 h.tvDueIcon.setText("📅");
                 h.tvDueText.setTextColor(Color.parseColor("#94A3B8"));
+            }
+            // Countdown badge content description
+            if (countdownText != null) {
+                h.chipDue.setContentDescription("Due " + countdownText);
             }
         } else {
             h.chipDue.setVisibility(View.GONE);
@@ -660,7 +955,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (!multiSelectMode && listener != null) listener.onTaskMenuClicked(task, v);
         });
 
-        // Double-tap on title → toggle expand/collapse
+        // Double-tap on title → inline edit; single tap confirmed → card click
         GestureDetector doubleTapDetector = new GestureDetector(context,
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
@@ -671,21 +966,14 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     @Override
                     public boolean onDoubleTap(MotionEvent e) {
-                        if (isCompact) {
-                            collapsedIds.remove(task.id);
-                        } else if (isExpanded) {
-                            expandedIds.remove(task.id);
-                        } else {
-                            expandedIds.add(task.id);
-                        }
-                        notifyDataSetChanged();
+                        enterInlineTitleEdit(h, task);
                         return true;
                     }
                 });
 
         h.tvTaskTitle.setOnTouchListener((v, event) -> {
             doubleTapDetector.onTouchEvent(event);
-            return true;
+            return false; // don't consume single taps
         });
 
         // Card click — multi-select or open detail
@@ -745,6 +1033,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.subtaskProgressContainer.setVisibility(View.GONE);
         if (h.subtaskPreviewContainer != null) h.subtaskPreviewContainer.setVisibility(View.GONE);
         if (h.tvNextRecurrence != null) h.tvNextRecurrence.setVisibility(View.GONE);
+        if (h.batch4BadgesRow != null) h.batch4BadgesRow.setVisibility(View.GONE);
         // Keep: title, priority badge, due date chip, star, menu, checkbox
     }
 
@@ -865,9 +1154,22 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // ═══════════════════════════════════════════════════════════════
 
     private void playCompletionAnimation(TaskCardViewHolder h) {
-        Handler handler = new Handler(Looper.getMainLooper());
+        // Reduced motion check — skip all animations if enabled
+        if (TaskUtils.isReducedMotionEnabled(context)) {
+            h.tvTaskTitle.setPaintFlags(h.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            h.tvTaskTitle.setTextColor(Color.parseColor("#6B7280"));
+            h.itemView.setAlpha(0.5f);
+            h.itemView.setBackgroundResource(R.drawable.task_card_completed_bg);
+            return;
+        }
 
-        // Step 1: Checkbox scale pulse
+        Handler handler = new Handler(Looper.getMainLooper());
+        Task task = getTaskAtPosition(h.getAdapterPosition());
+
+        // Light haptic on checkbox tap
+        TaskUtils.hapticClick(context);
+
+        // Step 1: Checkbox scale pulse (0ms → 200ms)
         h.cbComplete.animate()
                 .scaleX(1.3f).scaleY(1.3f)
                 .setDuration(100)
@@ -879,32 +1181,67 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             .start()
                 ).start();
 
-        // Strikethrough + title dim
-        h.tvTaskTitle.setPaintFlags(h.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        h.tvTaskTitle.setTextColor(Color.parseColor("#6B7280"));
+        // Step 2: Animated strikethrough (0ms → 180ms)
+        if (task != null && task.title != null) {
+            ValueAnimator strikeAnim = ValueAnimator.ofFloat(0f, 1f);
+            strikeAnim.setDuration(180);
+            strikeAnim.addUpdateListener(anim -> {
+                float progress = (float) anim.getAnimatedValue();
+                SpannableString span = new SpannableString(task.title);
+                span.setSpan(new PartialStrikethroughSpan(progress),
+                        0, task.title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                h.tvTaskTitle.setText(span);
+            });
+            strikeAnim.start();
+        } else {
+            h.tvTaskTitle.setPaintFlags(h.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
 
-        // Step 2: Card compress (after 150ms)
+        // Step 3: Title color fade (0ms → 300ms)
+        ObjectAnimator colorFade = ObjectAnimator.ofArgb(h.tvTaskTitle, "textColor",
+                Color.WHITE, Color.parseColor("#64748B"));
+        colorFade.setDuration(300);
+        colorFade.start();
+
+        // Step 4: Heavy haptic at 350ms (checkmark completion feel)
+        handler.postDelayed(() -> TaskUtils.hapticHeavy(context), 350);
+
+        // Step 5: Confetti burst for High/Urgent (200ms delay)
+        if (task != null && (Task.PRIORITY_URGENT.equals(task.priority)
+                || Task.PRIORITY_HIGH.equals(task.priority))) {
+            handler.postDelayed(() -> {
+                try {
+                    int[] loc = new int[2];
+                    h.cbComplete.getLocationOnScreen(loc);
+                    float cx = loc[0] + h.cbComplete.getWidth() / 2f;
+                    float cy = loc[1] + h.cbComplete.getHeight() / 2f;
+                    int count = Task.PRIORITY_URGENT.equals(task.priority) ? 20 : 12;
+                    int[] palette = Task.PRIORITY_URGENT.equals(task.priority)
+                            ? ConfettiView.PALETTE_URGENT : ConfettiView.PALETTE_HIGH;
+                    android.app.Activity activity = (android.app.Activity) context;
+                    ConfettiView.launch(activity.getWindow().getDecorView(), cx, cy, count, palette);
+                } catch (Exception ignored) {}
+            }, 200);
+        }
+
+        // Step 6: Card exit animation (400ms → 650ms)
         handler.postDelayed(() -> {
             h.itemView.animate()
-                    .scaleY(0.85f)
-                    .alpha(0.4f)
-                    .setDuration(150)
-                    .setInterpolator(new DecelerateInterpolator())
+                    .scaleX(0.95f).scaleY(0.95f)
+                    .translationY(-8f)
+                    .alpha(0f)
+                    .setDuration(250)
+                    .setInterpolator(new android.view.animation.AccelerateInterpolator())
                     .withEndAction(() -> {
-                        // Step 3: Spring settle
-                        h.itemView.animate()
-                                .scaleY(1f)
-                                .alpha(0.5f)
-                                .setDuration(100)
-                                .setInterpolator(new OvershootInterpolator())
-                                .withEndAction(() -> {
-                                    // Step 4: Morph to completed bg
-                                    h.itemView.setBackgroundResource(R.drawable.task_card_completed_bg);
-                                })
-                                .start();
+                        h.itemView.setBackgroundResource(R.drawable.task_card_completed_bg);
+                        // Reset for reuse
+                        h.itemView.setScaleX(1f);
+                        h.itemView.setScaleY(1f);
+                        h.itemView.setTranslationY(0f);
+                        h.itemView.setAlpha(0.5f);
                     })
                     .start();
-        }, 150);
+        }, 400);
     }
 
     private void playUndoCompletionAnimation(TaskCardViewHolder h) {
@@ -1044,6 +1381,61 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return (int) (dp * context.getResources().getDisplayMetrics().density + 0.5f);
     }
 
+    // ─── Inline Title Editing ─────────────────────────────────────
+
+    private void enterInlineTitleEdit(TaskCardViewHolder holder, Task task) {
+        if (holder.etTitleEdit == null) return;
+        holder.tvTaskTitle.setVisibility(View.GONE);
+        holder.etTitleEdit.setVisibility(View.VISIBLE);
+        holder.etTitleEdit.setText(task.title);
+        holder.etTitleEdit.setSelection(holder.etTitleEdit.getText().length());
+        holder.etTitleEdit.requestFocus();
+        android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager)
+            context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) imm.showSoftInput(holder.etTitleEdit, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+
+        holder.etTitleEdit.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) commitInlineTitleEdit(holder, task);
+        });
+        holder.etTitleEdit.setOnEditorActionListener((v, actionId, ev) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+                    || (ev != null && ev.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER)) {
+                commitInlineTitleEdit(holder, task);
+                return true;
+            }
+            return false;
+        });
+        holder.etTitleEdit.setOnKeyListener((v, keyCode, ev) -> {
+            if (keyCode == android.view.KeyEvent.KEYCODE_ESCAPE) {
+                exitInlineTitleEdit(holder, task.title);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void commitInlineTitleEdit(TaskCardViewHolder holder, Task task) {
+        if (holder.etTitleEdit == null) return;
+        String newTitle = holder.etTitleEdit.getText().toString().trim();
+        String displayTitle = newTitle.isEmpty() ? task.title : newTitle;
+        exitInlineTitleEdit(holder, displayTitle);
+        if (!newTitle.isEmpty() && !newTitle.equals(task.title)) {
+            task.title = newTitle;
+            task.updatedAt = System.currentTimeMillis();
+            if (listener != null) listener.onTaskUpdated(task);
+        }
+    }
+
+    private void exitInlineTitleEdit(TaskCardViewHolder holder, String displayTitle) {
+        if (holder.etTitleEdit == null) return;
+        holder.etTitleEdit.setVisibility(View.GONE);
+        holder.tvTaskTitle.setVisibility(View.VISIBLE);
+        holder.tvTaskTitle.setText(displayTitle);
+        android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager)
+            context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) imm.hideSoftInputFromWindow(holder.etTitleEdit.getWindowToken(), 0);
+    }
+
     // ─── ViewHolders ─────────────────────────────────────────────
 
     static class GroupHeaderViewHolder extends RecyclerView.ViewHolder {
@@ -1100,6 +1492,18 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         LinearLayout linkPreviewContainer;
         TextView tvLinkUrl;
 
+        // Carry-over badge
+        TextView tvCarryOverBadge;
+
+        // Batch 4 badges
+        LinearLayout batch4BadgesRow;
+        TextView tvNextActionBadge, tvMITBadge, tvContextTag, tvWaitingBadge;
+        TextView tv2MinBadge, tvReadingTime, tvAssignedTo, tvPrivateLock;
+        TextView tvWatcherCount;
+
+        // Inline title edit
+        android.widget.EditText etTitleEdit;
+
         // Priority morph tracking
         String lastBoundPriority = null;
 
@@ -1153,6 +1557,119 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvNextRecurrence = v.findViewById(R.id.tvNextRecurrence);
             linkPreviewContainer = v.findViewById(R.id.linkPreviewContainer);
             tvLinkUrl = v.findViewById(R.id.tvLinkUrl);
+
+            // Carry-over badge
+            tvCarryOverBadge = v.findViewById(R.id.tvCarryOverBadge);
+
+            // Batch 4 badges
+            batch4BadgesRow = v.findViewById(R.id.batch4BadgesRow);
+            tvNextActionBadge = v.findViewById(R.id.tvNextActionBadge);
+            tvMITBadge = v.findViewById(R.id.tvMITBadge);
+            tvContextTag = v.findViewById(R.id.tvContextTag);
+            tvWaitingBadge = v.findViewById(R.id.tvWaitingBadge);
+            tv2MinBadge = v.findViewById(R.id.tv2MinBadge);
+            tvReadingTime = v.findViewById(R.id.tvReadingTime);
+            tvAssignedTo = v.findViewById(R.id.tvAssignedTo);
+            tvPrivateLock = v.findViewById(R.id.tvPrivateLock);
+            tvWatcherCount = v.findViewById(R.id.tvWatcherCount);
+
+            // Inline title edit
+            etTitleEdit = v.findViewById(R.id.etTitleEdit);
         }
+    }
+
+    // ─── Grid Card ViewHolder ────────────────────────────────────
+
+    static class GridCardViewHolder extends RecyclerView.ViewHolder {
+        View viewPriorityStrip;
+        TextView tvTitle, tvDueDate, tvStar;
+
+        GridCardViewHolder(@NonNull View v) {
+            super(v);
+            viewPriorityStrip = v.findViewById(R.id.viewGridPriorityStrip);
+            tvTitle = v.findViewById(R.id.tvGridTitle);
+            tvDueDate = v.findViewById(R.id.tvGridDueDate);
+            tvStar = v.findViewById(R.id.tvGridStar);
+        }
+    }
+
+    // ─── Grid Card Binding ───────────────────────────────────────
+
+    private void bindGridCard(GridCardViewHolder h, Task task) {
+        // Priority strip color
+        String color = getPriorityColor(task.priority);
+        if (task.colorLabel != null && !task.colorLabel.isEmpty()) {
+            color = task.colorLabel;
+        }
+        GradientDrawable stripBg = new GradientDrawable();
+        stripBg.setShape(GradientDrawable.RECTANGLE);
+        stripBg.setCornerRadius(dp(2));
+        stripBg.setColor(Color.parseColor(color));
+        h.viewPriorityStrip.setBackground(stripBg);
+
+        // Title
+        h.tvTitle.setText(task.title);
+        if (task.isCompleted()) {
+            h.tvTitle.setPaintFlags(h.tvTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            h.tvTitle.setTextColor(Color.parseColor("#6B7280"));
+        } else {
+            h.tvTitle.setPaintFlags(h.tvTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            h.tvTitle.setTextColor(Color.parseColor("#F1F5F9"));
+        }
+
+        // Due date
+        if (task.hasDueDate()) {
+            h.tvDueDate.setText("📅 " + task.dueDate);
+            h.tvDueDate.setVisibility(View.VISIBLE);
+        } else {
+            h.tvDueDate.setVisibility(View.GONE);
+        }
+
+        // Star
+        h.tvStar.setText(task.isStarred ? "★" : "☆");
+        h.tvStar.setTextColor(task.isStarred ? Color.parseColor("#FBBF24") : Color.parseColor("#4B5563"));
+        h.tvStar.setOnClickListener(v -> {
+            if (listener != null) listener.onTaskStarToggle(task);
+        });
+
+        // Deferred alpha
+        h.itemView.setAlpha(task.isDeferred() ? 0.5f : 1.0f);
+
+        // Card click
+        h.itemView.setOnClickListener(v -> {
+            if (multiSelectMode) {
+                toggleSelection(task.id);
+            } else if (listener != null) {
+                listener.onTaskClicked(task);
+            }
+        });
+
+        // Long press menu
+        h.itemView.setOnLongClickListener(v -> {
+            if (!multiSelectMode) {
+                enterMultiSelect();
+                toggleSelection(task.id);
+            }
+            return true;
+        });
+
+        // Selection highlight
+        boolean isSelected = selectedIds.contains(task.id);
+        h.itemView.setAlpha(isSelected ? 0.7f : (task.isDeferred() ? 0.5f : 1.0f));
+    }
+
+    private String getPriorityColor(String priority) {
+        if (priority == null) return "#3B82F6";
+        switch (priority) {
+            case "urgent":  return "#EF4444";
+            case "high":    return "#F59E0B";
+            case "normal":  return "#3B82F6";
+            case "low":     return "#64748B";
+            default:        return "#3B82F6";
+        }
+    }
+
+    private int dp(int value) {
+        return (int) (value * context.getResources().getDisplayMetrics().density);
     }
 }

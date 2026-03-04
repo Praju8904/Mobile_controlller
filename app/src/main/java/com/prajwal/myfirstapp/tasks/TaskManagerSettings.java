@@ -46,6 +46,8 @@ public class TaskManagerSettings {
     public boolean meetingReminders = true;
     public int defaultMeetingReminderMinutes = 15;
     public boolean taskReminders = true;
+    public boolean persistentReminders = false;
+    public int persistentReminderIntervalHours = 6;
 
     // Smart Features
     public boolean smartDueDateDetection = true;
@@ -54,6 +56,7 @@ public class TaskManagerSettings {
     public boolean duplicateDetection = true;
     public boolean priorityEscalation = true;
     public int escalationThresholdDays = 3;
+    public boolean sentimentPriorityDetection = true;
 
     // Focus Mode
     public int pomodoroFocusMinutes = 25;
@@ -69,6 +72,12 @@ public class TaskManagerSettings {
     public boolean showStreakBanner = true;
     public boolean showFocusScoreCard = true;
     public boolean hapticFeedback = true;
+    public boolean reducedMotion = false;
+    public String taskViewMode = "list"; // "list" or "grid"
+
+    // Task Rules
+    public boolean subtaskCompletionGate = false;
+    public boolean subtaskGateIsHardBlock = false;
 
     // Meeting
     public int defaultMeetingDurationMinutes = 30;
@@ -110,6 +119,8 @@ public class TaskManagerSettings {
         meetingReminders               = prefs.getBoolean("meetingReminders", meetingReminders);
         defaultMeetingReminderMinutes  = prefs.getInt("defaultMeetingReminderMinutes", defaultMeetingReminderMinutes);
         taskReminders                  = prefs.getBoolean("taskReminders", taskReminders);
+        persistentReminders            = prefs.getBoolean("persistentReminders", persistentReminders);
+        persistentReminderIntervalHours= prefs.getInt("persistentReminderIntervalHours", persistentReminderIntervalHours);
 
         smartDueDateDetection          = prefs.getBoolean("smartDueDateDetection", smartDueDateDetection);
         smartPriorityDetection         = prefs.getBoolean("smartPriorityDetection", smartPriorityDetection);
@@ -117,6 +128,7 @@ public class TaskManagerSettings {
         duplicateDetection             = prefs.getBoolean("duplicateDetection", duplicateDetection);
         priorityEscalation             = prefs.getBoolean("priorityEscalation", priorityEscalation);
         escalationThresholdDays        = prefs.getInt("escalationThresholdDays", escalationThresholdDays);
+        sentimentPriorityDetection     = prefs.getBoolean("sentimentPriorityDetection", sentimentPriorityDetection);
 
         pomodoroFocusMinutes           = prefs.getInt("pomodoroFocusMinutes", pomodoroFocusMinutes);
         shortBreakMinutes              = prefs.getInt("shortBreakMinutes", shortBreakMinutes);
@@ -130,6 +142,11 @@ public class TaskManagerSettings {
         showStreakBanner               = prefs.getBoolean("showStreakBanner", showStreakBanner);
         showFocusScoreCard             = prefs.getBoolean("showFocusScoreCard", showFocusScoreCard);
         hapticFeedback                 = prefs.getBoolean("hapticFeedback", hapticFeedback);
+        reducedMotion                  = prefs.getBoolean("reducedMotion", reducedMotion);
+        taskViewMode                   = prefs.getString("taskViewMode", taskViewMode);
+
+        subtaskCompletionGate          = prefs.getBoolean("subtaskCompletionGate", subtaskCompletionGate);
+        subtaskGateIsHardBlock         = prefs.getBoolean("subtaskGateIsHardBlock", subtaskGateIsHardBlock);
 
         defaultMeetingDurationMinutes  = prefs.getInt("defaultMeetingDurationMinutes", defaultMeetingDurationMinutes);
         defaultVideoPlatform           = prefs.getString("defaultVideoPlatform", defaultVideoPlatform);
@@ -163,6 +180,8 @@ public class TaskManagerSettings {
         e.putBoolean("meetingReminders", meetingReminders);
         e.putInt("defaultMeetingReminderMinutes", defaultMeetingReminderMinutes);
         e.putBoolean("taskReminders", taskReminders);
+        e.putBoolean("persistentReminders", persistentReminders);
+        e.putInt("persistentReminderIntervalHours", persistentReminderIntervalHours);
 
         e.putBoolean("smartDueDateDetection", smartDueDateDetection);
         e.putBoolean("smartPriorityDetection", smartPriorityDetection);
@@ -170,6 +189,7 @@ public class TaskManagerSettings {
         e.putBoolean("duplicateDetection", duplicateDetection);
         e.putBoolean("priorityEscalation", priorityEscalation);
         e.putInt("escalationThresholdDays", escalationThresholdDays);
+        e.putBoolean("sentimentPriorityDetection", sentimentPriorityDetection);
 
         e.putInt("pomodoroFocusMinutes", pomodoroFocusMinutes);
         e.putInt("shortBreakMinutes", shortBreakMinutes);
@@ -183,6 +203,11 @@ public class TaskManagerSettings {
         e.putBoolean("showStreakBanner", showStreakBanner);
         e.putBoolean("showFocusScoreCard", showFocusScoreCard);
         e.putBoolean("hapticFeedback", hapticFeedback);
+        e.putBoolean("reducedMotion", reducedMotion);
+        e.putString("taskViewMode", taskViewMode);
+
+        e.putBoolean("subtaskCompletionGate", subtaskCompletionGate);
+        e.putBoolean("subtaskGateIsHardBlock", subtaskGateIsHardBlock);
 
         e.putInt("defaultMeetingDurationMinutes", defaultMeetingDurationMinutes);
         e.putString("defaultVideoPlatform", defaultVideoPlatform);

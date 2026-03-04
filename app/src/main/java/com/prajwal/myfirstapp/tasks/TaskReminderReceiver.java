@@ -14,6 +14,11 @@ import android.os.Vibrator;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+import android.app.AlarmManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BroadcastReceiver that fires when an AlarmManager alarm triggers
@@ -94,6 +99,7 @@ public class TaskReminderReceiver extends BroadcastReceiver {
         Log.i(TAG, "Notification fired: type=" + notifType + " task='" + title + "' id=" + taskId);
 
         createNotificationChannels(context);
+        TaskNotificationHelper.createNotificationChannel(context);
 
         // Build notification based on type
         String notifTitle;
@@ -179,10 +185,37 @@ public class TaskReminderReceiver extends BroadcastReceiver {
             builder.addAction(android.R.drawable.ic_popup_reminder, "Snooze 15m", snooze15Pi);
         }
 
+        // ── Smart Notification Bundling ──
+        // Count active task reminder notifications already shown
+        int pendingCount = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            android.app.NotificationManager anm = (android.app.NotificationManager)
+                    context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (anm != null) {
+                for (android.service.notification.StatusBarNotification n : anm.getActiveNotifications()) {
+                    if (TaskNotificationHelper.TASK_REMINDER_GROUP_KEY.equals(n.getNotification().getGroup())
+                            && n.getId() != TaskNotificationHelper.SUMMARY_NOTIFICATION_ID) {
+                        pendingCount++;
+                    }
+                }
+            }
+        }
+
+        // Apply group key to individual notification; silence if group already has members
+        builder.setGroup(TaskNotificationHelper.TASK_REMINDER_GROUP_KEY);
+        if (pendingCount >= 1) {
+            builder.setSilent(true);
+        }
+
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm != null) {
             int notifId = taskId != null ? (taskId.hashCode() & 0x7FFFFFFF) : (int) System.currentTimeMillis();
             nm.notify(notifId, builder.build());
+        }
+
+        // Rebuild group summary when 2+ notifications already existed (3+ total including this one)
+        if (pendingCount >= 2) {
+            rebuildBundleSummary(context);
         }
 
         // Vibrate
@@ -195,6 +228,109 @@ public class TaskReminderReceiver extends BroadcastReceiver {
                 vibrator.vibrate(duration);
             }
         }
+
+        // ── Feature 11: Persistent Reminder Re-fire ──
+        schedulePersistentReminder(context, taskId, title);
+    }
+
+    /**
+     * Feature 11: Schedule a persistent re-fire alarm if the task is still open.
+     */
+    private void schedulePersistentReminder(Context context, String taskId, String title) {
+        if (taskId == null) return;
+        try {
+            TaskManagerSettings settings = TaskManagerSettings.getInstance(context);
+            if (!settings.persistentReminders) return;
+
+            TaskRepository repo = new TaskRepository(context);
+            Task task = repo.getTaskById(taskId);
+            if (task == null || task.isCompleted() || task.isCancelled() || task.isTrashed) return;
+
+            int intervalHours = settings.persistentReminderIntervalHours;
+            long intervalMs = intervalHours * 60L * 60L * 1000L;
+
+            // Get re-fire count from current intent (incremented for next fire)
+            int refireCount = 1; // This is at least the first re-fire
+
+            Intent refireIntent = new Intent(context, TaskReminderReceiver.class);
+            refireIntent.putExtra(TaskNotificationHelper.EXTRA_TASK_ID, taskId);
+            refireIntent.putExtra(TaskNotificationHelper.EXTRA_TASK_TITLE,
+                    "\u23f0 Still pending: " + (title != null ? title : "Task"));
+            refireIntent.putExtra(TaskNotificationHelper.EXTRA_NOTIF_TYPE,
+                    TaskNotificationHelper.TYPE_REMINDER);
+            refireIntent.putExtra("persistent_refire_count", refireCount);
+
+            int requestCode = (taskId.hashCode() + 9000) & 0x7FFFFFFF;
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) flags |= PendingIntent.FLAG_IMMUTABLE;
+
+            PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, refireIntent, flags);
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (am != null) {
+                long triggerAt = System.currentTimeMillis() + intervalMs;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi);
+                } else {
+                    am.setExact(AlarmManager.RTC_WAKEUP, triggerAt, pi);
+                }
+                Log.i(TAG, "Persistent reminder scheduled in " + intervalHours + "h for: " + taskId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error scheduling persistent reminder: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Builds (or rebuilds) the group summary notification for bundled task reminders.
+     */
+    private void rebuildBundleSummary(Context context) {
+        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
+
+        android.app.NotificationManager anm = (android.app.NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        List<String> lines = new ArrayList<>();
+        int count = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && anm != null) {
+            android.service.notification.StatusBarNotification[] active = anm.getActiveNotifications();
+            for (android.service.notification.StatusBarNotification n : active) {
+                if (TaskNotificationHelper.TASK_REMINDER_GROUP_KEY.equals(n.getNotification().getGroup())
+                        && n.getId() != TaskNotificationHelper.SUMMARY_NOTIFICATION_ID) {
+                    String title = n.getNotification().extras != null
+                            ? n.getNotification().extras.getString(android.app.Notification.EXTRA_TITLE, "") : "";
+                    if (!title.isEmpty()) lines.add(title);
+                    count++;
+                }
+            }
+        }
+        // count already includes the just-posted notification from getActiveNotifications()
+
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle()
+                .setBigContentTitle(count + " tasks need attention");
+        for (int i = 0; i < Math.min(lines.size(), 5); i++) inboxStyle.addLine(lines.get(i));
+        if (count > 5) inboxStyle.setSummaryText("+" + (count - 5) + " more");
+
+        android.app.PendingIntent openIntent = android.app.PendingIntent.getActivity(
+                context, 0,
+                new Intent(context, TaskManagerActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
+        );
+
+        android.app.Notification summary = new NotificationCompat.Builder(context,
+                TaskNotificationHelper.CHANNEL_ID_REMINDERS)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(count + " tasks due")
+                .setContentText("Tap to review")
+                .setStyle(inboxStyle)
+                .setGroup(TaskNotificationHelper.TASK_REMINDER_GROUP_KEY)
+                .setGroupSummary(true)
+                .setAutoCancel(true)
+                .setColor(0xFF3B82F6)
+                .setContentIntent(openIntent)
+                .build();
+
+        nm.notify(TaskNotificationHelper.SUMMARY_NOTIFICATION_ID, summary);
     }
 
     /**

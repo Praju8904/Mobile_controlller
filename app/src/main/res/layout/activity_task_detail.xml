@@ -350,11 +350,11 @@
                         android:background="@drawable/task_subtask_progress_fill" />
                 </FrameLayout>
 
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/detailSubtasksContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:nestedScrollingEnabled="false" />
             </LinearLayout>
 
             <!-- ── Timer Section ── -->
@@ -432,6 +432,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/btnLogTimeManually"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+ Log time manually"
+                    android:textColor="#6366F1"
+                    android:textSize="13sp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:padding="8dp" />
             </LinearLayout>
 
             <!-- ── Attachments Section ── -->
@@ -460,6 +471,44 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" />
+            </LinearLayout>
+
+            <!-- ── Links Section ── -->
+            <LinearLayout
+                android:id="@+id/detailLinksSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/task_detail_section_bg"
+                android:layout_marginHorizontal="16dp"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔗  Links"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/detailLinksContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/btnAddLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+ Add Link"
+                    android:textColor="#6366F1"
+                    android:textSize="13sp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="4dp" />
             </LinearLayout>
 
             <!-- ── Notes Section ── -->
@@ -518,6 +567,66 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- ── Comments Section ── -->
+            <LinearLayout
+                android:id="@+id/detailCommentsSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/task_detail_section_bg"
+                android:layout_marginHorizontal="16dp"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="💬  Comments"
+                    android:textColor="#F1F5F9"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/detailCommentsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <android.widget.EditText
+                        android:id="@+id/etCommentInput"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:hint="Add a comment…"
+                        android:textColorHint="#4B5563"
+                        android:textColor="#F1F5F9"
+                        android:textSize="13sp"
+                        android:background="@drawable/task_chip_removable_bg"
+                        android:paddingHorizontal="12dp"
+                        android:singleLine="true"
+                        android:imeOptions="actionSend"
+                        android:inputType="text" />
+
+                    <TextView
+                        android:id="@+id/btnSendComment"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:text="➤"
+                        android:textColor="#6366F1"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ── Activity Log ── -->

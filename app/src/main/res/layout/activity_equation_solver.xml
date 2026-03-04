@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/math_header_bg"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Equation Solver"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+    <!-- Tab Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:background="#111827"
+        android:padding="6dp">
+
+        <TextView
+            android:id="@+id/tabLinear"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Linear"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/math_deg_btn_active_bg"
+            android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+        <TextView
+            android:id="@+id/tabQuadratic"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Quadratic"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#A5B4FC"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginHorizontal="4dp" />
+
+        <TextView
+            android:id="@+id/tabSystem"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="System"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#A5B4FC"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- ===== LINEAR PANEL ===== -->
+            <LinearLayout
+                android:id="@+id/panelLinear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Equation preview label -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Solve: ax + b = c"
+                    android:textColor="#A5B4FC"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Input Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/math_input_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+                            android:text="a =" android:textColor="#A5B4FC" android:textSize="14sp" />
+                        <EditText
+                            android:id="@+id/etLinearA"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF"
+                            android:hint="coefficient of x"
+                            android:textColorHint="#4B5563"
+                            android:textSize="15sp"
+                            android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+                            android:text="b =" android:textColor="#A5B4FC" android:textSize="14sp" />
+                        <EditText
+                            android:id="@+id/etLinearB"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF"
+                            android:hint="constant term"
+                            android:textColorHint="#4B5563"
+                            android:textSize="15sp"
+                            android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+                            android:text="c =" android:textColor="#A5B4FC" android:textSize="14sp" />
+                        <EditText
+                            android:id="@+id/etLinearC"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF"
+                            android:hint="right-hand side"
+                            android:textColorHint="#4B5563"
+                            android:textSize="15sp"
+                            android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Solve / Clear Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:id="@+id/btnSolveLinear"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="2"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/math_btn_operator_bg"
+                        android:text="Solve"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btnClearLinear"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/math_quick_btn_bg"
+                        android:text="Clear"
+                        android:textColor="#A5B4FC"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground" />
+
+                </LinearLayout>
+
+                <!-- Result Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/math_result_card_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvLinearResult"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#FFFFFF1A"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvLinearSteps"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#A5B4FC"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="4dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ===== QUADRATIC PANEL ===== -->
+            <LinearLayout
+                android:id="@+id/panelQuadratic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Solve: ax² + bx + c = 0"
+                    android:textColor="#A5B4FC"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/math_input_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+                            android:text="a =" android:textColor="#A5B4FC" android:textSize="14sp" />
+                        <EditText android:id="@+id/etQuadA" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="x² coefficient" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+                        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+                            android:text="b =" android:textColor="#A5B4FC" android:textSize="14sp" />
+                        <EditText android:id="@+id/etQuadB" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="x coefficient" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+                            android:text="c =" android:textColor="#A5B4FC" android:textSize="14sp" />
+                        <EditText android:id="@+id/etQuadC" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="constant term" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <TextView android:id="@+id/btnSolveQuad" android:layout_width="0dp" android:layout_height="48dp"
+                        android:layout_weight="2" android:layout_marginEnd="8dp"
+                        android:background="@drawable/math_btn_operator_bg"
+                        android:text="Solve" android:textColor="#FFFFFF" android:textSize="16sp"
+                        android:textStyle="bold" android:gravity="center"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground" />
+                    <TextView android:id="@+id/btnClearQuad" android:layout_width="0dp" android:layout_height="48dp"
+                        android:layout_weight="1" android:background="@drawable/math_quick_btn_bg"
+                        android:text="Clear" android:textColor="#A5B4FC" android:textSize="15sp"
+                        android:gravity="center" android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:background="@drawable/math_result_card_bg" android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView android:id="@+id/tvQuadResult" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="#FFFFFF"
+                        android:textSize="18sp" android:textStyle="bold" android:layout_marginBottom="12dp" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                        android:background="#FFFFFF1A" android:layout_marginBottom="12dp" />
+                    <TextView android:id="@+id/tvQuadSteps" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="#A5B4FC"
+                        android:textSize="13sp" android:lineSpacingExtra="4dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ===== SYSTEM PANEL ===== -->
+            <LinearLayout
+                android:id="@+id/panelSystem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Solve: a₁x + b₁y = c₁  and  a₂x + b₂y = c₂"
+                    android:textColor="#A5B4FC"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/math_input_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp">
+
+                    <!-- Equation 1 label -->
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Equation 1: a₁x + b₁y = c₁"
+                        android:textColor="#A5B4FC" android:textSize="13sp" android:layout_marginBottom="8dp" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <EditText android:id="@+id/etSysA1" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:layout_marginEnd="4dp"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="a₁" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" android:gravity="center" />
+                        <EditText android:id="@+id/etSysB1" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="b₁" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" android:gravity="center" />
+                        <EditText android:id="@+id/etSysC1" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:layout_marginStart="4dp"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="c₁" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" android:gravity="center" />
+                    </LinearLayout>
+
+                    <!-- Equation 2 label -->
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Equation 2: a₂x + b₂y = c₂"
+                        android:textColor="#A5B4FC" android:textSize="13sp" android:layout_marginBottom="8dp" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <EditText android:id="@+id/etSysA2" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:layout_marginEnd="4dp"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="a₂" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" android:gravity="center" />
+                        <EditText android:id="@+id/etSysB2" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="b₂" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" android:gravity="center" />
+                        <EditText android:id="@+id/etSysC2" android:layout_width="0dp" android:layout_height="44dp"
+                            android:layout_weight="1" android:layout_marginStart="4dp"
+                            android:background="@drawable/math_display_bg"
+                            android:textColor="#FFFFFF" android:hint="c₂" android:textColorHint="#4B5563"
+                            android:textSize="15sp" android:inputType="numberDecimal|numberSigned"
+                            android:paddingHorizontal="12dp" android:gravity="center" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <TextView android:id="@+id/btnSolveSys" android:layout_width="0dp" android:layout_height="48dp"
+                        android:layout_weight="2" android:layout_marginEnd="8dp"
+                        android:background="@drawable/math_btn_operator_bg"
+                        android:text="Solve" android:textColor="#FFFFFF" android:textSize="16sp"
+                        android:textStyle="bold" android:gravity="center"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground" />
+                    <TextView android:id="@+id/btnClearSys" android:layout_width="0dp" android:layout_height="48dp"
+                        android:layout_weight="1" android:background="@drawable/math_quick_btn_bg"
+                        android:text="Clear" android:textColor="#A5B4FC" android:textSize="15sp"
+                        android:gravity="center" android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:background="@drawable/math_result_card_bg" android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView android:id="@+id/tvSysResult" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="#FFFFFF"
+                        android:textSize="18sp" android:textStyle="bold" android:layout_marginBottom="12dp" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                        android:background="#FFFFFF1A" android:layout_marginBottom="12dp" />
+                    <TextView android:id="@+id/tvSysSteps" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textColor="#A5B4FC"
+                        android:textSize="13sp" android:lineSpacingExtra="4dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

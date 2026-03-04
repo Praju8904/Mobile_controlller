@@ -100,4 +100,11 @@
     <!-- ── LEGACY / COMPAT ──────────────────────────────────── -->
     <color name="colorAccent">#F59E0B</color>        <!-- Amber – legacy compat alias -->
 
+    <!-- Math Studio Colors -->
+    <color name="math_indigo">#4F46E5</color>
+    <color name="math_violet">#7C3AED</color>
+    <color name="math_teal">#0891B2</color>
+    <color name="math_cyan">#06B6D4</color>
+    <color name="math_indigo_soft">#334F46E5</color>
+
 </resources>

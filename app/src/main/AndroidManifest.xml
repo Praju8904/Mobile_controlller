@@ -88,11 +88,39 @@
         <activity
             android:name=".tasks.TaskDetailActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar">
+
+            <!-- Deep link: myfirstapp://task/{id} -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="myfirstapp" android:host="task" />
+            </intent-filter>
+        </activity>
 
         <!-- Task Stats / Productivity Activity -->
         <activity
             android:name=".tasks.TaskStatsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Project List Activity -->
+        <activity
+            android:name=".tasks.ProjectListActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Task Time Report Activity -->
+        <activity
+            android:name=".tasks.TaskTimeReportActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <!-- Task Eisenhower Matrix Activity -->
+        <activity
+            android:name=".tasks.TaskEisenhowerActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
@@ -812,6 +840,35 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_idea_capture_info" />
         </receiver>
+
+        <activity
+            android:name=".tasks.ShareReceiverActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/uri-list"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Math Studio Activities -->
+        <activity android:name=".mathstudio.MathStudioHubActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.StandardCalculatorActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.ScientificCalculatorActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.GraphingActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.MatrixActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.StatisticsActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.ProgrammerCalculatorActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.ConverterActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.AptitudeActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.FormulaBuilderActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+        <activity android:name=".mathstudio.EquationSolverActivity" android:configChanges="orientation|screenSize" android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
     </application>
 

@@ -59,6 +59,7 @@ public class TaskManagerSettingsActivity extends AppCompatActivity {
         buildSmartFeaturesSection();
         buildFocusModeSection();
         buildDisplaySection();
+        buildBehaviorSection();
         buildMeetingSection();
         buildDataSection();
     }
@@ -241,6 +242,21 @@ public class TaskManagerSettingsActivity extends AppCompatActivity {
                 v -> settings.showFocusScoreCard = v));
         root.addView(toggleRow("Haptic Feedback", settings.hapticFeedback,
                 v -> settings.hapticFeedback = v));
+        root.addView(toggleRow("Reduced Motion", settings.reducedMotion,
+                v -> settings.reducedMotion = v));
+    }
+
+    // ── Behavior ──────────────────────────────────────────────────
+
+    private void buildBehaviorSection() {
+        root.addView(divider());
+        root.addView(sectionHeader("Behavior"));
+
+        root.addView(toggleRow("Subtask Completion Gate", settings.subtaskCompletionGate,
+                v -> settings.subtaskCompletionGate = v));
+        root.addView(toggleRow("Hard Block (no complete with open subtasks)",
+                settings.subtaskGateIsHardBlock,
+                v -> settings.subtaskGateIsHardBlock = v));
     }
 
     // ── Meeting ───────────────────────────────────────────────────
@@ -283,7 +299,7 @@ public class TaskManagerSettingsActivity extends AppCompatActivity {
             startActivity(new Intent(this, TaskImportActivity.class));
         }));
 
-        root.addView(actionRow("📤  Export Tasks", "#34C759", () -> {
+        root.addView(actionRow("📤  Export Tasks (CSV)", "#34C759", () -> {
             settings.save();
             TaskRepository repo = new TaskRepository(this);
             List<Task> tasks = repo.getAllTasks();
@@ -294,6 +310,13 @@ public class TaskManagerSettingsActivity extends AppCompatActivity {
                     ex -> Toast.makeText(this,
                             "Export failed: " + ex.getMessage(),
                             Toast.LENGTH_LONG).show());
+        }));
+
+        root.addView(actionRow("💾  Backup (JSON)", "#3B82F6", () -> {
+            settings.save();
+            TaskRepository repo2 = new TaskRepository(this);
+            List<Task> tasks = repo2.getAllTasks();
+            TaskExportManager.exportToJson(this, tasks);
         }));
         root.addView(actionRow("🔄  Reset to Defaults", "#EF4444", () ->
                 new AlertDialog.Builder(this)

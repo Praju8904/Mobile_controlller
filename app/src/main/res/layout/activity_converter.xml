@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Unit Converter"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Search bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="#1A1F3A"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="🔍" android:textSize="16sp" android:layout_marginEnd="8dp"/>
+        <android.widget.EditText android:id="@+id/etSearch"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:hint="Search categories..." android:textColor="#FFFFFF"
+            android:textColorHint="#4B5563" android:background="@null"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- Category grid (shown when no category selected) -->
+    <ScrollView android:id="@+id/scrollCategories"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout android:id="@+id/categoryGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"/>
+    </ScrollView>
+
+    <!-- Converter panel (hidden initially) -->
+    <LinearLayout android:id="@+id/panelConverter"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+            <TextView android:id="@+id/tvCategoryTitle"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="Length" android:textColor="#FFFFFF"
+                android:textSize="20sp" android:textStyle="bold"/>
+            <Button android:id="@+id/btnBackToCategories"
+                android:layout_width="wrap_content" android:layout_height="36dp"
+                android:text="← Back" android:textColor="#A5B4FC"
+                android:background="#1A1F3A" android:textSize="13sp"/>
+        </LinearLayout>
+
+        <!-- From value -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:background="#1A1F3A"
+            android:padding="12dp" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="From" android:textColor="#6B7280" android:textSize="12sp"
+                android:layout_marginBottom="6dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <android.widget.EditText android:id="@+id/etFromValue"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:hint="0" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="@null" android:textSize="24sp"
+                    android:inputType="numberDecimal|numberSigned"/>
+                <android.widget.Spinner android:id="@+id/spinnerFromUnit"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Swap button -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="40dp"
+            android:orientation="horizontal" android:gravity="center">
+            <Button android:id="@+id/btnSwap"
+                android:layout_width="60dp" android:layout_height="36dp"
+                android:text="⇅" android:textSize="18sp"
+                android:textColor="#A5B4FC" android:background="#252A4A"/>
+        </LinearLayout>
+
+        <!-- To value -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:background="#1A1F3A"
+            android:padding="12dp" android:layout_marginBottom="16dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="To" android:textColor="#6B7280" android:textSize="12sp"
+                android:layout_marginBottom="6dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <android.widget.EditText android:id="@+id/etToValue"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:hint="0" android:textColor="#A5B4FC" android:textColorHint="#4B5563"
+                    android:background="@null" android:textSize="24sp"
+                    android:inputType="numberDecimal|numberSigned"/>
+                <android.widget.Spinner android:id="@+id/spinnerToUnit"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Temperature special display -->
+        <LinearLayout android:id="@+id/panelTempAll"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:background="#1A1F3A"
+            android:padding="12dp" android:visibility="gone">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="All Temperature Values" android:textColor="#A5B4FC"
+                android:textSize="13sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+            <TextView android:id="@+id/tvTempAll"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="—" android:textColor="#FFFFFF" android:textSize="14sp"
+                android:fontFamily="monospace" android:lineSpacingExtra="4dp"/>
+        </LinearLayout>
+
+        <!-- Currency note -->
+        <TextView android:id="@+id/tvCurrencyNote"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="⚠ Rates may not be current (hardcoded)"
+            android:textColor="#F59E0B" android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</LinearLayout>

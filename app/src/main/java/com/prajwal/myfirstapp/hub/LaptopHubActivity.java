@@ -4,6 +4,7 @@ package com.prajwal.myfirstapp.hub;
 import com.prajwal.myfirstapp.R;
 import com.prajwal.myfirstapp.chat.ChatActivity;
 import com.prajwal.myfirstapp.connectivity.ConnectionManager;
+import com.prajwal.myfirstapp.core.MainActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -58,25 +59,34 @@ public class LaptopHubActivity extends AppCompatActivity {
     private void setupHubCards() {
         // Touchpad
         findViewById(R.id.hubCardTouchpad).setOnClickListener(v -> {
-            finish(); // Return to MainActivity, user navigates to touchpad from there
-            Toast.makeText(this, "Use the touchpad from the main screen", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("open_screen", "touchpad");
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
 
         // Keyboard
         findViewById(R.id.hubCardKeyboard).setOnClickListener(v -> {
-            finish();
-            Toast.makeText(this, "Use the keyboard from the main screen", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("open_screen", "keyboard");
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
 
         // Presenter
         findViewById(R.id.hubCardPresenter).setOnClickListener(v -> {
-            finish();
-            Toast.makeText(this, "Use presenter mode from the main screen", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("open_screen", "presenter");
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
 
         // File Transfer
         findViewById(R.id.hubCardFileTransfer).setOnClickListener(v -> {
-            Toast.makeText(this, "File Transfer — use the main screen", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("open_screen", "file_transfer");
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
 
         // AI Assistant

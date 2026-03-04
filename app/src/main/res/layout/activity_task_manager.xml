@@ -114,7 +114,17 @@
                     android:src="@android:drawable/ic_menu_delete"
                     android:padding="8dp"
                     android:background="@drawable/task_icon_circle_bg"
-                    android:contentDescription="Trash" />
+                    android:contentDescription="Trash"
+                    android:layout_marginEnd="8dp" />
+
+                <ImageView
+                    android:id="@+id/btnToggleView"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@android:drawable/ic_dialog_dialer"
+                    android:padding="8dp"
+                    android:background="@drawable/task_icon_circle_bg"
+                    android:contentDescription="Toggle grid/list view" />
             </LinearLayout>
 
             <!-- ═══════════ SEARCH BAR (hidden by default) ═══════════ -->
@@ -673,6 +683,35 @@
                     android:orientation="horizontal"
                     android:paddingBottom="8dp" />
             </HorizontalScrollView>
+
+            <!-- ═══════════ FOCUS BANNER (hidden by default) ═══════════ -->
+            <LinearLayout
+                android:id="@+id/layout_focus_banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="#1A10B981"
+                android:padding="10dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎯"
+                    android:textSize="16sp"
+                    android:paddingEnd="8dp" />
+
+                <TextView
+                    android:id="@+id/tvFocusTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Focus today: 0m"
+                    android:textColor="#10B981"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <!-- ═══════════ GROUP + SORT ROW ═══════════ -->
             <LinearLayout

@@ -521,9 +521,153 @@ public class TaskStatsActivity extends AppCompatActivity {
         int streak = repo.getCurrentStreak();
         int completionPct = Math.round(repo.getCompletionRate() * 100);
 
-        addRecordCard("🏆", "Total Done", String.valueOf(totalCompleted));
-        addRecordCard("🔥", "Best Streak", streak + " days");
-        addRecordCard("📊", "Completion", completionPct + "%");
+        addRecordCard("\uD83C\uDFC6", "Total Done", String.valueOf(totalCompleted));
+        addRecordCard("\uD83D\uDD25", "Best Streak", streak + " days");
+        addRecordCard("\uD83D\uDCCA", "Completion", completionPct + "%");
+
+        // Feature 14E: Progress & Rewards section
+        buildXpProgressSection();
+    }
+
+    /**
+     * Feature 14E: XP progress display in stats.
+     */
+    private void buildXpProgressSection() {
+        if (personalRecordsContainer == null) return;
+
+        TaskXpManager xpManager = TaskXpManager.getInstance(this);
+        int level = xpManager.getCurrentLevel();
+        String levelName = xpManager.getLevelName();
+        int xpInLevel = xpManager.getXpForCurrentLevel();
+        int xpNeeded = xpManager.getXpToNextLevel();
+        float progress = xpManager.getLevelProgress();
+        int totalXp = xpManager.getTotalXp();
+        int longestStreak = xpManager.getLongestStreak();
+        int totalCompleted = repo.getTotalCompletedCount();
+
+        // Section header
+        TextView header = new TextView(this);
+        header.setText("Progress & Rewards");
+        header.setTextColor(Color.WHITE);
+        header.setTextSize(16);
+        header.setTypeface(null, Typeface.BOLD);
+        LinearLayout.LayoutParams headerLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        headerLp.topMargin = dp(20);
+        headerLp.bottomMargin = dp(8);
+        header.setLayoutParams(headerLp);
+        ((LinearLayout) personalRecordsContainer.getParent()).addView(header);
+
+        // XP Card container
+        LinearLayout xpCard = new LinearLayout(this);
+        xpCard.setOrientation(LinearLayout.VERTICAL);
+        xpCard.setPadding(dp(16), dp(14), dp(16), dp(14));
+        GradientDrawable xpBg = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{Color.parseColor("#252B45"), Color.parseColor("#1A1F35")});
+        xpBg.setCornerRadius(dp(12));
+        xpCard.setBackground(xpBg);
+        LinearLayout.LayoutParams xpCardLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        xpCardLp.topMargin = dp(4);
+        xpCard.setLayoutParams(xpCardLp);
+
+        // Level label
+        TextView tvLevel = new TextView(this);
+        tvLevel.setText("\u2B50 Level " + level + " \u00B7 " + levelName);
+        tvLevel.setTextColor(Color.WHITE);
+        tvLevel.setTextSize(16);
+        tvLevel.setTypeface(null, Typeface.BOLD);
+        xpCard.addView(tvLevel);
+
+        // XP progress bar (16dp height)
+        android.widget.FrameLayout progressContainer = new android.widget.FrameLayout(this);
+        LinearLayout.LayoutParams pcLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dp(16));
+        pcLp.topMargin = dp(10);
+        progressContainer.setLayoutParams(pcLp);
+
+        android.view.View track = new android.view.View(this);
+        GradientDrawable trackBg = new GradientDrawable();
+        trackBg.setColor(Color.parseColor("#1E293B"));
+        trackBg.setCornerRadius(dp(8));
+        track.setBackground(trackBg);
+        track.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT));
+        progressContainer.addView(track);
+
+        android.view.View fill = new android.view.View(this);
+        GradientDrawable fillBg = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{Color.parseColor("#F59E0B"), Color.parseColor("#FCD34D")});
+        fillBg.setCornerRadius(dp(8));
+        fill.setBackground(fillBg);
+        fill.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
+                0, android.widget.FrameLayout.LayoutParams.MATCH_PARENT));
+        progressContainer.addView(fill);
+        progressContainer.post(() -> {
+            int totalWidth = progressContainer.getWidth();
+            int fillWidth = Math.round(totalWidth * progress);
+            android.widget.FrameLayout.LayoutParams fLp =
+                    (android.widget.FrameLayout.LayoutParams) fill.getLayoutParams();
+            fLp.width = fillWidth;
+            fill.setLayoutParams(fLp);
+        });
+        xpCard.addView(progressContainer);
+
+        // XP label
+        TextView tvXpLabel = new TextView(this);
+        tvXpLabel.setText(String.format(java.util.Locale.US, "%,d / %,d XP", xpInLevel, xpNeeded));
+        tvXpLabel.setTextColor(Color.parseColor("#94A3B8"));
+        tvXpLabel.setTextSize(12);
+        tvXpLabel.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams xpLabelLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        xpLabelLp.topMargin = dp(4);
+        tvXpLabel.setLayoutParams(xpLabelLp);
+        xpCard.addView(tvXpLabel);
+
+        // Stats row
+        LinearLayout statsRow = new LinearLayout(this);
+        statsRow.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams statsLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        statsLp.topMargin = dp(10);
+        statsRow.setLayoutParams(statsLp);
+
+        addXpStat(statsRow, "Completed Tasks", String.valueOf(totalCompleted));
+        addXpStat(statsRow, "Longest Streak", longestStreak + " days");
+        addXpStat(statsRow, "Total XP Earned", String.format(java.util.Locale.US, "%,d", totalXp));
+
+        xpCard.addView(statsRow);
+        ((LinearLayout) personalRecordsContainer.getParent()).addView(xpCard);
+    }
+
+    private void addXpStat(LinearLayout container, String label, String value) {
+        LinearLayout stat = new LinearLayout(this);
+        stat.setOrientation(LinearLayout.VERTICAL);
+        stat.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        stat.setLayoutParams(lp);
+
+        TextView tvVal = new TextView(this);
+        tvVal.setText(value);
+        tvVal.setTextColor(Color.parseColor("#F1F5F9"));
+        tvVal.setTextSize(14);
+        tvVal.setTypeface(null, Typeface.BOLD);
+        tvVal.setGravity(Gravity.CENTER);
+        stat.addView(tvVal);
+
+        TextView tvLabel = new TextView(this);
+        tvLabel.setText(label);
+        tvLabel.setTextColor(Color.parseColor("#6B7280"));
+        tvLabel.setTextSize(10);
+        tvLabel.setGravity(Gravity.CENTER);
+        stat.addView(tvLabel);
+
+        container.addView(stat);
     }
 
     private void addRecordCard(String icon, String label, String value) {

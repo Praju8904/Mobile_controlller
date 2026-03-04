@@ -37,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -91,6 +92,10 @@ public class TaskManagerActivity extends AppCompatActivity
     private String currentGroupMode;
     private String searchQuery = "";
     private boolean isSearchVisible = false;
+    private TaskManagerSettings settings;
+    private CountdownRefreshScheduler countdownScheduler;
+    private TaskUndoManager undoManager;
+    private String projectIdFilter = null; // Feature 17E: project-scoped view
 
     // ─── Views ───────────────────────────────────────────────────
     private TextView tvDateSummary;
@@ -110,6 +115,7 @@ public class TaskManagerActivity extends AppCompatActivity
     private EditText etSearch;
     private TaskAdapter taskAdapter;
     private DrawerLayout drawerLayout;
+    private ImageView btnToggleView;
 
     // Streak banner views
     private LinearLayout streakBanner;
@@ -125,7 +131,9 @@ public class TaskManagerActivity extends AppCompatActivity
 
     // ─── Filter chip names ───────────────────────────────────────
     private static final String[] FILTER_NAMES = {
-        "All", "Today", "Upcoming", "Overdue", "Starred", "Completed", "Priority", "Meetings"
+        "All", "Today", "Upcoming", "Overdue", "Starred", "Inbox",
+        "Next Actions", "MIT", "Waiting", "Someday",
+        "Completed", "Priority", "Meetings"
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -136,6 +144,7 @@ public class TaskManagerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_manager);
         instance = this;
+        TaskNotificationHelper.createNotificationChannel(this);
 
         serverIp = getIntent().getStringExtra("server_ip");
         if (serverIp == null) {
@@ -144,6 +153,12 @@ public class TaskManagerActivity extends AppCompatActivity
         connectionManager = new ConnectionManager(serverIp);
 
         repo = new TaskRepository(this);
+        settings = TaskManagerSettings.getInstance(this);
+        undoManager = new TaskUndoManager(findViewById(android.R.id.content),
+                new TaskUndoManager.UndoCallback() {
+                    @Override public void onUndoPerformed() { refreshAll(); }
+                    @Override public void onWriteCommitted() { /* no-op */ }
+                });
         currentSortMode = repo.getSavedSortMode();
         currentGroupMode = repo.getSavedGroupMode();
 
@@ -164,10 +179,23 @@ public class TaskManagerActivity extends AppCompatActivity
         }
         loadMeetingsStrip();
 
+        // Feature 17E: handle project-scoped intent
+        projectIdFilter = getIntent().getStringExtra("projectId");
+        String projectName = getIntent().getStringExtra("projectName");
+        if (projectIdFilter != null && projectName != null) {
+            // Override title to show project name
+            if (tvResultLabel != null) {
+                tvResultLabel.setText("\uD83D\uDCC1 " + projectName);
+            }
+        }
+
         refreshAll();
 
         // Sync on open
         connectionManager.sendCommand("TASK_SYNC");
+
+        // Show onboarding tour on first launch
+        CoachMarkOverlay.showIfNeeded(this);
     }
 
     @Override
@@ -179,6 +207,33 @@ public class TaskManagerActivity extends AppCompatActivity
             loadMeetingsStrip();
         }
         refreshAll();
+
+        // Start countdown badge refresher
+        if (countdownScheduler == null && recyclerTasks != null && taskAdapter != null) {
+            countdownScheduler = new CountdownRefreshScheduler(recyclerTasks);
+        }
+        if (countdownScheduler != null) {
+            countdownScheduler.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (countdownScheduler != null) {
+            countdownScheduler.stop();
+        }
+        // Feature 15G: auto-lock vault when app goes to background
+        TaskVaultManager.getInstance(this).lock();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Commit any pending undo writes so they are not lost in background
+        if (undoManager != null) {
+            undoManager.commitPendingWrite();
+        }
     }
 
     @Override
@@ -225,6 +280,13 @@ public class TaskManagerActivity extends AppCompatActivity
         btnTrash.setOnClickListener(v -> {
             Intent intent = new Intent(this, TaskTrashActivity.class);
             startActivity(intent);
+        });
+
+        // Grid / List toggle
+        btnToggleView = findViewById(R.id.btnToggleView);
+        btnToggleView.setOnClickListener(v -> {
+            String current = settings.taskViewMode;
+            setViewMode("grid".equals(current) ? "list" : "grid");
         });
 
         // Search bar
@@ -333,8 +395,11 @@ public class TaskManagerActivity extends AppCompatActivity
         taskAdapter = new TaskAdapter(this, this);
         recyclerTasks.setAdapter(taskAdapter);
 
-        // Swipe gestures (right=complete, left=archive)
-        TaskSwipeCallback swipeCb = new TaskSwipeCallback(taskAdapter, this);
+        // Apply saved view mode (grid / list)
+        setViewMode(settings.taskViewMode != null ? settings.taskViewMode : "list");
+
+        // Swipe gestures (right=complete, left=archive) with haptic feedback
+        TaskSwipeCallback swipeCb = new TaskSwipeCallback(taskAdapter, this, this, settings);
         new ItemTouchHelper(swipeCb).attachToRecyclerView(recyclerTasks);
 
         // Empty state
@@ -359,6 +424,18 @@ public class TaskManagerActivity extends AppCompatActivity
             TaskEditorSheet sheet = TaskEditorSheet.newInstance();
             sheet.setListener(this);
             sheet.show(getSupportFragmentManager(), "task_editor");
+        });
+        // Long-press FAB to open bulk import
+        fabAddTask.setOnLongClickListener(v -> {
+            BulkImportSheet bulkSheet = BulkImportSheet.newInstance();
+            bulkSheet.setListener(tasks -> {
+                for (Task t : tasks) {
+                    repo.addTask(t);
+                }
+                refreshTaskList();
+            });
+            bulkSheet.show(getSupportFragmentManager(), "bulk_import");
+            return true;
         });
 
         // Meetings section views
@@ -459,12 +536,22 @@ public class TaskManagerActivity extends AppCompatActivity
                 return new int[]{Color.parseColor("#DC2626"), Color.parseColor("#EF4444")};
             case "Starred":
                 return new int[]{Color.parseColor("#D97706"), Color.parseColor("#F59E0B")};
+            case "Inbox":
+                return new int[]{Color.parseColor("#0369A1"), Color.parseColor("#0EA5E9")};
             case "Completed":
                 return new int[]{Color.parseColor("#059669"), Color.parseColor("#10B981")};
             case "Priority":
                 return new int[]{Color.parseColor("#EA580C"), Color.parseColor("#F97316")};
             case "Meetings":
                 return new int[]{Color.parseColor("#5B21B6"), Color.parseColor("#6C63FF")};
+            case "Next Actions":
+                return new int[]{Color.parseColor("#D97706"), Color.parseColor("#FBBF24")};
+            case "MIT":
+                return new int[]{Color.parseColor("#BE123C"), Color.parseColor("#F43F5E")};
+            case "Waiting":
+                return new int[]{Color.parseColor("#B45309"), Color.parseColor("#F59E0B")};
+            case "Someday":
+                return new int[]{Color.parseColor("#4338CA"), Color.parseColor("#6366F1")};
             default:
                 return new int[]{Color.parseColor("#3B82F6"), Color.parseColor("#6366F1")};
         }
@@ -503,8 +590,16 @@ public class TaskManagerActivity extends AppCompatActivity
         popup.getMenu().add("Created");
         popup.getMenu().add("Title");
         popup.getMenu().add("Status");
+        // Feature 10: toggle subtask collapse
+        String subtaskLabel = taskAdapter.isAllSubtasksCollapsed()
+                ? "▶ Expand Subtasks" : "▼ Collapse Subtasks";
+        popup.getMenu().add(subtaskLabel);
         popup.setOnMenuItemClickListener(item -> {
             String label = item.getTitle().toString();
+            if (label.contains("Subtasks")) {
+                taskAdapter.toggleAllSubtasksCollapsed();
+                return true;
+            }
             switch (label) {
                 case "Priority":
                     currentSortMode = TaskRepository.SORT_PRIORITY;
@@ -617,6 +712,169 @@ public class TaskManagerActivity extends AppCompatActivity
         // Calculate focus score
         int focusScore = calculateFocusScore();
         animateStatCount(tvStatFocusScore, focusScore);
+
+        // Feature 14D: XP Profile Card (below streak banner)
+        refreshXpProfileCard();
+    }
+
+    /**
+     * Feature 14D: Builds or updates the XP profile card shown when showFocusScoreCard is true.
+     * Programmatically created since the layout is already built dynamically.
+     */
+    private void refreshXpProfileCard() {
+        // Find or create the XP card container
+        android.view.View existingCard = findViewById(0x14D00001); // unique ID
+        if (settings == null || !settings.showFocusScoreCard) {
+            if (existingCard != null) existingCard.setVisibility(android.view.View.GONE);
+            return;
+        }
+
+        TaskXpManager xpManager = TaskXpManager.getInstance(this);
+        int level = xpManager.getCurrentLevel();
+        String levelName = xpManager.getLevelName();
+        int xpInLevel = xpManager.getXpForCurrentLevel();
+        int xpNeeded = xpManager.getXpToNextLevel();
+        float progress = xpManager.getLevelProgress();
+        int streak = repo.getCurrentStreak();
+
+        if (existingCard instanceof LinearLayout) {
+            // Update existing card
+            LinearLayout card = (LinearLayout) existingCard;
+            updateXpCardContents(card, level, levelName, xpInLevel, xpNeeded, progress, streak);
+            card.setVisibility(android.view.View.VISIBLE);
+        } else {
+            // Create new card — find where to insert it (after streak banner)
+            if (streakBanner != null && streakBanner.getParent() instanceof LinearLayout) {
+                LinearLayout parent = (LinearLayout) streakBanner.getParent();
+                int index = parent.indexOfChild(streakBanner) + 1;
+
+                LinearLayout card = new LinearLayout(this);
+                card.setId(0x14D00001);
+                card.setOrientation(LinearLayout.VERTICAL);
+                card.setPadding(dp(12), dp(10), dp(12), dp(10));
+                LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                cardLp.topMargin = dp(8);
+                cardLp.leftMargin = dp(12);
+                cardLp.rightMargin = dp(12);
+                card.setLayoutParams(cardLp);
+
+                // Gradient background
+                android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable(
+                        android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                        new int[]{Color.parseColor("#252B45"), Color.parseColor("#1A1F35")});
+                bg.setCornerRadius(dp(12));
+                card.setBackground(bg);
+
+                // Tap to open stats
+                card.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, TaskStatsActivity.class);
+                    startActivity(intent);
+                });
+
+                updateXpCardContents(card, level, levelName, xpInLevel, xpNeeded, progress, streak);
+                parent.addView(card, index);
+            }
+        }
+    }
+
+    private void updateXpCardContents(LinearLayout card, int level, String levelName,
+                                       int xpInLevel, int xpNeeded, float progress, int streak) {
+        card.removeAllViews();
+
+        // Row 1: Level info + XP numbers
+        LinearLayout row1 = new LinearLayout(this);
+        row1.setOrientation(LinearLayout.HORIZONTAL);
+        row1.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row1.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        TextView tvLevel = new TextView(this);
+        tvLevel.setText("\u2B50 Level " + level + " \u00B7 " + levelName);
+        tvLevel.setTextColor(Color.WHITE);
+        tvLevel.setTextSize(14);
+        tvLevel.setTypeface(null, android.graphics.Typeface.BOLD);
+        LinearLayout.LayoutParams levelLp = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        tvLevel.setLayoutParams(levelLp);
+        row1.addView(tvLevel);
+
+        TextView tvXpNums = new TextView(this);
+        tvXpNums.setText(String.format(java.util.Locale.US, "%,d / %,d XP", xpInLevel, xpNeeded));
+        tvXpNums.setTextColor(Color.parseColor("#94A3B8"));
+        tvXpNums.setTextSize(11);
+        row1.addView(tvXpNums);
+
+        card.addView(row1);
+
+        // Row 2: Progress bar + streak
+        LinearLayout row2 = new LinearLayout(this);
+        row2.setOrientation(LinearLayout.HORIZONTAL);
+        row2.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams row2Lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        row2Lp.topMargin = dp(6);
+        row2.setLayoutParams(row2Lp);
+
+        // Progress bar
+        android.widget.FrameLayout progressContainer = new android.widget.FrameLayout(this);
+        LinearLayout.LayoutParams pcLp = new LinearLayout.LayoutParams(0, dp(8), 1f);
+        pcLp.setMarginEnd(dp(8));
+        progressContainer.setLayoutParams(pcLp);
+
+        // Track
+        android.view.View track = new android.view.View(this);
+        android.graphics.drawable.GradientDrawable trackBg = new android.graphics.drawable.GradientDrawable();
+        trackBg.setColor(Color.parseColor("#1E293B"));
+        trackBg.setCornerRadius(dp(4));
+        track.setBackground(trackBg);
+        track.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT));
+        progressContainer.addView(track);
+
+        // Fill
+        android.view.View fill = new android.view.View(this);
+        android.graphics.drawable.GradientDrawable fillBg = new android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{Color.parseColor("#F59E0B"), Color.parseColor("#FCD34D")});
+        fillBg.setCornerRadius(dp(4));
+        fill.setBackground(fillBg);
+        int pctInt = Math.round(progress * 100);
+        android.widget.FrameLayout.LayoutParams fillLp = new android.widget.FrameLayout.LayoutParams(
+                0, android.widget.FrameLayout.LayoutParams.MATCH_PARENT);
+        fill.setLayoutParams(fillLp);
+        progressContainer.addView(fill);
+
+        // Post to measure and set fill width
+        progressContainer.post(() -> {
+            int totalWidth = progressContainer.getWidth();
+            int fillWidth = Math.round(totalWidth * progress);
+            android.widget.FrameLayout.LayoutParams fLp = (android.widget.FrameLayout.LayoutParams) fill.getLayoutParams();
+            fLp.width = fillWidth;
+            fill.setLayoutParams(fLp);
+        });
+
+        row2.addView(progressContainer);
+
+        // Percentage + streak
+        TextView tvPct = new TextView(this);
+        tvPct.setText(pctInt + "%");
+        tvPct.setTextColor(Color.parseColor("#94A3B8"));
+        tvPct.setTextSize(11);
+        tvPct.setPadding(0, 0, dp(8), 0);
+        row2.addView(tvPct);
+
+        if (streak > 0) {
+            TextView tvStreak = new TextView(this);
+            tvStreak.setText("\uD83D\uDD25 " + streak + " Day Streak");
+            tvStreak.setTextColor(Color.parseColor("#F59E0B"));
+            tvStreak.setTextSize(12);
+            row2.addView(tvStreak);
+        }
+
+        card.addView(row2);
     }
 
     private void animateStatCount(TextView textView, int targetValue) {
@@ -658,6 +916,12 @@ public class TaskManagerActivity extends AppCompatActivity
 
     private void refreshStreakBanner() {
         int streak = repo.getCurrentStreak();
+
+        // Feature 14C: award streak XP (deduplicates per day internally)
+        if (streak > 0) {
+            TaskXpManager.getInstance(this).onStreakDay(streak);
+        }
+
         if (streak > 0) {
             streakBanner.setBackgroundResource(R.drawable.task_streak_banner_bg);
             tvStreakIcon.setText("🔥");
@@ -793,6 +1057,15 @@ public class TaskManagerActivity extends AppCompatActivity
             taskList = repo.filterTasks(repoFilter);
         }
 
+        // Feature 17E: apply project scope filter
+        if (projectIdFilter != null) {
+            java.util.Iterator<Task> it = taskList.iterator();
+            while (it.hasNext()) {
+                Task t = it.next();
+                if (!projectIdFilter.equals(t.projectId)) it.remove();
+            }
+        }
+
         // For Priority filter, auto-sort by priority
         if ("Priority".equals(currentFilter)) {
             repo.sortTasks(taskList, TaskRepository.SORT_PRIORITY);
@@ -814,7 +1087,15 @@ public class TaskManagerActivity extends AppCompatActivity
             tvResultLabel.setText("Results for \"" + searchQuery + "\"");
             tvResultCount.setText(String.valueOf(count));
         } else {
-            tvResultLabel.setText(currentFilter.equals("All") ? "All Tasks" : currentFilter);
+            String label;
+            if ("Starred".equals(currentFilter)) {
+                label = "⭐ Focus List";
+            } else if ("Inbox".equals(currentFilter)) {
+                label = "📥 Inbox";
+            } else {
+                label = currentFilter.equals("All") ? "All Tasks" : currentFilter;
+            }
+            tvResultLabel.setText(label);
             tvResultCount.setText(count + " task" + (count != 1 ? "s" : ""));
         }
 
@@ -826,6 +1107,51 @@ public class TaskManagerActivity extends AppCompatActivity
         } else {
             emptyStateContainer.setVisibility(View.GONE);
             recyclerTasks.setVisibility(View.VISIBLE);
+        }
+        updateFocusBanner();
+    }
+
+    private long computeTodayFocusSeconds() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long startOfDay = c.getTimeInMillis();
+        long total = 0L;
+        for (Task t : repo.getAllTasks()) {
+            if (t.timerSessions == null) continue;
+            for (long[] session : t.timerSessions) {
+                if (session.length >= 2 && session[0] >= startOfDay) {
+                    total += (session[1] - session[0]) / 1000L;
+                }
+            }
+        }
+        return total;
+    }
+
+    private String formatFocusDuration(long totalSecs) {
+        long hours = totalSecs / 3600;
+        long mins = (totalSecs % 3600) / 60;
+        if (hours > 0) return hours + "h " + mins + "m";
+        return mins + "m";
+    }
+
+    private void updateFocusBanner() {
+        long totalSecs = computeTodayFocusSeconds();
+        View focusBanner = findViewById(R.id.layout_focus_banner);
+        if (focusBanner == null) {
+            if (totalSecs > 0) {
+                Log.d(TAG, "Focus today: " + formatFocusDuration(totalSecs) + " (banner not in layout)");
+            }
+            return;
+        }
+        if (totalSecs > 0) {
+            focusBanner.setVisibility(View.VISIBLE);
+            TextView tvFocusTime = focusBanner.findViewById(R.id.tvFocusTime);
+            if (tvFocusTime != null) tvFocusTime.setText("Focus today: " + formatFocusDuration(totalSecs));
+        } else {
+            focusBanner.setVisibility(View.GONE);
         }
     }
 
@@ -853,8 +1179,13 @@ public class TaskManagerActivity extends AppCompatActivity
                     break;
                 case "Starred":
                     tvEmptyIcon.setText("⭐");
-                    tvEmptyTitle.setText("No starred tasks");
-                    tvEmptySubtitle.setText("Star important tasks to find them quickly");
+                    tvEmptyTitle.setText("No focus tasks");
+                    tvEmptySubtitle.setText("Star tasks or set high/urgent priority to see them here");
+                    break;
+                case "Inbox":
+                    tvEmptyIcon.setText("📥");
+                    tvEmptyTitle.setText("Inbox is empty");
+                    tvEmptySubtitle.setText("Uncategorised and Personal tasks appear here");
                     break;
                 case "Completed":
                     tvEmptyIcon.setText("🏆");
@@ -865,6 +1196,26 @@ public class TaskManagerActivity extends AppCompatActivity
                     tvEmptyIcon.setText("🔥");
                     tvEmptyTitle.setText("No high priority tasks");
                     tvEmptySubtitle.setText("Set priorities to focus on what matters");
+                    break;
+                case "Next Actions":
+                    tvEmptyIcon.setText("⚡");
+                    tvEmptyTitle.setText("No next actions");
+                    tvEmptySubtitle.setText("Mark tasks as 'Next Action' to see them here");
+                    break;
+                case "MIT":
+                    tvEmptyIcon.setText("🎯");
+                    tvEmptyTitle.setText("No Most Important Tasks");
+                    tvEmptySubtitle.setText("Mark tasks as MIT to focus on what matters most");
+                    break;
+                case "Waiting":
+                    tvEmptyIcon.setText("⏳");
+                    tvEmptyTitle.setText("Not waiting on anything");
+                    tvEmptySubtitle.setText("Tasks waiting on others will appear here");
+                    break;
+                case "Someday":
+                    tvEmptyIcon.setText("💭");
+                    tvEmptyTitle.setText("No someday/maybe items");
+                    tvEmptySubtitle.setText("Park ideas here for later review");
                     break;
                 default:
                     tvEmptyIcon.setText("🚀");
@@ -882,6 +1233,7 @@ public class TaskManagerActivity extends AppCompatActivity
     public void onTaskChecked(Task task, boolean isChecked) {
         if (isChecked) {
             repo.completeTask(task.id);
+            awardXpForCompletion(task);
             connectionManager.sendCommand("TASK_COMPLETE:" + task.id);
         } else {
             repo.uncompleteTask(task.id);
@@ -908,6 +1260,7 @@ public class TaskManagerActivity extends AppCompatActivity
         PopupMenu popup = new PopupMenu(this, anchor);
         popup.getMenu().add("Edit");
         popup.getMenu().add("Duplicate");
+        popup.getMenu().add("Share");
         popup.getMenu().add("Move to Category");
         popup.getMenu().add("Change Priority");
         if (task.isCompleted()) {
@@ -916,6 +1269,17 @@ public class TaskManagerActivity extends AppCompatActivity
             popup.getMenu().add("Mark Complete");
         }
         popup.getMenu().add("Move to Trash");
+        popup.getMenu().add("Copy Link");
+
+        // GTD actions
+        popup.getMenu().add(task.isNextAction ? "Remove Next Action" : "Mark as Next Action");
+        popup.getMenu().add(task.isMIT ? "Remove MIT" : "Mark as MIT");
+        popup.getMenu().add("Move to Someday/Maybe");
+        if (!task.isWaiting()) {
+            popup.getMenu().add("Set Waiting For...");
+        } else {
+            popup.getMenu().add("Clear Waiting For");
+        }
 
         popup.setOnMenuItemClickListener(item -> {
             String label = item.getTitle().toString();
@@ -930,6 +1294,9 @@ public class TaskManagerActivity extends AppCompatActivity
                     Toast.makeText(this, "Task duplicated!", Toast.LENGTH_SHORT).show();
                     refreshAll();
                     break;
+                case "Share":
+                    TaskExportManager.shareTaskAsText(this, task);
+                    break;
                 case "Move to Category":
                     showCategoryPicker(task);
                     break;
@@ -937,9 +1304,17 @@ public class TaskManagerActivity extends AppCompatActivity
                     showPriorityPicker(task);
                     break;
                 case "Mark Complete":
-                    repo.completeTask(task.id);
-                    connectionManager.sendCommand("TASK_COMPLETE:" + task.id);
-                    refreshAll();
+                    {
+                        Task snapshot = task.deepCopy();
+                        repo.completeTask(task.id);
+                        refreshAll();
+                        undoManager.record(snapshot, "complete", "Task completed ✓",
+                                () -> {
+                                    repo.uncompleteTask(task.id);
+                                    connectionManager.sendCommand("TASK_UNCOMPLETE:" + task.id);
+                                },
+                                () -> connectionManager.sendCommand("TASK_COMPLETE:" + task.id));
+                    }
                     break;
                 case "Mark Incomplete":
                     repo.uncompleteTask(task.id);
@@ -947,9 +1322,58 @@ public class TaskManagerActivity extends AppCompatActivity
                     refreshAll();
                     break;
                 case "Move to Trash":
-                    repo.trashTask(task.id);
-                    connectionManager.sendCommand("TASK_DELETE:" + task.id);
-                    Toast.makeText(this, "Moved to trash", Toast.LENGTH_SHORT).show();
+                    {
+                        Task snapshot = task.deepCopy();
+                        repo.trashTask(task.id);
+                        refreshAll();
+                        undoManager.record(snapshot, "trash", "Moved to trash",
+                                () -> {
+                                    repo.restoreFromTrash(task.id);
+                                    connectionManager.sendCommand("TASK_ADD_JSON:" + task.toJson());
+                                },
+                                () -> connectionManager.sendCommand("TASK_DELETE:" + task.id));
+                    }
+                    break;
+                case "Copy Link":
+                    String deeplink = "myfirstapp://task/" + task.id;
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                            getSystemService(CLIPBOARD_SERVICE);
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Task Link", deeplink));
+                    Toast.makeText(this, "Link copied!", Toast.LENGTH_SHORT).show();
+                    break;
+
+                // GTD menu actions
+                case "Mark as Next Action":
+                    repo.setNextAction(task.id, true);
+                    Toast.makeText(this, "Marked as Next Action", Toast.LENGTH_SHORT).show();
+                    refreshAll();
+                    break;
+                case "Remove Next Action":
+                    repo.setNextAction(task.id, false);
+                    Toast.makeText(this, "Removed Next Action flag", Toast.LENGTH_SHORT).show();
+                    refreshAll();
+                    break;
+                case "Mark as MIT":
+                    repo.setMIT(task.id, true);
+                    Toast.makeText(this, "Marked as MIT", Toast.LENGTH_SHORT).show();
+                    refreshAll();
+                    break;
+                case "Remove MIT":
+                    repo.setMIT(task.id, false);
+                    Toast.makeText(this, "Removed MIT flag", Toast.LENGTH_SHORT).show();
+                    refreshAll();
+                    break;
+                case "Move to Someday/Maybe":
+                    repo.setStatus(task.id, Task.STATUS_SOMEDAY);
+                    Toast.makeText(this, "Moved to Someday/Maybe", Toast.LENGTH_SHORT).show();
+                    refreshAll();
+                    break;
+                case "Set Waiting For...":
+                    showWaitingForDialog(task);
+                    break;
+                case "Clear Waiting For":
+                    repo.setWaitingFor(task.id, null);
+                    Toast.makeText(this, "Waiting cleared", Toast.LENGTH_SHORT).show();
                     refreshAll();
                     break;
             }
@@ -972,32 +1396,47 @@ public class TaskManagerActivity extends AppCompatActivity
                 repo.uncompleteTask(task.id);
                 connectionManager.sendCommand("TASK_UNCOMPLETE:" + task.id);
                 Toast.makeText(this, "Task marked incomplete", Toast.LENGTH_SHORT).show();
+                refreshAll();
             } else {
+                Task snapshot = task.deepCopy();
                 repo.completeTask(task.id);
-                connectionManager.sendCommand("TASK_COMPLETE:" + task.id);
-                Toast.makeText(this, "Task completed ✓", Toast.LENGTH_SHORT).show();
+                refreshAll();
+                undoManager.record(snapshot, "complete", "Task completed ✓",
+                        () -> {
+                            repo.uncompleteTask(task.id);
+                            connectionManager.sendCommand("TASK_UNCOMPLETE:" + task.id);
+                        },
+                        () -> connectionManager.sendCommand("TASK_COMPLETE:" + task.id));
             }
-            refreshAll();
         } else if (swipeDirection == TaskAdapter.SWIPE_ARCHIVE) {
-            // Archive (trash) + undo snackbar
-            repo.trashTask(task.id);
-            connectionManager.sendCommand("TASK_DELETE:" + task.id);
+            // Push to Tomorrow + undo snackbar
+            Task snapshot = task.deepCopy();
 
-            // Show undo snackbar
-            View rootView = findViewById(android.R.id.content);
-            com.google.android.material.snackbar.Snackbar snackbar
-                    = com.google.android.material.snackbar.Snackbar.make(
-                            rootView, "Task archived", com.google.android.material.snackbar.Snackbar.LENGTH_LONG);
+            // Compute tomorrow's date
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.add(java.util.Calendar.DAY_OF_YEAR, 1);
+            String tomorrow = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(cal.getTime());
+
+            // Push the task
+            task.dueDate = tomorrow;
+            task.rescheduleCount++;
+            task.updatedAt = System.currentTimeMillis();
+            repo.updateTask(task);
+            refreshAll();
+
+            // Snackbar with undo
+            com.google.android.material.snackbar.Snackbar snackbar =
+                com.google.android.material.snackbar.Snackbar.make(
+                    findViewById(android.R.id.content),
+                    "Pushed to tomorrow", com.google.android.material.snackbar.Snackbar.LENGTH_LONG);
             snackbar.setAction("UNDO", v -> {
-                repo.restoreFromTrash(task.id);
+                task.dueDate = snapshot.dueDate;
+                task.rescheduleCount = snapshot.rescheduleCount;
+                task.updatedAt = System.currentTimeMillis();
+                repo.updateTask(task);
                 refreshAll();
             });
-            snackbar.setActionTextColor(Color.parseColor("#F59E0B"));
-            // Style the snackbar for dark theme
-            View snackView = snackbar.getView();
-            snackView.setBackgroundColor(Color.parseColor("#1E293B"));
             snackbar.show();
-            refreshAll();
         }
     }
 
@@ -1033,6 +1472,95 @@ public class TaskManagerActivity extends AppCompatActivity
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    private void showWaitingForDialog(Task task) {
+        EditText input = new EditText(this);
+        input.setHint("Person or event...");
+        input.setPadding(dp(16), dp(12), dp(16), dp(12));
+        if (task.waitingFor != null) input.setText(task.waitingFor);
+        new AlertDialog.Builder(this)
+                .setTitle("Waiting For")
+                .setView(input)
+                .setPositiveButton("Set", (d, w) -> {
+                    String val = input.getText().toString().trim();
+                    repo.setWaitingFor(task.id, val.isEmpty() ? null : val);
+                    refreshAll();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // GAMIFICATION — XP awarding on task completion (Feature 14)
+    // ═══════════════════════════════════════════════════════════════
+    private void awardXpForCompletion(Task task) {
+        TaskXpManager xpManager = TaskXpManager.getInstance(this);
+        int xpResult = xpManager.onTaskCompleted(task);
+        repo.addKarma(1);
+
+        // Also keep legacy repo-level XP in sync
+        int xpAmount = xpResult < 0 ? 15 : xpResult;
+        repo.addXp(xpAmount);
+
+        // Show XP floater if focus score card is enabled
+        if (settings != null && settings.showFocusScoreCard) {
+            if (xpResult < 0) {
+                // Level-up!
+                int newLevel = Math.abs(xpResult);
+                showXpFloater("Level Up! Lv. " + newLevel, true);
+            } else if (xpResult > 0) {
+                showXpFloater("+" + xpResult + " XP", false);
+            }
+        }
+    }
+
+    /**
+     * Feature 14B: Floating XP label that animates upward and fades.
+     */
+    private void showXpFloater(String text, boolean isLevelUp) {
+        try {
+            android.view.ViewGroup rootLayout = findViewById(android.R.id.content);
+            if (rootLayout == null) return;
+
+            TextView tvXp = new TextView(this);
+            tvXp.setText(text);
+            tvXp.setTextSize(isLevelUp ? 20 : 16);
+            tvXp.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvXp.setTextColor(Color.parseColor(isLevelUp ? "#FFFFFF" : "#F59E0B"));
+            tvXp.setGravity(android.view.Gravity.CENTER);
+
+            android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(
+                    android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.FrameLayout.LayoutParams.WRAP_CONTENT);
+            lp.gravity = android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.TOP;
+            lp.topMargin = dp(200);
+            tvXp.setLayoutParams(lp);
+
+            rootLayout.addView(tvXp);
+
+            // Animate translateY -120dp + alpha fade
+            float translationPx = -dp(120);
+            android.animation.ObjectAnimator translateAnim = android.animation.ObjectAnimator.ofFloat(
+                    tvXp, "translationY", 0f, translationPx);
+            translateAnim.setDuration(800);
+
+            android.animation.ObjectAnimator alphaAnim = android.animation.ObjectAnimator.ofFloat(
+                    tvXp, "alpha", 1f, 0f);
+            alphaAnim.setDuration(800);
+
+            android.animation.AnimatorSet animSet = new android.animation.AnimatorSet();
+            animSet.playTogether(translateAnim, alphaAnim);
+            animSet.addListener(new android.animation.AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(android.animation.Animator animation) {
+                    rootLayout.removeView(tvXp);
+                }
+            });
+            animSet.start();
+        } catch (Exception e) {
+            android.util.Log.w(TAG, "XP floater error: " + e.getMessage());
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1113,6 +1641,12 @@ public class TaskManagerActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onTaskUpdated(Task task) {
+        repo.updateTask(task);
+        refreshTaskList();
+    }
+
     private void setupBulkActions() {
         if (bulkActionBar == null) {
             return;
@@ -1129,13 +1663,28 @@ public class TaskManagerActivity extends AppCompatActivity
 
         if (btnBulkComplete != null) {
             btnBulkComplete.setOnClickListener(v -> {
-                for (String id : taskAdapter.getSelectedIds()) {
+                List<String> ids = new ArrayList<>(taskAdapter.getSelectedIds());
+                List<Task> snapshots = new ArrayList<>();
+                for (String id : ids) {
+                    Task t = repo.getTaskById(id);
+                    if (t != null) snapshots.add(t.deepCopy());
                     repo.completeTask(id);
-                    connectionManager.sendCommand("TASK_COMPLETE:" + id);
                 }
                 taskAdapter.exitMultiSelect();
                 refreshAll();
-                Toast.makeText(this, "Tasks completed!", Toast.LENGTH_SHORT).show();
+                undoManager.recordBulk(snapshots, "bulk_complete",
+                        ids.size() + " tasks completed",
+                        () -> {
+                            for (Task snap : snapshots) {
+                                repo.uncompleteTask(snap.id);
+                                connectionManager.sendCommand("TASK_UNCOMPLETE:" + snap.id);
+                            }
+                        },
+                        () -> {
+                            for (String id : ids) {
+                                connectionManager.sendCommand("TASK_COMPLETE:" + id);
+                            }
+                        });
             });
         }
 
@@ -1183,12 +1732,27 @@ public class TaskManagerActivity extends AppCompatActivity
                         .setTitle("Move to Trash")
                         .setMessage("Trash " + taskAdapter.getSelectedCount() + " tasks?")
                         .setPositiveButton("Trash", (d, w) -> {
-                            for (String id : taskAdapter.getSelectedIds()) {
+                            List<String> ids = new ArrayList<>(taskAdapter.getSelectedIds());
+                            List<Task> snapshots = new ArrayList<>();
+                            for (String id : ids) {
+                                Task t = repo.getTaskById(id);
+                                if (t != null) snapshots.add(t.deepCopy());
                                 repo.trashTask(id);
-                                connectionManager.sendCommand("TASK_DELETE:" + id);
                             }
                             taskAdapter.exitMultiSelect();
                             refreshAll();
+                            undoManager.recordBulk(snapshots, "bulk_trash",
+                                    ids.size() + " tasks trashed",
+                                    () -> {
+                                        for (Task snap : snapshots) {
+                                            repo.restoreFromTrash(snap.id);
+                                        }
+                                    },
+                                    () -> {
+                                        for (String id : ids) {
+                                            connectionManager.sendCommand("TASK_DELETE:" + id);
+                                        }
+                                    });
                         })
                         .setNegativeButton("Cancel", null)
                         .show();
@@ -1203,6 +1767,35 @@ public class TaskManagerActivity extends AppCompatActivity
 
         // Setup navigation drawer
         setupDrawer();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // GRID / LIST VIEW MODE
+    // ═══════════════════════════════════════════════════════════════
+    private void setViewMode(String mode) {
+        settings.taskViewMode = mode;
+        settings.save();
+
+        if ("grid".equals(mode)) {
+            GridLayoutManager glm = new GridLayoutManager(this, 2);
+            glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    return taskAdapter.getItemViewType(position) == TaskAdapter.TYPE_GROUP_HEADER
+                            ? 2 : 1;
+                }
+            });
+            recyclerTasks.setLayoutManager(glm);
+            if (btnToggleView != null)
+                btnToggleView.setImageResource(android.R.drawable.ic_menu_agenda);
+        } else {
+            recyclerTasks.setLayoutManager(new LinearLayoutManager(this));
+            if (btnToggleView != null)
+                btnToggleView.setImageResource(android.R.drawable.ic_dialog_dialer);
+        }
+
+        taskAdapter.setGridMode("grid".equals(mode));
+        taskAdapter.notifyDataSetChanged();
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1234,12 +1827,23 @@ public class TaskManagerActivity extends AppCompatActivity
                 extraContainer.setLayoutParams(lp);
                 drawerLinear.addView(extraContainer);
 
-                addDrawerNavItem(extraContainer, "📋", "Templates", TaskTemplatesActivity.class);
+                addDrawerNavItem(extraContainer, "�", "Projects", ProjectListActivity.class);
+                addDrawerNavItem(extraContainer, "�📋", "Templates", TaskTemplatesActivity.class);
                 addDrawerNavItem(extraContainer, "📥", "Import Tasks", TaskImportActivity.class);
                 addDrawerNavItem(extraContainer, "📊", "Kanban View", KanbanBoardActivity.class);
                 addDrawerNavItem(extraContainer, "🕐", "Time Block", TimeBlockActivity.class);
                 addDrawerNavItem(extraContainer, "🎯", "Focus Mode", FocusModeActivity.class);
+                addDrawerNavItem(extraContainer, "⏱", "Time Report", TaskTimeReportActivity.class);
+                addDrawerNavItem(extraContainer, "🧭", "Eisenhower Matrix", TaskEisenhowerActivity.class);
                 addDrawerNavItem(extraContainer, "⚙️", "Settings", TaskManagerSettingsActivity.class);
+
+                // Export actions
+                addDrawerActionItem(extraContainer, "📅", "Export to Calendar (.ics)", () -> {
+                    TaskExportManager.exportToIcs(this, repo.getAllTasks());
+                });
+                addDrawerActionItem(extraContainer, "📄", "Export to PDF", () -> {
+                    TaskExportManager.exportToPdf(this, repo.getAllTasks());
+                });
             }
         }
     }
@@ -1273,6 +1877,35 @@ public class TaskManagerActivity extends AppCompatActivity
         container.addView(row);
     }
 
+    private void addDrawerActionItem(LinearLayout container, String icon, String label,
+            Runnable action) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(12), dp(10), dp(12), dp(10));
+        row.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        TextView tvIcon = new TextView(this);
+        tvIcon.setText(icon);
+        tvIcon.setTextSize(16);
+        tvIcon.setPadding(0, 0, dp(12), 0);
+        row.addView(tvIcon);
+
+        TextView tvLabel = new TextView(this);
+        tvLabel.setText(label);
+        tvLabel.setTextColor(Color.parseColor("#D1D5DB"));
+        tvLabel.setTextSize(14);
+        row.addView(tvLabel);
+
+        row.setOnClickListener(v -> {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            action.run();
+        });
+
+        container.addView(row);
+    }
+
     private void refreshDrawer() {
         if (drawerLayout == null) {
             return;
@@ -1291,14 +1924,33 @@ public class TaskManagerActivity extends AppCompatActivity
             viewsContainer.removeAllViews();
 
             String[][] viewItems = {
-                {"📋", "All Tasks", String.valueOf(repo.getTotalActiveCount()), "#60A5FA"},
-                {"📅", "Today", String.valueOf(repo.getTotalTodayCount()), "#3B82F6"},
-                {"🗓️", "Upcoming", "", "#8B5CF6"},
-                {"⚠️", "Overdue", String.valueOf(repo.getOverdueCount()), "#EF4444"},
-                {"⭐", "Starred", String.valueOf(repo.getStarredCount()), "#F59E0B"},
-                {"✅", "Completed", String.valueOf(repo.getTotalCompletedCount()), "#10B981"},
-                {"🗑️", "Trash", String.valueOf(repo.getTrashCount()), "#6B7280"}
+                {"\uD83D\uDCCB", "All Tasks", String.valueOf(repo.getTotalActiveCount()), "#60A5FA"},
+                {"\uD83D\uDCC5", "Today", String.valueOf(repo.getTotalTodayCount()), "#3B82F6"},
+                {"\uD83D\uDDD3\uFE0F", "Upcoming", "", "#8B5CF6"},
+                {"\u26A0\uFE0F", "Overdue", String.valueOf(repo.getOverdueCount()), "#EF4444"},
+                {"\u2B50", "Starred", String.valueOf(repo.getStarredCount()), "#F59E0B"},
+                {"\uD83D\uDCE5", "Inbox", String.valueOf(repo.getInboxCount()), "#60A5FA"},
+                {"\u26A1", "Next Actions", String.valueOf(repo.getNextActionCount()), "#FBBF24"},
+                {"\uD83C\uDFAF", "MIT", String.valueOf(repo.getMITCount()), "#F43F5E"},
+                {"\u23F3", "Waiting", String.valueOf(repo.getWaitingCount()), "#F59E0B"},
+                {"\uD83D\uDCAD", "Someday", String.valueOf(repo.getSomedayCount()), "#6366F1"},
+                {"\u2705", "Completed", String.valueOf(repo.getTotalCompletedCount()), "#10B981"},
+                {"\uD83D\uDDD1\uFE0F", "Trash", String.valueOf(repo.getTrashCount()), "#6B7280"}
             };
+
+            // Feature 15F: conditionally add Private Tasks view if any exist
+            int privateCount = repo.getPrivateCount();
+            if (privateCount > 0) {
+                // Insert before Completed entry
+                String[][] extendedItems = new String[viewItems.length + 1][];
+                int insertIdx = viewItems.length - 2; // before Completed and Trash
+                System.arraycopy(viewItems, 0, extendedItems, 0, insertIdx);
+                extendedItems[insertIdx] = new String[]{"\uD83D\uDD12", "Private Tasks",
+                        String.valueOf(privateCount), "#A855F7"};
+                System.arraycopy(viewItems, insertIdx, extendedItems, insertIdx + 1,
+                        viewItems.length - insertIdx);
+                viewItems = extendedItems;
+            }
 
             for (String[] item : viewItems) {
                 LinearLayout row = new LinearLayout(this);
@@ -1346,6 +1998,11 @@ public class TaskManagerActivity extends AppCompatActivity
                     drawerLayout.closeDrawer(GravityCompat.START);
                     if ("Trash".equals(filterName)) {
                         startActivity(new Intent(this, TaskTrashActivity.class));
+                    } else if ("Private Tasks".equals(filterName)) {
+                        // Feature 15F: prompt biometric before showing private tasks
+                        TaskVaultManager.getInstance(this).promptUnlock(this, () -> {
+                            selectFilter("Private");
+                        });
                     } else if ("Completed".equals(filterName)) {
                         selectFilter("Completed");
                     } else {

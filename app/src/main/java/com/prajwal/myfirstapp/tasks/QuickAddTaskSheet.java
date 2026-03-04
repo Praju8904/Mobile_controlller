@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,9 +84,13 @@ public class QuickAddTaskSheet extends BottomSheetDialogFragment {
 
     // Views
     private EditText     etQuickTaskTitle;
+    private ImageView    btnMic;
     private TextView     btnQuickSave;
     private TextView     chipToday, chipTomorrow, chipThisWeek, chipPriority;
     private TextView     btnMoreOptions;
+
+    // Voice input
+    private VoiceInputHelper voiceInputHelper;
 
     // Smart suggestion banner (added programmatically below etQuickTaskTitle)
     private LinearLayout smartSuggestionBanner;
@@ -100,6 +105,23 @@ public class QuickAddTaskSheet extends BottomSheetDialogFragment {
 
     public static QuickAddTaskSheet newInstance() {
         return new QuickAddTaskSheet();
+    }
+
+    /**
+     * Creates a sheet pre-populated with a fully built Task (e.g. from share sheet).
+     */
+    public static QuickAddTaskSheet newInstance(@Nullable Task preFilledTask) {
+        QuickAddTaskSheet sheet = new QuickAddTaskSheet();
+        Bundle args = new Bundle();
+        if (preFilledTask != null) {
+            try {
+                args.putString("prefilled_task", preFilledTask.toJson().toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        sheet.setArguments(args);
+        return sheet;
     }
 
     /**
@@ -174,6 +196,54 @@ public class QuickAddTaskSheet extends BottomSheetDialogFragment {
             getDialog().getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
+
+        // Voice input helper
+        voiceInputHelper = new VoiceInputHelper(this, requireContext());
+
+        // Set hint if voice is available
+        if (VoiceInputHelper.isAvailable(requireContext())) {
+            etQuickTaskTitle.setHint("Type or tap 🎤 to speak…");
+        }
+
+        // Mic button click
+        if (btnMic != null) {
+            btnMic.setColorFilter(0xFF6366F1);
+            btnMic.setOnClickListener(v -> {
+                if (!VoiceInputHelper.isAvailable(requireContext())) {
+                    Toast.makeText(requireContext(), "Voice input not available", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                voiceInputHelper.startListening(transcription -> {
+                    if (etQuickTaskTitle != null) {
+                        etQuickTaskTitle.setText(transcription);
+                        etQuickTaskTitle.setSelection(transcription.length());
+                    }
+                });
+            });
+        }
+
+        // Check for pre-filled task (from share sheet or external callers)
+        if (getArguments() != null && getArguments().containsKey("prefilled_task")) {
+            try {
+                String json = getArguments().getString("prefilled_task");
+                if (json != null) {
+                    Task prefilledTask = Task.fromJson(new org.json.JSONObject(json));
+                    if (prefilledTask != null) {
+                        etQuickTaskTitle.setText(prefilledTask.title);
+                        if (prefilledTask.priority != null) {
+                            quickPriority = prefilledTask.priority;
+                            updatePriorityChipText();
+                        }
+                        if (prefilledTask.dueDate != null) {
+                            quickDueDate = prefilledTask.dueDate;
+                            syncDateChipHighlights();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -206,6 +276,7 @@ public class QuickAddTaskSheet extends BottomSheetDialogFragment {
 
     private void initViews(View v) {
         etQuickTaskTitle = v.findViewById(R.id.etQuickTaskTitle);
+        btnMic           = v.findViewById(R.id.btnMic);
         chipToday        = v.findViewById(R.id.chipToday);
         chipTomorrow     = v.findViewById(R.id.chipTomorrow);
         chipThisWeek     = v.findViewById(R.id.chipThisWeek);
@@ -347,7 +418,11 @@ public class QuickAddTaskSheet extends BottomSheetDialogFragment {
                 debounceRunnable = () -> analyzeAndShowSuggestion(s.toString().trim());
                 debounceHandler.postDelayed(debounceRunnable, DEBOUNCE_MS);
             }
-            @Override public void afterTextChanged(Editable s) { }
+            @Override public void afterTextChanged(Editable s) {
+                if (btnMic != null) {
+                    btnMic.setVisibility(s.length() == 0 ? View.VISIBLE : View.GONE);
+                }
+            }
         });
     }
 
@@ -581,5 +656,21 @@ public class QuickAddTaskSheet extends BottomSheetDialogFragment {
     private int dp(int value) {
         float density = requireContext().getResources().getDisplayMetrics().density;
         return Math.round(value * density);
+    }
+
+    // ─── Dismiss listener support ────────────────────────────────
+
+    private android.content.DialogInterface.OnDismissListener externalDismissListener;
+
+    public void setOnDismissListener(android.content.DialogInterface.OnDismissListener listener) {
+        this.externalDismissListener = listener;
+    }
+
+    @Override
+    public void onDismiss(@androidx.annotation.NonNull android.content.DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (externalDismissListener != null) {
+            externalDismissListener.onDismiss(dialog);
+        }
     }
 }

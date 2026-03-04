@@ -48,4 +48,18 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation "androidx.biometric:biometric:1.2.0-alpha05"
 
+    // Markwon — Markdown rendering (Feature 5, gap 4.2/4.3/4.4)
+    def markwon_version = "4.6.2"
+    implementation "io.noties.markwon:core:$markwon_version"
+    implementation "io.noties.markwon:ext-tasklist:$markwon_version"
+    implementation "io.noties.markwon:ext-strikethrough:$markwon_version"
+    implementation "io.noties.markwon:html:$markwon_version"
+    implementation "io.noties.markwon:editor:$markwon_version"
+
+    // PhotoView — full-screen image zoom/pan (Feature 7C, gap 4.9)
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
+    // MPAndroidChart — charts for time tracking report (Feature 8)
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
 }

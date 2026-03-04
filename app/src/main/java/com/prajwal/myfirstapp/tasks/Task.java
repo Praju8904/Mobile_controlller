@@ -54,6 +54,23 @@ public class Task {
     public String energyLevel;            // "deep_work", "light", "low_energy", or null
     public String locationReminderName;   // Location name (e.g. "Gym") or null
     public boolean timerRunning;          // True when stopwatch is active
+    public int rescheduleCount;            // Number of times this task has been rescheduled
+    public String colorLabel;             // nullable hex string e.g. "#E11D48" — gap 3.18
+    public String startDate;              // nullable "YYYY-MM-DD" — task hidden before this date
+    public int effortPoints;              // 0=unset; Fibonacci: 1,2,3,5,8,13 — gap 3.16
+    public List<TaskLink> links;          // URL attachment objects — gap 4.8
+    public List<TaskComment> comments;       // comment thread — gap 11.2
+    public boolean is_archived;               // archived flag
+
+    // ─── Batch 4 Fields ─────────────────────────────────────────
+    public boolean isNextAction;              // GTD next action flag — Feature 1
+    public boolean isMIT;                     // Most Important Task for today — Feature 2
+    public String contextTag;                 // "@home"|"@computer"|"@phone"|"@errands"|"@anywhere"|null — Feature 3
+    public String waitingFor;                 // who/what we're waiting on — Feature 5
+    public String assignedTo;                 // "Mobile"|"PC"|null — Feature 7
+    public List<String> watchers;             // device IDs watching this task — Feature 8
+    public boolean isPrivate;                 // hide details unless vault unlocked — Feature 15
+    public String projectId;                  // links task to a Project — Feature 17
 
     // ─── Constants ───────────────────────────────────────────────
 
@@ -67,6 +84,15 @@ public class Task {
     public static final String STATUS_INPROGRESS = "inprogress";
     public static final String STATUS_COMPLETED  = "completed";
     public static final String STATUS_CANCELLED  = "cancelled";
+    public static final String STATUS_WAITING    = "waiting";
+    public static final String STATUS_SOMEDAY    = "someday";
+
+    // GTD Context Tag constants
+    public static final String CONTEXT_HOME     = "@home";
+    public static final String CONTEXT_COMPUTER = "@computer";
+    public static final String CONTEXT_PHONE    = "@phone";
+    public static final String CONTEXT_ERRANDS  = "@errands";
+    public static final String CONTEXT_ANYWHERE = "@anywhere";
 
     public static final String RECURRENCE_NONE    = "none";
     public static final String RECURRENCE_DAILY   = "daily";
@@ -79,7 +105,8 @@ public class Task {
     };
 
     public static final String[] STATUS_OPTIONS = {
-        STATUS_TODO, STATUS_INPROGRESS, STATUS_COMPLETED, STATUS_CANCELLED
+        STATUS_TODO, STATUS_INPROGRESS, STATUS_COMPLETED, STATUS_CANCELLED,
+        STATUS_WAITING, STATUS_SOMEDAY
     };
 
     // ─── Priority Colors ─────────────────────────────────────────
@@ -121,6 +148,20 @@ public class Task {
         this.energyLevel = null;
         this.locationReminderName = null;
         this.timerRunning = false;
+        this.rescheduleCount = 0;
+        this.colorLabel = null;
+        this.startDate = null;
+        this.effortPoints = 0;
+        this.links = new ArrayList<>();
+        this.comments = new ArrayList<>();
+        this.isNextAction = false;
+        this.isMIT = false;
+        this.contextTag = null;
+        this.waitingFor = null;
+        this.assignedTo = null;
+        this.watchers = new ArrayList<>();
+        this.isPrivate = false;
+        this.projectId = null;
     }
 
     public Task(String title, String priority) {
@@ -189,7 +230,34 @@ public class Task {
     }
 
     public boolean isActive() {
-        return STATUS_TODO.equals(status) || STATUS_INPROGRESS.equals(status);
+        return STATUS_TODO.equals(status) || STATUS_INPROGRESS.equals(status)
+                || STATUS_WAITING.equals(status);
+    }
+
+    public boolean isSomeday() {
+        return STATUS_SOMEDAY.equals(status);
+    }
+
+    public boolean isWaiting() {
+        return STATUS_WAITING.equals(status);
+    }
+
+    /** Returns true when startDate is set and is after today — task should be hidden. */
+    public boolean isDeferred() {
+        if (startDate == null || startDate.isEmpty()) return false;
+        try {
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar.SECOND, 0);
+            today.set(Calendar.MILLISECOND, 0);
+            String[] p = startDate.split("-");
+            if (p.length != 3) return false;
+            Calendar start = Calendar.getInstance();
+            start.set(Integer.parseInt(p[0]), Integer.parseInt(p[1]) - 1, Integer.parseInt(p[2]), 0, 0, 0);
+            start.set(Calendar.MILLISECOND, 0);
+            return start.after(today);
+        } catch (Exception e) { return false; }
     }
 
     public void markCompleted() {
@@ -396,6 +464,8 @@ public class Task {
         if (title != null && title.toLowerCase().contains(q)) return true;
         if (description != null && description.toLowerCase().contains(q)) return true;
         if (category != null && category.toLowerCase().contains(q)) return true;
+        if (contextTag != null && contextTag.toLowerCase().contains(q)) return true;
+        if (waitingFor != null && waitingFor.toLowerCase().contains(q)) return true;
         if (tags != null) {
             for (String tag : tags) {
                 if (tag != null && tag.toLowerCase().contains(q)) return true;
@@ -445,6 +515,32 @@ public class Task {
 
     public boolean hasDependency() {
         return dependsOnTaskId != null && !dependsOnTaskId.isEmpty();
+    }
+
+    // ─── Reading Time Estimate ──────────────────────────────────
+
+    public int getReadingTimeMinutes() {
+        if (notes == null || notes.trim().isEmpty()) return 0;
+        int wordCount = notes.trim().split("\\s+").length;
+        return Math.max(1, (int) Math.ceil(wordCount / 200.0));
+    }
+
+    // ─── Context Tag Helpers ────────────────────────────────────
+
+    public boolean hasContextTag() {
+        return contextTag != null && !contextTag.isEmpty();
+    }
+
+    public static int getContextTagColor(String tag) {
+        if (tag == null) return 0xFF64748B;
+        switch (tag) {
+            case CONTEXT_HOME:     return 0xFF14B8A6; // Teal
+            case CONTEXT_COMPUTER: return 0xFF3B82F6; // Blue
+            case CONTEXT_PHONE:    return 0xFF8B5CF6; // Violet
+            case CONTEXT_ERRANDS:  return 0xFFF59E0B; // Amber
+            case CONTEXT_ANYWHERE: return 0xFF64748B; // Slate
+            default:               return 0xFF64748B;
+        }
     }
 
     // ─── Duration Helpers ────────────────────────────────────────
@@ -576,6 +672,28 @@ public class Task {
             json.put("energyLevel", energyLevel != null ? energyLevel : "");
             json.put("locationReminderName", locationReminderName != null ? locationReminderName : "");
             json.put("timerRunning", timerRunning);
+            json.put("rescheduleCount", rescheduleCount);
+            if (colorLabel != null) json.put("colorLabel", colorLabel);
+            if (startDate  != null) json.put("startDate",  startDate);
+            json.put("effortPoints", effortPoints);
+            JSONArray linksArr = new JSONArray();
+            if (links != null) for (TaskLink l : links) linksArr.put(l.toJson());
+            json.put("links", linksArr);
+            JSONArray commentsArr = new JSONArray();
+            if (comments != null) for (TaskComment c : comments) commentsArr.put(c.toJson());
+            json.put("comments", commentsArr);
+
+            // Batch 4 fields
+            json.put("isNextAction", isNextAction);
+            json.put("isMIT", isMIT);
+            if (contextTag != null) json.put("contextTag", contextTag);
+            if (waitingFor != null) json.put("waitingFor", waitingFor);
+            if (assignedTo != null) json.put("assignedTo", assignedTo);
+            JSONArray watchArr = new JSONArray();
+            if (watchers != null) for (String w : watchers) watchArr.put(w);
+            json.put("watchers", watchArr);
+            json.put("isPrivate", isPrivate);
+            if (projectId != null) json.put("projectId", projectId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -686,6 +804,49 @@ public class Task {
             task.locationReminderName = locName.isEmpty() ? null : locName;
             task.timerRunning = json.optBoolean("timerRunning", false)
                                 || json.optBoolean("timer_running", false);
+            task.rescheduleCount = json.optInt("rescheduleCount", 0);
+
+            task.colorLabel   = json.optString("colorLabel", null);
+            if ("null".equals(task.colorLabel)) task.colorLabel = null;
+            task.startDate    = json.optString("startDate", null);
+            if ("null".equals(task.startDate)) task.startDate = null;
+            task.effortPoints = json.optInt("effortPoints", 0);
+            task.links = new ArrayList<>();
+            JSONArray linksArr = json.optJSONArray("links");
+            if (linksArr != null) {
+                for (int i = 0; i < linksArr.length(); i++) {
+                    TaskLink l = TaskLink.fromJson(linksArr.optJSONObject(i));
+                    if (l != null) task.links.add(l);
+                }
+            }
+            task.comments = new ArrayList<>();
+            JSONArray commentsArr = json.optJSONArray("comments");
+            if (commentsArr != null) {
+                for (int i = 0; i < commentsArr.length(); i++) {
+                    TaskComment c = TaskComment.fromJson(commentsArr.optJSONObject(i));
+                    if (c != null) task.comments.add(c);
+                }
+            }
+
+            // Batch 4 fields
+            task.isNextAction = json.optBoolean("isNextAction", false);
+            task.isMIT = json.optBoolean("isMIT", false);
+            String ctx = json.optString("contextTag", "");
+            task.contextTag = ctx.isEmpty() ? null : ctx;
+            String wf = json.optString("waitingFor", "");
+            task.waitingFor = wf.isEmpty() ? null : wf;
+            String at = json.optString("assignedTo", "");
+            task.assignedTo = at.isEmpty() ? null : at;
+            task.watchers = new ArrayList<>();
+            JSONArray watchArr2 = json.optJSONArray("watchers");
+            if (watchArr2 != null) {
+                for (int i = 0; i < watchArr2.length(); i++) {
+                    task.watchers.add(watchArr2.getString(i));
+                }
+            }
+            task.isPrivate = json.optBoolean("isPrivate", false);
+            String projId = json.optString("projectId", "");
+            task.projectId = projId.isEmpty() ? null : projId;
 
             return task;
         } catch (Exception e) {
@@ -767,6 +928,91 @@ public class Task {
         copy.timerSessions = new ArrayList<>();
         copy.notes = this.notes;
         copy.isStarred = false;
+        copy.rescheduleCount = 0;
+        copy.contextTag = this.contextTag;
+        copy.energyLevel = this.energyLevel;
+        copy.assignedTo = this.assignedTo;
+        copy.colorLabel = this.colorLabel;
+        copy.effortPoints = this.effortPoints;
+        copy.projectId = this.projectId;
+        return copy;
+    }
+
+    /**
+     * Creates a deep copy of this task, preserving all fields including ID.
+     * Used by the undo system to snapshot task state before destructive operations.
+     */
+    public Task deepCopy() {
+        Task copy = new Task();
+        copy.id = this.id;
+        copy.title = this.title;
+        copy.description = this.description;
+        copy.priority = this.priority;
+        copy.status = this.status;
+        copy.category = this.category;
+        copy.dueDate = this.dueDate;
+        copy.dueTime = this.dueTime;
+        copy.createdAt = this.createdAt;
+        copy.updatedAt = this.updatedAt;
+        copy.completedAt = this.completedAt;
+        copy.isStarred = this.isStarred;
+        copy.isTrashed = this.isTrashed;
+        copy.trashedAt = this.trashedAt;
+        copy.source = this.source;
+        copy.dependsOnTaskId = this.dependsOnTaskId;
+        copy.linkedNoteId = this.linkedNoteId;
+        copy.templateId = this.templateId;
+        copy.energyLevel = this.energyLevel;
+        copy.locationReminderName = this.locationReminderName;
+        copy.timerRunning = this.timerRunning;
+        copy.recurrence = this.recurrence;
+        copy.recurrenceRule = this.recurrenceRule;
+        copy.estimatedDuration = this.estimatedDuration;
+        copy.actualDuration = this.actualDuration;
+        copy.notes = this.notes;
+        copy.rescheduleCount = this.rescheduleCount;
+        copy.colorLabel   = this.colorLabel;
+        copy.startDate    = this.startDate;
+        copy.effortPoints = this.effortPoints;
+        copy.links = new ArrayList<>();
+        if (this.links != null) {
+            for (TaskLink l : this.links) {
+                TaskLink copy_l = new TaskLink(l.title, l.url);
+                copy_l.id = l.id;  // preserve original ID
+                copy.links.add(copy_l);
+            }
+        }
+        copy.comments = new ArrayList<>();
+        if (this.comments != null) {
+            for (TaskComment c : this.comments) {
+                TaskComment cc = new TaskComment(c.author, c.text);
+                cc.id = c.id;
+                cc.timestamp = c.timestamp;
+                copy.comments.add(cc);
+            }
+        }
+        copy.tags = this.tags != null ? new ArrayList<>(this.tags) : new ArrayList<>();
+        copy.subtasks = new ArrayList<>();
+        if (this.subtasks != null) {
+            for (SubTask st : this.subtasks) copy.subtasks.add(st.copy());
+        }
+        copy.attachments = this.attachments != null ? new ArrayList<>(this.attachments) : new ArrayList<>();
+        copy.reminderDateTimes = this.reminderDateTimes != null ? new ArrayList<>(this.reminderDateTimes) : new ArrayList<>();
+        copy.timerSessions = new ArrayList<>();
+        if (this.timerSessions != null) {
+            for (long[] session : this.timerSessions) {
+                copy.timerSessions.add(new long[]{session[0], session[1]});
+            }
+        }
+        // Batch 4 fields
+        copy.isNextAction = this.isNextAction;
+        copy.isMIT = this.isMIT;
+        copy.contextTag = this.contextTag;
+        copy.waitingFor = this.waitingFor;
+        copy.assignedTo = this.assignedTo;
+        copy.watchers = this.watchers != null ? new ArrayList<>(this.watchers) : new ArrayList<>();
+        copy.isPrivate = this.isPrivate;
+        copy.projectId = this.projectId;
         return copy;
     }
 }

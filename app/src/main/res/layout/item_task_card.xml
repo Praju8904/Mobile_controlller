@@ -60,6 +60,22 @@
                 android:maxLines="2"
                 android:ellipsize="end" />
 
+            <!-- Inline title edit (shown on double-tap, hidden by default) -->
+            <EditText
+                android:id="@+id/etTitleEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:background="@null"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences"
+                android:padding="0dp" />
+
             <!-- 17. Star/Favorite toggle -->
             <TextView
                 android:id="@+id/btnStar"
@@ -282,6 +298,146 @@
                 android:text="📍"
                 android:textSize="@dimen/text_badge"
                 android:layout_marginEnd="@dimen/space_sm"
+                android:visibility="gone" />
+
+            <!-- 15. Carry-over / reschedule count badge -->
+            <TextView
+                android:id="@+id/tvCarryOverBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#F59E0B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:layout_marginEnd="@dimen/space_sm"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- ═══ ROW 3B: Batch 4 Badges — Next Action, MIT, Context, Waiting, 2-min, etc. ═══ -->
+        <LinearLayout
+            android:id="@+id/batch4BadgesRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp"
+            android:visibility="gone">
+
+            <!-- GTD Next Action badge -->
+            <TextView
+                android:id="@+id/tvNextActionBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NEXT"
+                android:textColor="#FBBF24"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/task_tag_chip_bg"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- MIT badge -->
+            <TextView
+                android:id="@+id/tvMITBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MIT"
+                android:textColor="#F43F5E"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/task_tag_chip_bg"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- Context tag chip -->
+            <TextView
+                android:id="@+id/tvContextTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/task_tag_chip_bg"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- Waiting-For badge -->
+            <TextView
+                android:id="@+id/tvWaitingBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#F59E0B"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- 2-Minute Rule badge -->
+            <TextView
+                android:id="@+id/tv2MinBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2min"
+                android:textColor="#10B981"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/task_tag_chip_bg"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- Reading time estimate -->
+            <TextView
+                android:id="@+id/tvReadingTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#94A3B8"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- Assigned To badge -->
+            <TextView
+                android:id="@+id/tvAssignedTo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#8B5CF6"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+            <!-- Private lock icon -->
+            <TextView
+                android:id="@+id/tvPrivateLock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔒"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <!-- Watcher count badge -->
+            <TextView
+                android:id="@+id/tvWatcherCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#94A3B8"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif"
+                android:layout_marginStart="6dp"
                 android:visibility="gone" />
         </LinearLayout>
 

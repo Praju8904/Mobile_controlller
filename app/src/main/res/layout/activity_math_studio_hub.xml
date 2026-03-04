@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/hubHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/math_header_bg"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Math Studio"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvHubSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calculate · Graph · Analyze"
+                android:textColor="#A5B4FC"
+                android:textSize="14sp"
+                android:layout_marginTop="2dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnHubHistory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="⏱"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Mode Grid Row 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/cardModeStandard"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/math_mode_standard_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⊞" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Standard" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Basic arithmetic" android:textColor="#BAE6FD" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardModeScientific"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/math_mode_scientific_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="∑" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Scientific" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Trig &amp; functions" android:textColor="#DDD6FE" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Mode Grid Row 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/cardModeGraphing"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/math_mode_graphing_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📈" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Graphing" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Plot functions" android:textColor="#A7F3D0" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardModeMatrix"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/math_mode_matrix_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⊞" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Matrix" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Linear algebra" android:textColor="#E9D5FF" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Mode Grid Row 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/cardModeStatistics"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/math_mode_stats_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📊" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Statistics" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Data analysis" android:textColor="#FDE68A" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardModeProgrammer"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/math_mode_programmer_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&lt;/&gt;" android:textSize="22sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Programmer" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hex &amp; binary" android:textColor="#A5F3FC" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Mode Grid Row 4 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:id="@+id/cardModeConverter"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/math_mode_converter_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⇄" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Converter" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unit conversion" android:textColor="#FBCFE8" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardModeAI"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/math_mode_ai_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="∓" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Equation Solver" android:textColor="#FFFFFF" android:textSize="14sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Solve equations" android:textColor="#FDE68A" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Mode Grid Row 5 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:id="@+id/cardModeAptitude"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/math_mode_aptitude_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📐" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aptitude" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Competitive math" android:textColor="#A7F3D0" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardModeFormulas"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/math_mode_formulas_bg"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="bottom"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+                    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ƒ" android:textSize="28sp" android:textColor="#FFFFFF" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Formulas" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Build &amp; solve" android:textColor="#A5F3FC" android:textSize="12sp" android:alpha="0.8"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Recent Calculations -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recent Calculations"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:id="@+id/recentCalcContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+            </HorizontalScrollView>
+
+            <!-- Quick Access -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/btnQuickHistory"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/math_quick_btn_bg"
+                    android:text="History"
+                    android:textColor="#A5B4FC"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground" />
+
+                <TextView
+                    android:id="@+id/btnQuickFormulas"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="3dp"
+                    android:background="@drawable/math_quick_btn_bg"
+                    android:text="Formulas"
+                    android:textColor="#A5B4FC"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground" />
+
+                <TextView
+                    android:id="@+id/btnQuickConstants"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/math_quick_btn_bg"
+                    android:text="Constants"
+                    android:textColor="#A5B4FC"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

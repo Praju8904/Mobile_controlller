@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Aptitude"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Tab bar -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:scrollbars="none"
+        android:background="#1A1F3A">
+        <LinearLayout android:id="@+id/aptTabBar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+            <TextView android:id="@+id/tabPC"
+                android:layout_width="wrap_content" android:layout_height="match_parent"
+                android:text="P&amp;C" android:gravity="center" android:textColor="#A5B4FC"
+                android:textSize="13sp" android:textStyle="bold" android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clickable="true" android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
+            <TextView android:id="@+id/tabProb"
+                android:layout_width="wrap_content" android:layout_height="match_parent"
+                android:text="Probability" android:gravity="center" android:textColor="#6B7280"
+                android:textSize="13sp" android:textStyle="bold" android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clickable="true" android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
+            <TextView android:id="@+id/tabInterest"
+                android:layout_width="wrap_content" android:layout_height="match_parent"
+                android:text="Interest" android:gravity="center" android:textColor="#6B7280"
+                android:textSize="13sp" android:textStyle="bold" android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clickable="true" android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
+            <TextView android:id="@+id/tabPercent"
+                android:layout_width="wrap_content" android:layout_height="match_parent"
+                android:text="Percentage" android:gravity="center" android:textColor="#6B7280"
+                android:textSize="13sp" android:textStyle="bold" android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clickable="true" android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
+            <TextView android:id="@+id/tabTSD"
+                android:layout_width="wrap_content" android:layout_height="match_parent"
+                android:text="TSD" android:gravity="center" android:textColor="#6B7280"
+                android:textSize="13sp" android:textStyle="bold" android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clickable="true" android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ===== P&C TAB ===== -->
+            <LinearLayout android:id="@+id/panelPC"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+
+                <!-- Toggle nPr / nCr -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="16dp">
+                    <Button android:id="@+id/btnNPR"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="nPr" android:textColor="#0A0E21" android:background="#A5B4FC"
+                        android:layout_marginEnd="4dp" android:textStyle="bold"/>
+                    <Button android:id="@+id/btnNCR"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="nCr" android:textColor="#A5B4FC" android:background="#1A1F3A"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="n (total items)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etPCn"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="n" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="number" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="r (items chosen)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etPCr"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="r" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="number" android:layout_marginBottom="12dp"/>
+
+                <Button android:id="@+id/btnCalcPC"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:text="Calculate" android:textColor="#0A0E21"
+                    android:background="#A5B4FC" android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A" android:padding="12dp">
+                    <TextView android:id="@+id/tvPCResult"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="Result: —" android:textColor="#00FF41"
+                        android:textSize="22sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <TextView android:id="@+id/tvPCFormula"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="Formula: —" android:textColor="#A5B4FC"
+                        android:textSize="14sp" android:fontFamily="monospace"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== PROBABILITY TAB ===== -->
+            <LinearLayout android:id="@+id/panelProb"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="P(A) — probability of event A (0 to 1)"
+                    android:textColor="#A5B4FC" android:textSize="13sp" android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etProbA"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="0.5" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="P(B) — probability of event B (0 to 1)"
+                    android:textColor="#A5B4FC" android:textSize="13sp" android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etProbB"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="0.3" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="4dp"/>
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="(Assumes A and B are independent)"
+                    android:textColor="#6B7280" android:textSize="12sp" android:layout_marginBottom="12dp"/>
+
+                <Button android:id="@+id/btnCalcProb"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:text="Calculate" android:textColor="#0A0E21"
+                    android:background="#A5B4FC" android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A" android:padding="12dp">
+                    <TextView android:id="@+id/tvProbResult"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#FFFFFF" android:textSize="14sp"
+                        android:fontFamily="monospace" android:lineSpacingExtra="6dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== INTEREST TAB ===== -->
+            <LinearLayout android:id="@+id/panelInterest"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Principal (P)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etPrincipal"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="1000" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Rate % per year (R)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etRate"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="5" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Time in years (T)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etTime"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="2" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Compound Frequency" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.Spinner android:id="@+id/spinnerFreq"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:layout_marginBottom="12dp"/>
+
+                <Button android:id="@+id/btnCalcInterest"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:text="Calculate" android:textColor="#0A0E21"
+                    android:background="#A5B4FC" android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A" android:padding="12dp">
+                    <TextView android:id="@+id/tvInterestResult"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#FFFFFF" android:textSize="14sp"
+                        android:fontFamily="monospace" android:lineSpacingExtra="6dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== PERCENTAGE TAB ===== -->
+            <LinearLayout android:id="@+id/panelPercent"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp"
+                android:visibility="gone">
+
+                <!-- X% of Y -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A"
+                    android:padding="12dp" android:layout_marginBottom="12dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="X% of Y" android:textColor="#A5B4FC" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <android.widget.EditText android:id="@+id/etPctX"
+                            android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+                            android:hint="X%" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                            android:background="#252A4A" android:padding="8dp" android:inputType="numberDecimal"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="% of" android:textColor="#6B7280" android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"/>
+                        <android.widget.EditText android:id="@+id/etPctY"
+                            android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+                            android:hint="Y" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                            android:background="#252A4A" android:padding="8dp" android:inputType="numberDecimal"/>
+                        <Button android:id="@+id/btnPctOfY"
+                            android:layout_width="wrap_content" android:layout_height="40dp"
+                            android:text="=" android:textColor="#0A0E21" android:background="#A5B4FC"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+                    <TextView android:id="@+id/tvPctOfYResult"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#00FF41" android:textSize="18sp"
+                        android:textStyle="bold" android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <!-- % change -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A"
+                    android:padding="12dp" android:layout_marginBottom="12dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="% Change" android:textColor="#A5B4FC" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <android.widget.EditText android:id="@+id/etPctFrom"
+                            android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+                            android:hint="From" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                            android:background="#252A4A" android:padding="8dp" android:inputType="numberDecimal"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="→" android:textColor="#6B7280" android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"/>
+                        <android.widget.EditText android:id="@+id/etPctTo"
+                            android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+                            android:hint="To" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                            android:background="#252A4A" android:padding="8dp" android:inputType="numberDecimal"/>
+                        <Button android:id="@+id/btnPctChange"
+                            android:layout_width="wrap_content" android:layout_height="40dp"
+                            android:text="=" android:textColor="#0A0E21" android:background="#A5B4FC"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+                    <TextView android:id="@+id/tvPctChangeResult"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#00FF41" android:textSize="18sp"
+                        android:textStyle="bold" android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <!-- Profit/Loss -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A"
+                    android:padding="12dp" android:layout_marginBottom="12dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="Profit / Loss" android:textColor="#A5B4FC" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <android.widget.EditText android:id="@+id/etCostPrice"
+                            android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+                            android:hint="Cost Price" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                            android:background="#252A4A" android:padding="8dp" android:inputType="numberDecimal"/>
+                        <android.widget.EditText android:id="@+id/etSellingPrice"
+                            android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+                            android:hint="Selling Price" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                            android:background="#252A4A" android:padding="8dp" android:inputType="numberDecimal"
+                            android:layout_marginStart="8dp"/>
+                        <Button android:id="@+id/btnProfitLoss"
+                            android:layout_width="wrap_content" android:layout_height="40dp"
+                            android:text="=" android:textColor="#0A0E21" android:background="#A5B4FC"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+                    <TextView android:id="@+id/tvProfitLossResult"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#00FF41" android:textSize="18sp"
+                        android:textStyle="bold" android:layout_marginTop="8dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== TSD TAB ===== -->
+            <LinearLayout android:id="@+id/panelTSD"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Problem Type" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.Spinner android:id="@+id/spinnerTSDType"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Speed (km/h)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etTSDSpeed"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="Speed" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Distance (km)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etTSDDistance"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="Distance" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="12dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Time (hours)" android:textColor="#A5B4FC" android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <android.widget.EditText android:id="@+id/etTSDTime"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:hint="Time" android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:inputType="numberDecimal" android:layout_marginBottom="12dp"/>
+
+                <Button android:id="@+id/btnCalcTSD"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:text="Calculate (leave one field empty)"
+                    android:textColor="#0A0E21" android:background="#A5B4FC"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A" android:padding="12dp">
+                    <TextView android:id="@+id/tvTSDResult"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#FFFFFF" android:textSize="14sp"
+                        android:fontFamily="monospace" android:lineSpacingExtra="6dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

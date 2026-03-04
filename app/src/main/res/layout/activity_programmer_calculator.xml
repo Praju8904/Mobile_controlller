@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E21">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Programmer"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Tab bar -->
+    <LinearLayout
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:background="#1A1F3A"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+        <TextView android:id="@+id/tabCalc"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:text="CALC" android:gravity="center" android:textColor="#00FF41"
+            android:textSize="13sp" android:textStyle="bold"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"/>
+        <TextView android:id="@+id/tabLogic"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:text="LOGIC" android:gravity="center" android:textColor="#6B7280"
+            android:textSize="13sp" android:textStyle="bold"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"/>
+        <TextView android:id="@+id/tabHash"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:text="HASH" android:gravity="center" android:textColor="#6B7280"
+            android:textSize="13sp" android:textStyle="bold"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"/>
+        <TextView android:id="@+id/tabNetwork"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:text="NETWORK" android:gravity="center" android:textColor="#6B7280"
+            android:textSize="13sp" android:textStyle="bold"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"/>
+    </LinearLayout>
+
+    <!-- Tab indicator -->
+    <View android:id="@+id/tabIndicator"
+        android:layout_width="match_parent" android:layout_height="2dp"
+        android:background="#00FF41" />
+
+    <!-- Scrollable content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ===== CALC TAB ===== -->
+            <LinearLayout android:id="@+id/panelCalc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <!-- Base display panel -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A"
+                    android:padding="12dp" android:layout_marginBottom="8dp">
+
+                    <!-- HEX row -->
+                    <LinearLayout android:id="@+id/rowHex"
+                        android:layout_width="match_parent" android:layout_height="40dp"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+                        <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                            android:text="HEX" android:textColor="#00FF41" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvHex" android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="0" android:textColor="#00FF41"
+                            android:textSize="18sp" android:textStyle="bold" android:gravity="end"
+                            android:fontFamily="monospace"/>
+                    </LinearLayout>
+
+                    <!-- DEC row -->
+                    <LinearLayout android:id="@+id/rowDec"
+                        android:layout_width="match_parent" android:layout_height="40dp"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+                        <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                            android:text="DEC" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvDec" android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="0" android:textColor="#FFFFFF"
+                            android:textSize="22sp" android:textStyle="bold" android:gravity="end"
+                            android:fontFamily="monospace"/>
+                    </LinearLayout>
+
+                    <!-- OCT row -->
+                    <LinearLayout android:id="@+id/rowOct"
+                        android:layout_width="match_parent" android:layout_height="40dp"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+                        <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                            android:text="OCT" android:textColor="#2DD4BF" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvOct" android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="0" android:textColor="#2DD4BF"
+                            android:textSize="14sp" android:gravity="end"
+                            android:fontFamily="monospace"/>
+                    </LinearLayout>
+
+                    <!-- BIN row -->
+                    <LinearLayout android:id="@+id/rowBin"
+                        android:layout_width="match_parent" android:layout_height="40dp"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+                        <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                            android:text="BIN" android:textColor="#94A3B8" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tvBin" android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="0" android:textColor="#94A3B8"
+                            android:textSize="11sp" android:gravity="end"
+                            android:fontFamily="monospace"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Bit width selector -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="36dp"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <Button android:id="@+id/btn8bit"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="8" android:textSize="13sp" android:textColor="#A5B4FC"
+                        android:background="#1A1F3A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn16bit"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="16" android:textSize="13sp" android:textColor="#A5B4FC"
+                        android:background="#1A1F3A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn32bit"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="32" android:textSize="13sp" android:textColor="#00FF41"
+                        android:background="#1A1F3A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn64bit"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="64" android:textSize="13sp" android:textColor="#A5B4FC"
+                        android:background="#1A1F3A"/>
+                </LinearLayout>
+
+                <!-- Bitwise ops row 1 -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="4dp">
+                    <Button android:id="@+id/btnAnd"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="AND" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnOr"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="OR" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnNot"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="NOT" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnXor"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="XOR" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A"/>
+                </LinearLayout>
+                <!-- Bitwise ops row 2 -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <Button android:id="@+id/btnNand"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="NAND" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnNor"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="NOR" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnLsh"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="LSH" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnRsh"
+                        android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                        android:text="RSH" android:textSize="12sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A"/>
+                </LinearLayout>
+
+                <!-- Hex digit buttons A-F + DEL/CLR -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="4dp">
+                    <Button android:id="@+id/btnA" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="A" android:textSize="14sp" android:textColor="#00FF41"
+                        android:background="#1A2A1A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnB" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="B" android:textSize="14sp" android:textColor="#00FF41"
+                        android:background="#1A2A1A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnC" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="C" android:textSize="14sp" android:textColor="#00FF41"
+                        android:background="#1A2A1A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnD" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="D" android:textSize="14sp" android:textColor="#00FF41"
+                        android:background="#1A2A1A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnE" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="E" android:textSize="14sp" android:textColor="#00FF41"
+                        android:background="#1A2A1A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnF" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="F" android:textSize="14sp" android:textColor="#00FF41"
+                        android:background="#1A2A1A"/>
+                </LinearLayout>
+
+                <!-- Number buttons 7-9, DEL, CLR -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="4dp">
+                    <Button android:id="@+id/btn7" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="7" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn8" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="8" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn9" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="9" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnDel" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="DEL" android:textSize="14sp" android:textColor="#F87171"
+                        android:background="#2A1A1A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnClr" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="CLR" android:textSize="14sp" android:textColor="#F87171"
+                        android:background="#2A1A1A"/>
+                </LinearLayout>
+
+                <!-- Number buttons 4-6 -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="4dp">
+                    <Button android:id="@+id/btn4" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="4" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn5" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="5" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn6" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="6" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnMod" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="MOD" android:textSize="13sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnDiv" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="÷" android:textSize="18sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A"/>
+                </LinearLayout>
+
+                <!-- Number buttons 1-3 -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="4dp">
+                    <Button android:id="@+id/btn1" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="1" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn2" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="2" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btn3" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="3" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnMul" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="×" android:textSize="18sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnSub" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="−" android:textSize="18sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A"/>
+                </LinearLayout>
+
+                <!-- Number buttons 0 / = -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <Button android:id="@+id/btn0" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="2" android:text="0" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnPlusMinus" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="±" android:textSize="16sp" android:textColor="#FFFFFF"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnAdd" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="+" android:textSize="18sp" android:textColor="#A5B4FC"
+                        android:background="#252A4A" android:layout_marginEnd="4dp"/>
+                    <Button android:id="@+id/btnEquals" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="=" android:textSize="18sp" android:textColor="#0A0E21"
+                        android:background="#00FF41"/>
+                </LinearLayout>
+
+                <!-- Bit visualization grid label -->
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Bit Visualization (tap to toggle)"
+                    android:textColor="#6B7280" android:textSize="12sp"
+                    android:layout_marginBottom="6dp"/>
+
+                <!-- Bit grid container -->
+                <LinearLayout android:id="@+id/bitGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp"/>
+
+            </LinearLayout>
+
+            <!-- ===== LOGIC TAB ===== -->
+            <LinearLayout android:id="@+id/panelLogic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Boolean Expression" android:textColor="#A5B4FC"
+                    android:textSize="14sp" android:layout_marginBottom="8dp"/>
+
+                <android.widget.EditText android:id="@+id/etLogicExpr"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:hint="e.g. A AND B OR NOT C"
+                    android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:textSize="15sp" android:fontFamily="monospace"
+                    android:layout_marginBottom="12dp"/>
+
+                <Button android:id="@+id/btnGenerateTruth"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:text="Generate Truth Table"
+                    android:textColor="#0A0E21" android:background="#A5B4FC"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Truth Table" android:textColor="#A5B4FC"
+                    android:textSize="14sp" android:layout_marginBottom="8dp"/>
+
+                <ScrollView android:layout_width="match_parent" android:layout_height="200dp"
+                    android:background="#1A1F3A">
+                    <TextView android:id="@+id/tvTruthTable"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="Enter an expression above"
+                        android:textColor="#9CA3AF" android:textSize="13sp"
+                        android:padding="12dp" android:fontFamily="monospace"/>
+                </ScrollView>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Simplified Form" android:textColor="#A5B4FC"
+                    android:textSize="14sp" android:layout_marginTop="16dp" android:layout_marginBottom="8dp"/>
+
+                <TextView android:id="@+id/tvLogicSimplified"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="—" android:textColor="#00FF41"
+                    android:textSize="15sp" android:background="#1A1F3A"
+                    android:padding="12dp" android:fontFamily="monospace"/>
+            </LinearLayout>
+
+            <!-- ===== HASH TAB ===== -->
+            <LinearLayout android:id="@+id/panelHash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Input Text" android:textColor="#A5B4FC"
+                    android:textSize="14sp" android:layout_marginBottom="8dp"/>
+
+                <android.widget.EditText android:id="@+id/etHashInput"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:hint="Enter text to hash..."
+                    android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:textSize="14sp" android:minLines="3" android:gravity="top"
+                    android:layout_marginBottom="12dp"/>
+
+                <Button android:id="@+id/btnComputeHash"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:text="Compute Hashes"
+                    android:textColor="#0A0E21" android:background="#A5B4FC"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A" android:padding="12dp">
+
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="MD5" android:textColor="#F59E0B" android:textSize="12sp" android:textStyle="bold"/>
+                    <TextView android:id="@+id/tvMd5"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#9CA3AF" android:textSize="13sp"
+                        android:fontFamily="monospace" android:layout_marginBottom="12dp"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"/>
+
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="SHA-1" android:textColor="#F59E0B" android:textSize="12sp" android:textStyle="bold"/>
+                    <TextView android:id="@+id/tvSha1"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#9CA3AF" android:textSize="13sp"
+                        android:fontFamily="monospace" android:layout_marginBottom="12dp"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"/>
+
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="SHA-256" android:textColor="#00FF41" android:textSize="12sp" android:textStyle="bold"/>
+                    <TextView android:id="@+id/tvSha256"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#9CA3AF" android:textSize="13sp"
+                        android:fontFamily="monospace" android:layout_marginBottom="12dp"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"/>
+
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="SHA-512" android:textColor="#00FF41" android:textSize="12sp" android:textStyle="bold"/>
+                    <TextView android:id="@+id/tvSha512"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="#9CA3AF" android:textSize="13sp"
+                        android:fontFamily="monospace"
+                        android:clickable="true" android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== NETWORK TAB ===== -->
+            <LinearLayout android:id="@+id/panelNetwork"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="IP Address" android:textColor="#A5B4FC"
+                    android:textSize="14sp" android:layout_marginBottom="8dp"/>
+
+                <android.widget.EditText android:id="@+id/etIpAddress"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:hint="e.g. 192.168.1.0"
+                    android:textColor="#FFFFFF" android:textColorHint="#4B5563"
+                    android:background="#1A1F3A" android:padding="12dp"
+                    android:textSize="15sp" android:fontFamily="monospace"
+                    android:inputType="text"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="CIDR Prefix: /" android:textColor="#A5B4FC" android:textSize="14sp"
+                        android:layout_marginEnd="12dp"/>
+                    <android.widget.NumberPicker android:id="@+id/cidrPicker"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <Button android:id="@+id/btnCalcNetwork"
+                    android:layout_width="match_parent" android:layout_height="44dp"
+                    android:text="Calculate"
+                    android:textColor="#0A0E21" android:background="#A5B4FC"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:background="#1A1F3A" android:padding="12dp">
+
+                    <TextView android:id="@+id/tvNetworkInfo"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="Enter IP and CIDR above"
+                        android:textColor="#9CA3AF" android:textSize="14sp"
+                        android:fontFamily="monospace" android:lineSpacingExtra="6dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
